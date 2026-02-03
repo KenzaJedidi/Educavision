@@ -1,0 +1,19 @@
+{% extends 'admin/layout.html.twig' %}
+{% block breadcrumb_title %}Réclamation{% endblock %}
+{% block breadcrumb_items %}{% endblock %}
+{% block body %}
+    <h1>Détail de la Réclamation</h1>
+    <ul>
+        <li>ID : {{ reclamation.id }}</li>
+        <li>Nom : {{ reclamation.nom|e }}</li>
+        <li>Prénom : {{ reclamation.prenom|e }}</li>
+        <li>Email : {{ reclamation.email|e }}</li>
+        <li>Rôle : {{ reclamation.role|capitalize }}</li>
+        <li>Statut : {{ reclamation.status|capitalize }}</li>
+        <li>Titre : {{ reclamation.titre|e }}</li>
+        <li>Description : {{ reclamation.description|e }}</li>
+        <li>Date : {{ reclamation.dateReclamation|date('d/m/Y H:i') }}</li>
+    </ul>
+    <a href="{{ path('reclamation_edit', {'id': reclamation.id}) }}">Modifier</a>
+    <a href="{{ path('reclamation_index') }}">Retour à la liste</a>
+{% endblock %}

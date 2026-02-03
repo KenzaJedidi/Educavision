@@ -1,0 +1,85 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Les Filières - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Les Filières{% endblock %}
+
+{% block breadcrumb_items %}
+<li>Les Filières</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+	<!-- Liste des filières -->
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Gestion des Filières</h4>
+				<a href="{{ path('admin_filiere_new') }}" class="btn button-sm green float-right">
+					<i class="fa fa-plus"></i> Ajouter une Filière
+				</a>
+			</div>
+			<div class="widget-inner">
+				{% for filiere in filieres %}
+				<div class="card-courses-list admin-courses">
+					<div class="card-courses-media">
+						{% if filiere.image %}
+							<img src="{{ asset('uploads/filieres/' ~ filiere.image) }}" alt="{{ filiere.nom }}" />
+						{% else %}
+							<img src="{{ asset('assets/images/courses/pic1.jpg') }}" alt="{{ filiere.nom }}" />
+						{% endif %}
+					</div>
+					<div class="card-courses-full-dec">
+						<div class="card-courses-title">
+							<h4>{{ filiere.nom }}</h4>
+						</div>
+						<div class="card-courses-list-bx">
+							<ul class="card-courses-view">
+								<li class="card-courses-user">
+									<div class="card-courses-user-info">
+										<h5>Responsable</h5>
+										<h4>{{ filiere.responsable ?? 'Non défini' }}</h4>
+									</div>
+								</li>
+								<li class="card-courses-categories">
+									<h5>Métiers</h5>
+									<h4>{{ filiere.metiers|length }} métier(s)</h4>
+								</li>
+								<li class="card-courses-review">
+									<h5>Date création</h5>
+									<h4>{{ filiere.dateCreation|date('d/m/Y') }}</h4>
+								</li>
+							</ul>
+						</div>
+						<div class="row card-courses-dec">
+							<div class="col-md-12">
+								<h6 class="m-b10">Description de la filière</h6>
+								<p>{{ filiere.description|raw }}</p>
+							</div>
+							<div class="col-md-12">
+								<a href="{{ path('admin_filiere_show', {'id': filiere.id}) }}" class="btn blue radius-xl outline">
+									<i class="fa fa-eye"></i> Voir détails
+								</a>
+								<a href="{{ path('admin_filiere_edit', {'id': filiere.id}) }}" class="btn green radius-xl outline">
+									<i class="fa fa-edit"></i> Modifier
+								</a>
+								<a href="{{ path('admin_filiere_delete', {'id': filiere.id}) }}" 
+								   class="btn red outline radius-xl" 
+								   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette filière ?')">
+									<i class="fa fa-trash"></i> Supprimer
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				{% else %}
+				<div class="alert alert-info">
+					<i class="fa fa-info-circle"></i> Aucune filière disponible pour le moment.
+					<a href="{{ path('admin_filiere_new') }}" class="btn button-sm green">Ajouter la première filière</a>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

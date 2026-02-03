@@ -1,0 +1,28 @@
+/* Hex color :hover */
+.btn:active,
+.btn:hover,
+.btn:focus,
+.active > .btn,
+.bg-primary-dark,
+.pagination > li > a:hover,
+.pagination > li > span:hover,
+.pagination > li > a:focus,
+.pagination > li > span:focus,
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus,
+.sidenav .closebtn:hover,
+.sidenav .closebtn:focus,
+.owl-btn-1.primary .owl-prev:hover,
+.owl-btn-1.primary .owl-next:hover,
+.owl-btn-2.primary .owl-prev:hover,
+.owl-btn-2.primary .owl-next:hover,
+.pagination-bx.primary .pagination > li > a:hover,
+.pagination-bx.primary .pagination > li > span:hover,
+.pagination-bx.primary .pagination > li.active > span,
+.pagination-bx.primary .pagination > li.active > a {
+    background-color: #f5f5f5;
+}

@@ -1,0 +1,99 @@
+
+{% extends 'admin/layout.html.twig' %}
+{% block breadcrumb_title %}Réclamation{% endblock %}
+{% block breadcrumb_items %}{% endblock %}
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold text-primary"><i class="fa fa-comments"></i> Liste des Réclamations</h1>
+    <a href="{{ path('reclamation_new') }}" class="btn btn-gradient-primary shadow"><i class="fa fa-plus"></i> Nouvelle Réclamation</a>
+</div>
+<form method="get" class="mb-4 d-flex flex-wrap gap-2 align-items-center bg-light p-3 rounded shadow-sm" action="">
+    <input type="text" name="search" class="form-control me-2 flex-grow-1" placeholder="Recherche par nom, prénom, email ou titre..." value="{{ search|default('') }}">
+    <button class="btn btn-outline-primary" type="submit"><i class="fa fa-search"></i> Rechercher</button>
+    {% if search %}
+        <a href="{{ path('reclamation_index') }}" class="btn btn-link ms-2">Réinitialiser</a>
+    {% endif %}
+</form>
+<div class="row mb-4 g-3">
+    <div class="col-md-4">
+        <div class="card border-0 shadow h-100" style="background: linear-gradient(90deg,#2ec4b6,#20bfa9); color:#fff;">
+            <div class="card-body text-center">
+                <i class="fa fa-list fa-2x mb-2"></i>
+                <h5 class="card-title">Total</h5>
+                <p class="display-6 fw-bold">{{ total_reclamations }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow h-100" style="background: linear-gradient(90deg,#43e97b,#38f9d7); color:#fff;">
+            <div class="card-body text-center">
+                <i class="fa fa-check-circle fa-2x mb-2"></i>
+                <h5 class="card-title">Traitées</h5>
+                <p class="display-6 fw-bold">{{ traite_reclamations }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow h-100" style="background: linear-gradient(90deg,#f7971e,#ffd200); color:#fff;">
+            <div class="card-body text-center">
+                <i class="fa fa-hourglass-half fa-2x mb-2"></i>
+                <h5 class="card-title">En cours</h5>
+                <p class="display-6 fw-bold">{{ encours_reclamations }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="table-responsive mt-4">
+    <table class="table table-hover align-middle shadow-sm rounded bg-white">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th>
+                <th><i class="fa fa-user"></i> Nom</th>
+                <th><i class="fa fa-user"></i> Prénom</th>
+                <th><i class="fa fa-envelope"></i> Email</th>
+                <th><i class="fa fa-user-tag"></i> Rôle</th>
+                <th><i class="fa fa-info-circle"></i> Statut</th>
+                <th><i class="fa fa-heading"></i> Titre</th>
+                <th><i class="fa fa-align-left"></i> Description</th>
+                <th><i class="fa fa-calendar"></i> Date</th>
+                <th>Actions</th>
+                <th>Réponses</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reclamation in reclamations %}
+            <tr>
+                <td><span class="badge bg-secondary">{{ reclamation.id }}</span></td>
+                <td>{{ reclamation.nom|e }}</td>
+                <td>{{ reclamation.prenom|e }}</td>
+                <td>{{ reclamation.email|e }}</td>
+                <td><span class="badge bg-info text-dark">{{ reclamation.role|capitalize }}</span></td>
+                <td>
+                    {% if reclamation.status == 'traitee' %}
+                        <span class="badge bg-success"><i class="fa fa-check"></i> Traité</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark"><i class="fa fa-hourglass-half"></i> En cours</span>
+                    {% endif %}
+                </td>
+                <td>{{ reclamation.titre|e }}</td>
+                <td>{{ reclamation.description|e }}</td>
+                <td><span class="badge bg-light text-dark">{{ reclamation.dateReclamation|date('d/m/Y H:i') }}</span></td>
+                <td>
+                    <a href="{{ path('reclamation_show', {'id': reclamation.id}) }}" class="btn btn-outline-primary btn-sm" title="Voir"><i class="fa fa-eye"></i></a>
+                    <form method="post" action="{{ path('reclamation_delete', {'id': reclamation.id}) }}" style="display:inline-block" onsubmit="return confirm('Supprimer ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
+                        <button class="btn btn-outline-danger btn-sm" title="Supprimer"><i class="fa fa-trash"></i></button>
+                    </form>
+                </td>
+                <td>
+                    <a href="{{ path('reponse_new', {'reclamation': reclamation.id}) }}" class="btn btn-success btn-sm" title="Répondre"><i class="fa fa-reply"></i></a>
+                    <a href="{{ path('reponse_index') }}?reclamation={{ reclamation.id }}" class="btn btn-info btn-sm" title="Voir réponses"><i class="fa fa-comments"></i></a>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="11" class="text-center text-muted">Aucune réclamation trouvée.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Liste des Quizs{% endblock %}
+{% block breadcrumb_title %}Quizs et Résultats{% endblock %}
+{% block body %}
+    <h1>Liste des Quizs</h1>
+    <a href="{{ path('admin_quiz_new') }}" class="btn btn-primary mb-3">Ajouter un Quiz</a>
+    <style>
+    .quiz-card-gradient {
+        background: linear-gradient(135deg, #ff9800 0%, #ffb347 100%);
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 16px 0 rgba(255,152,0,0.10);
+        transition: transform 0.15s;
+    }
+    .quiz-card-gradient:hover {
+        transform: translateY(-4px) scale(1.03);
+        box-shadow: 0 8px 24px 0 rgba(255,152,0,0.18);
+    }
+    .quiz-card-gradient .card-title,
+    .quiz-card-gradient .card-text {
+        color: #fff;
+    }
+    .quiz-btn-orange {
+        background: linear-gradient(90deg, #ff9800 0%, #ffb347 100%);
+        color: #fff;
+        border: none;
+    }
+    .quiz-btn-orange:hover {
+        background: linear-gradient(90deg, #ffb347 0%, #ff9800 100%);
+        color: #fff;
+    }
+    </style>
+    <div class="row g-4">
+        {% for quiz in quizs %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card quiz-card-gradient h-100 rounded-4">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title mb-2">{{ quiz.titre }}</h5>
+                        <p class="card-text small mb-1">{{ quiz.description|default('Aucune description') }}</p>
+                        <p class="card-text mb-1"><small>Créé le {{ quiz.datecreation|date('d/m/Y H:i') }}</small></p>
+                        <span class="badge {{ quiz.visible ? 'bg-success' : 'bg-secondary' }} mb-2">{{ quiz.visible ? 'Visible' : 'Non visible' }}</span>
+                        <div class="mt-auto d-flex gap-2">
+                            <a href="{{ path('admin_quiz_show', {'idquiz': quiz.idquiz}) }}" class="btn quiz-btn-orange btn-sm flex-fill">Voir</a>
+                            <a href="{{ path('admin_quiz_edit', {'idquiz': quiz.idquiz}) }}" class="btn btn-light btn-sm flex-fill">Modifier</a>
+                            <form method="post" action="{{ path('admin_quiz_delete', {'idquiz': quiz.idquiz}) }}" style="display:inline-block;" onsubmit="return confirm('Confirmer la suppression ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ quiz.idquiz) }}">
+                                <button class="btn btn-outline-light btn-sm flex-fill">Supprimer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">Aucun quiz trouvé.</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

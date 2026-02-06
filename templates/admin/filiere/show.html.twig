@@ -1,0 +1,92 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ filiere.nom }} - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Détails de la Filière{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_filiere_index') }}">Les Filières</a></li>
+<li>{{ filiere.nom }}</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>{{ filiere.nom }}</h4>
+				<div class="float-right">
+					<a href="{{ path('admin_filiere_edit', {'id': filiere.id}) }}" class="btn button-sm green">
+						<i class="fa fa-edit"></i> Modifier
+					</a>
+					<a href="{{ path('admin_filiere_delete', {'id': filiere.id}) }}" 
+					   class="btn button-sm red" 
+					   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette filière ?')">
+						<i class="fa fa-trash"></i> Supprimer
+					</a>
+				</div>
+			</div>
+			<div class="widget-inner">
+				<div class="card-courses-list admin-courses">
+					<div class="card-courses-media">
+						{% if filiere.image %}
+							<img src="{{ asset('uploads/filieres/' ~ filiere.image) }}" alt="{{ filiere.nom }}" />
+						{% else %}
+							<img src="{{ asset('assets/images/courses/pic1.jpg') }}" alt="{{ filiere.nom }}" />
+						{% endif %}
+					</div>
+					<div class="card-courses-full-dec">
+						<div class="card-courses-title">
+							<h4>{{ filiere.nom }}</h4>
+						</div>
+						
+						<div class="row m-b20">
+							<div class="col-md-6">
+								<h6><strong>Responsable :</strong></h6>
+								<p>{{ filiere.responsable ?? 'Non défini' }}</p>
+							</div>
+							<div class="col-md-6">
+								<h6><strong>Date de création :</strong></h6>
+								<p>{{ filiere.dateCreation|date('d/m/Y à H:i') }}</p>
+							</div>
+						</div>
+						
+						<div class="row m-b20">
+							<div class="col-md-12">
+								<h6><strong>Description :</strong></h6>
+								<p>{{ filiere.description|raw }}</p>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="col-md-12">
+								<h6><strong>Métiers associés ({{ filiere.metiers|length }}) :</strong></h6>
+								{% if filiere.metiers|length > 0 %}
+									<ul class="list-group">
+										{% for metier in filiere.metiers %}
+											<li class="list-group-item">
+												<strong>{{ metier.nom }}</strong><br>
+												<small>{{ metier.description }}</small>
+											</li>
+										{% endfor %}
+									</ul>
+								{% else %}
+									<p class="text-muted">Aucun métier associé pour le moment.</p>
+								{% endif %}
+							</div>
+						</div>
+						
+						<div class="row m-t20">
+							<div class="col-md-12">
+								<a href="{{ path('admin_filiere_index') }}" class="btn blue radius-xl">
+									<i class="fa fa-arrow-left"></i> Retour à la liste
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Offres de Stage - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Offres de Stage{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_offre_stage_index') }}">Offres de Stage</a></li>
+<li>Les Offres</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+	<!-- Affichage des messages flash -->
+	{% for message in app.flashes('success') %}
+	<div class="col-lg-12 m-b30">
+		<div class="alert alert-success alert-dismissible fade show" role="alert">
+			<i class="fa fa-check-circle"></i> {{ message }}
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	</div>
+	{% endfor %}
+
+	{% for message in app.flashes('error') %}
+	<div class="col-lg-12 m-b30">
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+			<i class="fa fa-exclamation-circle"></i> {{ message }}
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	</div>
+	{% endfor %}
+
+	<!-- Liste des offres de stage -->
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Gestion des Offres de Stage</h4>
+				<a href="{{ path('admin_offre_stage_new') }}" class="btn button-sm btn-action-create">
+					<i class="fa fa-plus"></i> Ajouter une Offre
+				</a>
+			</div>
+
+			<!-- Barre de recherche et Export -->
+			<div class="widget-inner mb-3" style="padding: 15px; border-bottom: 1px solid #e3e3e3;">
+				<div style="display: flex; gap: 10px; align-items: center;">
+					<form method="GET" action="{{ path('admin_offre_stage_index') }}" class="form-inline" style="display: flex; gap: 10px; flex: 1;">
+						<input type="text" name="search" class="form-control" placeholder="Rechercher par titre..." value="{{ search }}" style="flex: 1;">
+						<button type="submit" class="btn btn-action-view">
+							<i class="fa fa-search"></i> Rechercher
+						</button>
+						<a href="{{ path('admin_offre_stage_index') }}" class="btn btn-action-back">
+							<i class="fa fa-redo"></i> Réinitialiser
+						</a>
+					</form>
+					
+					<!-- Boutons Export -->
+					<div style="display: flex; gap: 5px; border-left: 1px solid #e3e3e3; padding-left: 15px;">
+						<a href="{{ path('admin_offre_stage_export_csv', {'search': search}) }}" class="btn btn-sm" style="background-color: #28a745; color: white; border: none;">
+							<i class="fa fa-file-csv"></i> CSV
+						</a>
+						<a href="{{ path('admin_offre_stage_export_pdf', {'search': search}) }}" class="btn btn-sm" style="background-color: #dc3545; color: white; border: none;">
+							<i class="fa fa-file-pdf"></i> PDF
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="widget-inner">
+				{% if offres_stage|length > 0 %}
+				<div class="table-responsive">
+					<table class="table table-hover table-striped">
+						<thead>
+							<tr>
+								<th>Titre</th>
+								<th>Entreprise</th>
+								<th>Lieu</th>
+								<th>Date Début</th>
+								<th>Date Fin</th>
+								<th>Durée (j)</th>
+								<th>Salaire (DT)</th>
+								<th>Statut</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for offre in offres_stage %}
+							<tr>
+								<td><strong>{{ offre.titre }}</strong></td>
+								<td>{{ offre.entreprise }}</td>
+								<td>{{ offre.lieu ?? '-' }}</td>
+								<td>{{ offre.dateDebut|date('d/m/Y') }}</td>
+								<td>{{ offre.dateFin|date('d/m/Y') }}</td>
+								<td>{{ offre.dureeJours }}</td>
+								<td>{{ offre.salaire ? offre.salaire|number_format(2, ',', ' ') ~ ' DT' : '-' }}</td>
+								<td>
+									{% if offre.statut == 'Ouvert' %}
+										<span class="badge badge-success">{{ offre.statut }}</span>
+									{% elseif offre.statut == 'Fermé' %}
+										<span class="badge badge-danger">{{ offre.statut }}</span>
+									{% else %}
+										<span class="badge badge-warning">{{ offre.statut }}</span>
+									{% endif %}
+								</td>
+								<td>
+									<div class="btn-actions-group">
+										<a href="{{ path('admin_offre_stage_show', {'id': offre.id}) }}" class="btn btn-sm btn-action-view" title="Voir">
+											<i class="fa fa-eye"></i>
+										</a>
+										<a href="{{ path('admin_offre_stage_edit', {'id': offre.id}) }}" class="btn btn-sm btn-action-edit" title="Modifier">
+											<i class="fa fa-edit"></i>
+										</a>
+										<a href="{{ path('admin_offre_stage_delete', {'id': offre.id}) }}" 
+										   class="btn btn-sm btn-action-delete" 
+										   title="Supprimer"
+										   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')">
+											<i class="fa fa-trash"></i>
+										</a>
+									</div>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				{% else %}
+				<div class="alert alert-info">
+					<i class="fa fa-info-circle"></i> Aucune offre de stage disponible pour le moment.
+					<a href="{{ path('admin_offre_stage_new') }}" class="btn button-sm btn-action-create">Ajouter la première offre</a>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

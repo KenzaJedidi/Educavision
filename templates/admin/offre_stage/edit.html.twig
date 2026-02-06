@@ -1,0 +1,209 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Modifier Offre de Stage - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Modifier une Offre de Stage{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_offre_stage_index') }}">Offres de Stage</a></li>
+<li><a href="{{ path('admin_offre_stage_show', {'id': offre_stage.id}) }}">{{ offre_stage.titre }}</a></li>
+<li>Modifier</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+	<div class="col-lg-12 col-md-12">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4><i class="fa fa-edit"></i> Modifier une Offre de Stage</h4>
+			</div>
+			<div class="widget-inner">
+				{{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'form-horizontal'}}) }}
+
+				<!-- Titre -->
+				<div class="form-group m-b20">
+					<label class="col-lg-3 col-md-4 control-label"><i class="fa fa-briefcase"></i> Titre du Stage</label>
+					<div class="col-lg-9 col-md-8">
+						{{ form_widget(form.titre, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Développeur Web Junior'}}) }}
+					{% if form.titre.vars.errors|length > 0 %}
+						<div class="text-danger small mt-1">
+							{% for error in form.titre.vars.errors %}
+								<i class="fa fa-exclamation-circle"></i> {{ error.message }}
+							{% endfor %}
+						</div>
+					{% endif %}
+					</div>
+				</div>
+
+				<!-- Description -->
+				<div class="form-group m-b20">
+					<label class="col-lg-3 col-md-4 control-label"><i class="fa fa-align-left"></i> Description</label>
+					<div class="col-lg-9 col-md-8">
+						{{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '6', 'placeholder': 'Décrivez les missions, responsabilités et compétences requises...'}}) }}
+					{% if form.description.vars.errors|length > 0 %}
+						<div class="text-danger small mt-1">
+							{% for error in form.description.vars.errors %}
+								<i class="fa fa-exclamation-circle"></i> {{ error.message }}
+							{% endfor %}
+						</div>
+					{% endif %}
+					</div>
+				</div>
+
+				<!-- Entreprise et Lieu -->
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="form-group m-b20">
+							<label class="col-lg-5 col-md-4 control-label"><i class="fa fa-building"></i> Entreprise</label>
+							<div class="col-lg-12">
+								{{ form_widget(form.entreprise, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Acme Corp'}}) }}
+								{% if form.entreprise.vars.errors|length > 0 %}
+									<div class="text-danger small mt-1">
+										{% for error in form.entreprise.vars.errors %}
+											<i class="fa fa-exclamation-circle"></i> {{ error.message }}
+										{% endfor %}
+									</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+
+					<div class="col-lg-6">
+						<div class="form-group m-b20">
+							<label class="col-lg-5 col-md-4 control-label"><i class="fa fa-map-marker"></i> Lieu</label>
+							<div class="col-lg-12">
+								{{ form_widget(form.lieu, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Paris, France'}}) }}
+								{% if form.lieu.vars.errors|length > 0 %}
+									<div class="text-danger small mt-1">
+										{% for error in form.lieu.vars.errors %}
+											<i class="fa fa-exclamation-circle"></i> {{ error.message }}
+										{% endfor %}
+									</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Dates -->
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="form-group m-b20">
+							<label class="col-lg-5 col-md-4 control-label"><i class="fa fa-calendar"></i> Date de Début</label>
+							<div class="col-lg-12">
+								{{ form_widget(form.dateDebut, {'attr': {'class': 'form-control'}}) }}
+								{% if form.dateDebut.vars.errors|length > 0 %}
+									<div class="text-danger small mt-1">
+										{% for error in form.dateDebut.vars.errors %}
+											<i class="fa fa-exclamation-circle"></i> {{ error.message }}
+										{% endfor %}
+									</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+
+					<div class="col-lg-6">
+						<div class="form-group m-b20">
+							<label class="col-lg-5 col-md-4 control-label"><i class="fa fa-calendar"></i> Date de Fin</label>
+							<div class="col-lg-12">
+								{{ form_widget(form.dateFin, {'attr': {'class': 'form-control'}}) }}
+								{% if form.dateFin.vars.errors|length > 0 %}
+									<div class="text-danger small mt-1">
+										{% for error in form.dateFin.vars.errors %}
+											<i class="fa fa-exclamation-circle"></i> {{ error.message }}
+										{% endfor %}
+									</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Durée et Statut -->
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="form-group m-b20">
+							<label class="col-lg-5 col-md-4 control-label"><i class="fa fa-hourglass"></i> Durée (jours)</label>
+							<div class="col-lg-12">
+								{{ form_widget(form.dureeJours, {'attr': {'class': 'form-control', 'min': '1', 'type': 'number'}}) }}
+								{% if form.dureeJours.vars.errors|length > 0 %}
+									<div class="text-danger small mt-1">
+										{% for error in form.dureeJours.vars.errors %}
+											<i class="fa fa-exclamation-circle"></i> {{ error.message }}
+										{% endfor %}
+									</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+
+				<!-- Durée et Salaire -->
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="form-group m-b20">
+							<label class="col-lg-5 col-md-4 control-label"><i class="fa fa-hourglass"></i> Durée (jours)</label>
+							<div class="col-lg-12">
+								{{ form_widget(form.dureeJours, {'attr': {'class': 'form-control', 'min': '1', 'type': 'number'}}) }}
+								{% if form.dureeJours.vars.errors|length > 0 %}
+									<div class="text-danger small mt-1">
+										{% for error in form.dureeJours.vars.errors %}
+											<i class="fa fa-exclamation-circle"></i> {{ error.message }}
+										{% endfor %}
+									</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+
+					<div class="col-lg-6">
+						<div class="form-group m-b20">
+							<label class="col-lg-5 col-md-4 control-label"><i class="fa fa-money"></i> Salaire (DT)</label>
+							<div class="col-lg-12">
+								{{ form_widget(form.salaire, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 2500'}}) }}
+								{% if form.salaire.vars.errors|length > 0 %}
+									<div class="text-danger small mt-1">
+										{% for error in form.salaire.vars.errors %}
+											<i class="fa fa-exclamation-circle"></i> {{ error.message }}
+										{% endfor %}
+									</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Statut -->
+				<div class="form-group m-b20">
+					<label class="col-lg-3 col-md-4 control-label"><i class="fa fa-tags"></i> Statut</label>
+					<div class="col-lg-9 col-md-8">
+						{{ form_widget(form.statut, {'attr': {'class': 'form-control'}}) }}
+						{% if form.statut.vars.errors|length > 0 %}
+							<div class="text-danger small mt-1">
+								{% for error in form.statut.vars.errors %}
+									<i class="fa fa-exclamation-circle"></i> {{ error.message }}
+								{% endfor %}
+							</div>
+						{% endif %}
+						</div>
+					</div>
+				</div>
+
+				<!-- Boutons d'action -->
+				<div class="form-group m-t30">
+					<div class="col-lg-offset-3 col-lg-9 col-md-offset-4 col-md-8">
+						<button type="submit" class="btn btn-lg btn-action-edit">
+							<i class="fa fa-save"></i> Modifier l'offre
+						</button>
+						<a href="{{ path('admin_offre_stage_show', {'id': offre_stage.id}) }}" class="btn btn-lg btn-action-back">
+							<i class="fa fa-arrow-left"></i> Retour
+						</a>
+					</div>
+				</div>
+
+				{{ form_end(form) }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<!-- META ============================================= -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="keywords" content="" />
+	<meta name="author" content="" />
+	<meta name="robots" content="" />
+
+	<!-- DESCRIPTION -->
+	<meta name="description" content="EducaVision : Plateforme Éducative" />
+
+	<!-- OG -->
+	<meta property="og:title" content="EducaVision : Plateforme Éducative" />
+	<meta property="og:description" content="EducaVision : Plateforme Éducative" />
+	<meta name="format-detection" content="telephone=no">
+
+	<!-- FAVICONS ICON ============================================= -->
+	<link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon" />
+	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/favicon.png') }}" />
+
+	<!-- PAGE TITLE HERE ============================================= -->
+	<title>{% block title %}EducaVision - Dashboard{% endblock %}</title>
+
+	<!-- MOBILE SPECIFIC ============================================= -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- All PLUGINS CSS ============================================= -->
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/assets.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/calendar/fullcalendar.css') }}">
+
+	<!-- TYPOGRAPHY ============================================= -->
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/typography.css') }}">
+
+	<!-- SHORTCODES ============================================= -->
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/shortcodes/shortcodes.css') }}">
+
+	<!-- STYLESHEETS ============================================= -->
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/dashboard.css') }}">
+	<link class="skin" rel="stylesheet" type="text/css" href="{{ asset('assets/css/color/color-1.css') }}">
+
+	<style>
+		.btn-action-view {
+			background-color: #007BFF !important;
+			color: white !important;
+			border: none !important;
+		}
+		.btn-action-view:hover {
+			background-color: #0056b3 !important;
+			color: white !important;
+		}
+		.btn-action-edit {
+			background-color: #FFC107 !important;
+			color: white !important;
+			border: none !important;
+		}
+		.btn-action-edit:hover {
+			background-color: #FFB300 !important;
+			color: white !important;
+		}
+		.btn-action-delete {
+			background-color: #DC3545 !important;
+			color: white !important;
+			border: none !important;
+		}
+		.btn-action-delete:hover {
+			background-color: #c82333 !important;
+			color: white !important;
+		}
+		.btn-action-create {
+			background-color: #FFC107 !important;
+			color: white !important;
+			border: none !important;
+		}
+		.btn-action-create:hover {
+			background-color: #FFB300 !important;
+			color: white !important;
+		}
+		.btn-action-back {
+			background-color: #6c757d !important;
+			color: white !important;
+			border: none !important;
+		}
+		.btn-action-back:hover {
+			background-color: #5a6268 !important;
+			color: white !important;
+		}
+		.btn-actions-group {
+			display: flex;
+			gap: 5px;
+			align-items: center;
+		}
+	</style>>
+
+	{% block stylesheets %}{% endblock %}
+</head>
+
+<body class="ttr-opened-sidebar ttr-pinned-sidebar">
+
+	<!-- header start -->
+	<header class="ttr-header">
+		<div class="ttr-header-wrapper">
+			<!--sidebar menu toggler start -->
+			<div class="ttr-toggle-sidebar ttr-material-button">
+				<i class="ti-close ttr-open-icon"></i>
+				<i class="ti-menu ttr-close-icon"></i>
+			</div>
+			<!--sidebar menu toggler end -->
+			<!--logo start -->
+			<div class="ttr-logo-box">
+				<div>
+					<a href="{{ path('admin_dashboard') }}" class="ttr-logo">
+						<img class="ttr-logo-mobile" alt="" src="{{ asset('assets/images/logo-mobile.png') }}" width="30" height="30">
+						<img class="ttr-logo-desktop" alt="" src="{{ asset('assets/images/logo-whitee.png') }}" width="120" height="20">
+					</a>
+				</div>
+			</div>
+			<!--logo end -->
+			<div class="ttr-header-menu">
+				<!-- header left menu start -->
+				<ul class="ttr-header-navigation">
+					<li>
+						<a href="#" class="ttr-material-button ttr-submenu-toggle">HOME</a>
+					</li>
+				</ul>
+				<!-- header left menu end -->
+			</div>
+			<div class="ttr-header-right ttr-with-seperator">
+				<!-- header right menu start -->
+				<ul class="ttr-header-navigation">
+					<li>
+						<a href="#" class="ttr-material-button ttr-search-toggle"><i class="fa fa-search"></i></a>
+					</li>
+					<li>
+						<a href="#" class="ttr-material-button ttr-submenu-toggle"><i class="fa fa-bell"></i></a>
+						<div class="ttr-header-submenu noti-menu">
+							<div class="ttr-notify-header">
+								<span class="ttr-notify-text-top">9 New</span>
+								<span class="ttr-notify-text">User Notifications</span>
+							</div>
+							<div class="noti-box-list">
+								<ul>
+									<li>
+										<span class="notification-icon dashbg-gray">
+											<i class="fa fa-check"></i>
+										</span>
+										<span class="notification-text">
+											<span>Admin</span> vous a envoyé un message.
+										</span>
+										<span class="notification-time">
+											<a href="#" class="fa fa-close"></a>
+											<span> 02:14</span>
+										</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</li>
+					<li>
+						<a href="#" class="ttr-material-button ttr-submenu-toggle"><span class="ttr-user-avatar"><img
+									alt="" src="{{ asset('assets/images/testimonials/pic3.jpg') }}" width="32" height="32"></span></a>
+						<div class="ttr-header-submenu">
+							<ul>
+								<li><a href="#">Mon profil</a></li>
+								<li><a href="#">Activité</a></li>
+								<li><a href="#">Messages</a></li>
+								<li><a href="#">Déconnexion</a></li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+				<!-- header right menu end -->
+			</div>
+			<!--header search panel start -->
+			<div class="ttr-search-bar">
+				<form class="ttr-search-form">
+					<div class="ttr-search-input-wrapper">
+						<input type="text" name="qq" placeholder="Rechercher..." class="ttr-search-input">
+						<button type="submit" name="search" class="ttr-search-submit"><i class="ti-arrow-right"></i></button>
+					</div>
+					<span class="ttr-search-close ttr-search-toggle">
+						<i class="ti-close"></i>
+					</span>
+				</form>
+			</div>
+			<!--header search panel end -->
+		</div>
+	</header>
+	<!-- header end -->
+
+	<!-- Left sidebar menu start -->
+	<div class="ttr-sidebar">
+		<div class="ttr-sidebar-wrapper content-scroll">
+			<!-- side menu logo start -->
+			<div class="ttr-sidebar-logo">
+				<a href="#"><img alt="" src="{{ asset('assets/images/logo.png') }}" width="122" height="27"></a>
+				<div class="ttr-sidebar-toggle-button">
+					<i class="ti-arrow-left"></i>
+				</div>
+			</div>
+			<!-- side menu logo end -->
+			<!-- sidebar menu start -->
+			<nav class="ttr-sidebar-navi">
+				<ul>
+					<li>
+						<a href="{{ path('admin_dashboard') }}" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-home"></i></span>
+							<span class="ttr-label">Dashboard</span>
+						</a>
+					</li>
+					<li>
+						<a href="#" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-book"></i></span>
+							<span class="ttr-label">Cours et Chapitres</span>
+						</a>
+					</li>
+					<li>
+						{# Remplacement du lien statique par un lien fonctionnel #}
+						<a href="{{ path('admin_quiz_index') }}" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-email"></i></span>
+							<span class="ttr-label">Quizs et Résultats</span>
+						</a>
+					</li>
+					<li>
+						<a href="#" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-calendar"></i></span>
+							<span class="ttr-label">Offres de Stages</span>
+							<span class="ttr-arrow-icon"><i class="fa fa-angle-down"></i></span>
+						</a>
+						<ul>
+							<li>
+								<a href="{{ path('admin_offre_stage_index') }}" class="ttr-material-button"><span class="ttr-label">Les Offres</span></a>
+							</li>
+							<li>
+								<a href="#" class="ttr-material-button"><span class="ttr-label">Les Candidatures</span></a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a href="#" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-bookmark-alt"></i></span>
+							<span class="ttr-label">Orientation</span>
+							<span class="ttr-arrow-icon"><i class="fa fa-angle-down"></i></span>
+						</a>
+						<ul>
+							<li>
+								<a href="{{ path('admin_filiere_index') }}" class="ttr-material-button"><span class="ttr-label">Les Filières</span></a>
+							</li>
+							<li>
+								<a href="{{ path('admin_formation_index') }}" class="ttr-material-button"><span class="ttr-label">Les Formations</span></a>
+							</li>
+							<li>
+								<a href="{{ path('admin_simulateur_index') }}" class="ttr-material-button"><span class="ttr-label">Simulateur</span></a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a href="#" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-comments"></i></span>
+							<span class="ttr-label">Réclamation</span>
+						</a>
+					</li>
+					<li>
+						<a href="#" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-user"></i></span>
+							<span class="ttr-label">My Profile</span>
+							<span class="ttr-arrow-icon"><i class="fa fa-angle-down"></i></span>
+						</a>
+						<ul>
+							<li>
+								<a href="#" class="ttr-material-button"><span class="ttr-label">User Profile</span></a>
+							</li>
+							<li>
+								<a href="#" class="ttr-material-button"><span class="ttr-label">Teacher Profile</span></a>
+							</li>
+						</ul>
+					</li>
+					<li class="ttr-seperate"></li>
+				</ul>
+			</nav>
+			<!-- sidebar menu end -->
+		</div>
+	</div>
+	<!-- Left sidebar menu end -->
+
+	<!--Main container start -->
+	<main class="ttr-wrapper">
+		<div class="container-fluid">
+			{% block breadcrumb %}
+			<div class="db-breadcrumb">
+				<h4 class="breadcrumb-title">{% block breadcrumb_title %}Dashboard{% endblock %}</h4>
+				<ul class="db-breadcrumb-list">
+					<li><a href="{{ path('admin_dashboard') }}"><i class="fa fa-home"></i>Home</a></li>
+					{% block breadcrumb_items %}{% endblock %}
+				</ul>
+			</div>
+			{% endblock %}
+
+			{% block body %}{% endblock %}
+		</div>
+	</main>
+	<div class="ttr-overlay"></div>
+
+	<!-- External JavaScripts -->
+	<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/bootstrap/js/popper.min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/bootstrap/js/bootstrap.min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/bootstrap-select/bootstrap-select.min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js') }}"></script>
+	<script src="{{ asset('assets/vendors/magnific-popup/magnific-popup.js') }}"></script>
+	<script src="{{ asset('assets/vendors/counter/waypoints-min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/counter/counterup.min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/imagesloaded/imagesloaded.js') }}"></script>
+	<script src="{{ asset('assets/vendors/masonry/masonry.js') }}"></script>
+	<script src="{{ asset('assets/vendors/masonry/filter.js') }}"></script>
+	<script src="{{ asset('assets/vendors/owl-carousel/owl.carousel.js') }}"></script>
+	<script src="{{ asset('assets/vendors/scroll/scrollbar.min.js') }}"></script>
+	<script src="{{ asset('assets/js/functions.js') }}"></script>
+	<script src="{{ asset('assets/vendors/chart/chart.min.js') }}"></script>
+	<script src="{{ asset('assets/js/admin.js') }}"></script>
+	<script src="{{ asset('assets/vendors/switcher/switcher.js') }}"></script>
+
+	{% block javascripts %}{% endblock %}
+</body>
+</html>

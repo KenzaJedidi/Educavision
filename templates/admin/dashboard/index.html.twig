@@ -1,0 +1,235 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Dashboard - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Dashboard{% endblock %}
+
+{% block breadcrumb_items %}
+<li>Dashboard</li>
+{% endblock %}
+
+{% block body %}
+<!-- Cards statistiques -->
+<div class="row">
+	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg1">
+			<div class="wc-item">
+				<h4 class="wc-title">Total Filières</h4>
+				<span class="wc-des">Filières disponibles</span>
+				<span class="wc-stats counter">12</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: 78%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Actives</span>
+					<span class="wc-number ml-auto">100%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg2">
+			<div class="wc-item">
+				<h4 class="wc-title">Formations</h4>
+				<span class="wc-des">Formations proposées</span>
+				<span class="wc-stats counter">25</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: 88%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Disponibles</span>
+					<span class="wc-number ml-auto">88%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg3">
+			<div class="wc-item">
+				<h4 class="wc-title">Simulations</h4>
+				<span class="wc-des">Tests effectués</span>
+				<span class="wc-stats counter">150</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: 65%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Ce mois</span>
+					<span class="wc-number ml-auto">+15%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg4">
+			<div class="wc-item">
+				<h4 class="wc-title">Étudiants</h4>
+				<span class="wc-des">Utilisateurs inscrits</span>
+				<span class="wc-stats counter">350</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: 90%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Actifs</span>
+					<span class="wc-number ml-auto">90%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Graphiques et notifications -->
+<div class="row">
+	<!-- Graphique -->
+	<div class="col-lg-8 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Statistiques d'utilisation</h4>
+			</div>
+			<div class="widget-inner">
+				<canvas id="chart" width="100" height="45"></canvas>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Notifications -->
+	<div class="col-lg-4 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Activité récente</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="noti-box-list">
+					<ul>
+						<li>
+							<span class="notification-icon dashbg-green">
+								<i class="fa fa-plus"></i>
+							</span>
+							<span class="notification-text">
+								Nouvelle filière <strong>Médecine</strong> ajoutée
+							</span>
+							<span class="notification-time">
+								<span> 2h</span>
+							</span>
+						</li>
+						<li>
+							<span class="notification-icon dashbg-blue">
+								<i class="fa fa-edit"></i>
+							</span>
+							<span class="notification-text">
+								Formation <strong>Développeur Web</strong> modifiée
+							</span>
+							<span class="notification-time">
+								<span> 5h</span>
+							</span>
+						</li>
+						<li>
+							<span class="notification-icon dashbg-yellow">
+								<i class="fa fa-bar-chart"></i>
+							</span>
+							<span class="notification-text">
+								15 nouvelles simulations effectuées
+							</span>
+							<span class="notification-time">
+								<span> 1 jour</span>
+							</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Accès rapide -->
+<div class="row">
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Accès rapide - Module Orientation</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="row">
+					<div class="col-md-4 text-center m-b20">
+						<a href="{{ path('admin_filiere_index') }}" class="btn btn-block btn-lg green">
+							<i class="fa fa-graduation-cap fa-3x m-b10"></i>
+							<h5>Gérer les Filières</h5>
+							<p class="text-white">Ajouter, modifier, supprimer</p>
+						</a>
+					</div>
+					<div class="col-md-4 text-center m-b20">
+						<a href="{{ path('admin_formation_index') }}" class="btn btn-block btn-lg blue">
+							<i class="fa fa-book fa-3x m-b10"></i>
+							<h5>Gérer les Formations</h5>
+							<p class="text-white">Roadmaps et prérequis</p>
+						</a>
+					</div>
+					<div class="col-md-4 text-center m-b20">
+						<a href="{{ path('admin_simulateur_index') }}" class="btn btn-block btn-lg orange">
+							<i class="fa fa-calculator fa-3x m-b10"></i>
+							<h5>Simulateur</h5>
+							<p class="text-white">Historique et paramètres</p>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Gestion des Offres et Candidatures -->
+<div class="row">
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Gestion des Offres et Candidatures</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="row">
+					<div class="col-md-6 text-center m-b20">
+						<a href="{{ path('admin_offre_stage_index') }}" class="btn btn-block btn-lg" style="background-color: #17a2b8;">
+							<i class="fa fa-briefcase fa-3x m-b10"></i>
+							<h5>Offres de Stage</h5>
+							<p class="text-white">Créer, modifier, gérer</p>
+						</a>
+					</div>
+					<div class="col-md-6 text-center m-b20">
+						<a href="#" class="btn btn-block btn-lg" style="background-color: #e83e8c;">
+							<i class="fa fa-user-circle fa-3x m-b10"></i>
+							<h5>Candidatures</h5>
+							<p class="text-white">Historique et suivi</p>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="{{ asset('assets/vendors/chart/chart.min.js') }}"></script>
+<script>
+// Graphique simple (exemple)
+var ctx = document.getElementById('chart').getContext('2d');
+var chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+        datasets: [{
+            label: 'Simulations',
+            data: [12, 19, 15, 25, 22, 30],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Détail du Quiz{% endblock %}
+{% block breadcrumb_title %}Détail du Quiz{% endblock %}
+{% block body %}
+<style>
+    .quiz-detail-gradient {
+        background: linear-gradient(135deg, #ff9800 0%, #ffb347 100%);
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 16px 0 rgba(255,152,0,0.10);
+        border-radius: 1.5rem;
+        padding: 2rem 2rem 1.5rem 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .quiz-detail-gradient strong { color: #fff; }
+    .quiz-detail-gradient .btn-warning {
+        background: linear-gradient(90deg, #ff9800 0%, #ffb347 100%);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 1rem;
+        transition: background 0.2s;
+    }
+    .quiz-detail-gradient .btn-warning:hover {
+        background: linear-gradient(90deg, #ffb347 0%, #ff9800 100%);
+    }
+</style>
+<div class="quiz-detail-gradient">
+        <h2 class="mb-3">Détail du Quiz</h2>
+        <ul class="list-unstyled fs-5 mb-4">
+            <li><strong>ID :</strong> {{ quiz.idquiz }}</li>
+            <li><strong>Titre :</strong> {{ quiz.titre }}</li>
+            <li><strong>Description :</strong> {{ quiz.description }}</li>
+            <li><strong>Date de création :</strong> {{ quiz.datecreation|date('d/m/Y H:i') }}</li>
+        </ul>
+
+        <h3 class="mt-4">Résultats du Quiz</h3>
+        <div class="row g-3">
+        {% for result in quiz.results %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 rounded-4" style="background: linear-gradient(135deg, #ff9800 0%, #ffb347 100%); color: #fff;">
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">{{ result.utilisateur }}</h5>
+                        <p class="mb-1"><strong>Score :</strong> {{ result.score }}</p>
+                        <p class="mb-1"><strong>Date :</strong> {{ result.datepassage|date('d/m/Y H:i') }}</p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">Aucun résultat pour ce quiz.</div>
+            </div>
+        {% endfor %}
+        </div>
+
+        <a href="{{ path('admin_quiz_edit', {'idquiz': quiz.idquiz}) }}" class="btn btn-warning me-2">Modifier</a>
+        <a href="{{ path('admin_quiz_index') }}" class="btn btn-secondary">Retour à la liste</a>
+</div>
+{% endblock %}

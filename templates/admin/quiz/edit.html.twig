@@ -1,0 +1,50 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Modifier Quiz{% endblock %}
+{% block breadcrumb_title %}Modifier Quiz{% endblock %}
+{% block body %}
+<style>
+    .quiz-form-gradient {
+        background: linear-gradient(135deg, #ff9800 0%, #ffb347 100%);
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 16px 0 rgba(255,152,0,0.10);
+        border-radius: 1.5rem;
+        padding: 2rem 2rem 1.5rem 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .quiz-form-gradient label { color: #fff; font-weight: 500; }
+    .quiz-form-gradient input, .quiz-form-gradient textarea {
+        border-radius: 1rem;
+        border: none;
+        box-shadow: 0 2px 8px 0 rgba(255,152,0,0.08);
+        margin-bottom: 0.5rem;
+    }
+    .quiz-form-gradient input:focus, .quiz-form-gradient textarea:focus {
+        outline: 2px solid #ff9800;
+        box-shadow: 0 0 0 2px #ffb347;
+    }
+    .quiz-form-gradient .btn-warning {
+        background: linear-gradient(90deg, #ff9800 0%, #ffb347 100%);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 1rem;
+        transition: background 0.2s;
+    }
+    .quiz-form-gradient .btn-warning:hover {
+        background: linear-gradient(90deg, #ffb347 0%, #ff9800 100%);
+    }
+</style>
+<div class="quiz-form-gradient">
+        <h2 class="mb-3">Modifier le Quiz</h2>
+        {{ form_start(form) }}
+                {{ form_row(form.titre) }}
+                {{ form_row(form.description) }}
+                <button class="btn btn-warning">Enregistrer</button>
+        {{ form_end(form) }}
+</div>
+<a href="{{ path('admin_quiz_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+{% endblock %}

@@ -1,0 +1,177 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Créer un Quiz{% endblock %}
+{% block breadcrumb_title %}Créer un Quiz{% endblock %}
+{% block body %}
+<style>
+    .quiz-form-gradient {
+        background: linear-gradient(135deg, #ff9800 0%, #ffb347 100%);
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 16px 0 rgba(255,152,0,0.10);
+        border-radius: 1.5rem;
+        padding: 2rem 2rem 1.5rem 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .quiz-form-gradient label { color: #fff; font-weight: 500; }
+    .quiz-form-gradient input, .quiz-form-gradient textarea {
+        border-radius: 1rem;
+        border: none;
+        box-shadow: 0 2px 8px 0 rgba(255,152,0,0.08);
+        margin-bottom: 0.5rem;
+    }
+    .quiz-form-gradient input:focus, .quiz-form-gradient textarea:focus {
+        outline: 2px solid #ff9800;
+        box-shadow: 0 0 0 2px #ffb347;
+    }
+    .quiz-form-gradient .btn-primary, .quiz-form-gradient .btn-success {
+        background: linear-gradient(90deg, #ff9800 0%, #ffb347 100%);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 1rem;
+        transition: background 0.2s;
+    }
+    .quiz-form-gradient .btn-primary:hover, .quiz-form-gradient .btn-success:hover {
+        background: linear-gradient(90deg, #ffb347 0%, #ff9800 100%);
+    }
+    .quiz-form-gradient .card {
+        background: rgba(255,255,255,0.12);
+        border-radius: 1rem;
+        border: none;
+        color: #fff;
+    }
+    .quiz-form-gradient .btn-outline-secondary, .quiz-form-gradient .btn-danger {
+        border-radius: 1rem;
+    }
+</style>
+<div class="quiz-form-gradient">
+        <h2 class="mb-3">Nouveau Quiz</h2>
+        <form method="post" action="{{ path('admin_quiz_new') }}" id="quizForm" onsubmit="return validateQuizForm();">
+                <div class="mb-3">
+                        <label for="titre" class="form-label">Nom du Quiz *</label>
+                        <input type="text" name="titre" id="titre" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea name="description" id="description" class="form-control"></textarea>
+                </div>
+                <hr style="border-color:rgba(255,255,255,0.3)">
+                <h4>Questions</h4>
+                <div id="questions-list"></div>
+                <button type="button" class="btn btn-outline-secondary mb-3" onclick="addQuestion()">Ajouter une question</button>
+                <button type="submit" class="btn btn-success">Créer le Quiz</button>
+                <div id="quiz-error" class="alert alert-danger mt-3 d-none"></div>
+        </form>
+</div>
+<a href="{{ path('admin_quiz_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+<script>
+let questionIndex = 0;
+function addQuestion() {
+    const qList = document.getElementById('questions-list');
+    const qDiv = document.createElement('div');
+    qDiv.className = 'card mb-3 p-3 shadow-sm';
+    qDiv.innerHTML = `
+        <div class="mb-2">
+            <label>Question *</label>
+            <input type="text" name="questions[${questionIndex}][texte]" class="form-control question-input" required>
+        </div>
+        <div class="mb-2">
+            <label>Réponses</label>
+            <div class="answers-list"></div>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addAnswer(this, ${questionIndex})">Ajouter une réponse</button>
+        </div>
+        <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Supprimer la question</button>
+    `;
+    qList.appendChild(qDiv);
+    questionIndex++;
+}
+function addAnswer(btn, qIdx) {
+    const answersDiv = btn.parentElement.querySelector('.answers-list');
+    const answerCount = answersDiv.children.length;
+    const aDiv = document.createElement('div');
+    aDiv.className = 'input-group mb-1';
+    aDiv.innerHTML = `
+        <input type="text" name="questions[${qIdx}][answers][${answerCount}][texte]" class="form-control answer-input" required>
+        <span class="input-group-text">
+            <input type="checkbox" name="questions[${qIdx}][answers][${answerCount}][correct]" class="correct-checkbox" title="Bonne réponse">
+        </span>
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.parentElement.remove()">✕</button>
+    `;
+    answersDiv.appendChild(aDiv);
+}
+
+function validateQuizForm() {
+    let error = '';
+    const titre = document.getElementById('titre').value.trim();
+    if (!titre) {
+        error = 'Le nom du quiz est requis.';
+    }
+    const questions = document.querySelectorAll('.question-input');
+    if (questions.length === 0) {
+        error = 'Ajoutez au moins une question.';
+    }
+    for (let i = 0; i < questions.length; i++) {
+        const qDiv = questions[i].closest('.card');
+        const answers = qDiv.querySelectorAll('.answer-input');
+        if (answers.length < 2) {
+            error = 'Chaque question doit avoir au moins deux réponses.';
+            break;
+        }
+        const corrects = qDiv.querySelectorAll('.correct-checkbox:checked');
+        if (corrects.length < 1) {
+            error = 'Chaque question doit avoir au moins une bonne réponse.';
+            break;
+        }
+    }
+    const errorDiv = document.getElementById('quiz-error');
+    if (error) {
+        errorDiv.textContent = error;
+        errorDiv.classList.remove('d-none');
+        window.scrollTo({top: errorDiv.offsetTop - 40, behavior: 'smooth'});
+        return false;
+    } else {
+        errorDiv.classList.add('d-none');
+        return true;
+    }
+}
+</script>
+<script>
+let questionIndex = 0;
+function addQuestion() {
+    const qList = document.getElementById('questions-list');
+    const qDiv = document.createElement('div');
+    qDiv.className = 'card mb-3 p-3 shadow-sm';
+    qDiv.innerHTML = `
+        <div class="mb-2">
+            <label>Question *</label>
+            <input type="text" name="questions[${questionIndex}][texte]" class="form-control rounded" required>
+        </div>
+        <div class="mb-2">
+            <label>Réponses</label>
+            <div class="answers-list"></div>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addAnswer(this, ${questionIndex})">Ajouter une réponse</button>
+        </div>
+        <button type="button" class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">Supprimer la question</button>
+    `;
+    qList.appendChild(qDiv);
+    questionIndex++;
+}
+function addAnswer(btn, qIdx) {
+    const answersDiv = btn.parentElement.querySelector('.answers-list');
+    const answerCount = answersDiv.children.length;
+    const aDiv = document.createElement('div');
+    aDiv.className = 'input-group mb-1';
+    aDiv.innerHTML = `
+        <input type="text" name="questions[${qIdx}][answers][${answerCount}][texte]" class="form-control rounded" required>
+        <span class="input-group-text">
+            <input type="checkbox" name="questions[${qIdx}][answers][${answerCount}][correct]" title="Bonne réponse">
+        </span>
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.parentElement.remove()">✕</button>
+    `;
+    answersDiv.appendChild(aDiv);
+}
+</script>
+{% endblock %}

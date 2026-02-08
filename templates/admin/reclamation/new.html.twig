@@ -1,0 +1,16 @@
+{% extends 'admin/layout.html.twig' %}
+{% block breadcrumb_title %}Réclamation{% endblock %}
+{% block breadcrumb_items %}{% endblock %}
+{% block body %}
+    <h1>Nouvelle Réclamation</h1>
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.role) }}
+        {{ form_row(form.titre) }}
+        {{ form_row(form.description) }}
+        <button class="btn btn-primary">Enregistrer</button>
+    {{ form_end(form) }}
+    <a href="{{ path('reclamation_index') }}">Retour à la liste</a>
+{% endblock %}

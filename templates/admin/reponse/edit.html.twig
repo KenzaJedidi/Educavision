@@ -1,0 +1,28 @@
+{% extends 'admin/layout.html.twig' %}
+{% block breadcrumb_title %}Réponse{% endblock %}
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_dashboard') }}"><i class="fa fa-home"></i> Home</a></li>
+    <li>Réponse</li>
+{% endblock %}
+{% block body %}
+<div class="d-flex justify-content-center align-items-center" style="min-height:60vh;">
+    <div class="card shadow-lg p-4 w-100" style="max-width:500px;">
+        <div class="mb-4 text-center">
+            <h1 class="fw-bold text-info mb-2"><i class="fa fa-edit"></i> Modifier la Réponse</h1>
+        </div>
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            <div class="mb-3">
+                {{ form_label(form.contenu, null, {'label_attr': {'class': 'fw-bold'}}) }}
+                {{ form_widget(form.contenu, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+                {{ form_errors(form.contenu) }}
+            </div>
+            <div class="d-grid gap-2 mb-2">
+                <button class="btn btn-warning fw-bold shadow" style="font-size:1.1rem;"><i class="fa fa-save"></i> Mettre à jour</button>
+            </div>
+        {{ form_end(form) }}
+        <div class="text-center mt-2">
+            <a href="{{ path('reponse_index') }}" class="text-decoration-none"><i class="fa fa-arrow-left"></i> Retour à la liste</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

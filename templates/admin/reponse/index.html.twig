@@ -1,0 +1,45 @@
+{% extends 'admin/layout.html.twig' %}
+{% block breadcrumb_title %}Réponse{% endblock %}
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_dashboard') }}"><i class="fa fa-home"></i> Home</a></li>
+    <li>Réponse</li>
+{% endblock %}
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold text-info"><i class="fa fa-reply"></i> Liste des Réponses</h1>
+    <a href="{{ path('reclamation_index') }}" class="btn btn-outline-secondary shadow"><i class="fa fa-arrow-left"></i> Retour aux réclamations</a>
+</div>
+<div class="table-responsive">
+    <table class="table table-hover align-middle shadow-sm rounded bg-white">
+        <thead class="table-info">
+            <tr>
+                <th>#</th>
+                <th><i class="fa fa-comments"></i> Réclamation</th>
+                <th><i class="fa fa-align-left"></i> Contenu</th>
+                <th><i class="fa fa-calendar"></i> Date</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reponse in reponses %}
+            <tr>
+                <td><span class="badge bg-secondary">{{ reponse.id }}</span></td>
+                <td><span class="badge bg-info text-dark">{{ reponse.reclamation.id }}</span></td>
+                <td>{{ reponse.contenu|e }}</td>
+                <td><span class="badge bg-light text-dark">{{ reponse.dateReponse|date('d/m/Y H:i') }}</span></td>
+                <td class="text-center">
+                    <a href="{{ path('reponse_show', {'id': reponse.id}) }}" class="btn btn-outline-primary btn-sm mx-1" title="Voir"><i class="fa fa-eye"></i></a>
+                    <a href="{{ path('reponse_edit', {'id': reponse.id}) }}" class="btn btn-outline-warning btn-sm mx-1" title="Modifier"><i class="fa fa-edit"></i></a>
+                    <form method="post" action="{{ path('reponse_delete', {'id': reponse.id}) }}" style="display:inline-block" onsubmit="return confirm('Supprimer cette réponse ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reponse.id) }}">
+                        <button class="btn btn-outline-danger btn-sm mx-1" title="Supprimer"><i class="fa fa-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="5" class="text-center text-muted">Aucune réponse trouvée.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Educavision Admin Dashboard" />
+    <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon" />
+    <title>{% block title %}Admin - Educavision{% endblock %}</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ asset('admin-assets/css/assets.css') }}?v=2">
+    <link rel="stylesheet" type="text/css" href="{{ asset('admin-assets/css/typography.css') }}?v=2">
+    <link rel="stylesheet" type="text/css" href="{{ asset('admin-assets/css/shortcodes/shortcodes.css') }}?v=2">
+    <link rel="stylesheet" type="text/css" href="{{ asset('admin-assets/css/style.css') }}?v=2">
+    <link rel="stylesheet" type="text/css" href="{{ asset('admin-assets/css/dashboard.css') }}?v=2">
+    <link class="skin" rel="stylesheet" type="text/css" href="{{ asset('admin-assets/css/color/color-1.css') }}?v=2">
+    {% block stylesheets %}{% endblock %}
+
+
+</head>
+<body class="ttr-opened-sidebar ttr-pinned-sidebar">
+
+    <!-- Header -->
+    <header class="ttr-header">
+        <div class="ttr-header-wrapper">
+            <div class="ttr-toggle-sidebar ttr-material-button">
+                <i class="ti-close ttr-open-icon"></i>
+                <i class="ti-menu ttr-close-icon"></i>
+            </div>
+            <div class="ttr-logo-box">
+                <div>
+                    <a href="{{ path('admin_user_index') }}" class="ttr-logo">
+                        <img class="ttr-logo-mobile" alt="" src="{{ asset('admin-assets/images/logo-mobile.png') }}" width="30" height="30">
+                        <img class="ttr-logo-desktop" alt="" src="{{ asset('admin-assets/images/logo-white.png') }}" width="160" height="27">
+                    </a>
+                </div>
+            </div>
+            <div class="ttr-header-menu">
+                <ul class="ttr-header-navigation">
+                    <li><a href="{{ path('app_home') }}" class="ttr-material-button ttr-submenu-toggle">HOME</a></li>
+                </ul>
+            </div>
+            <div class="ttr-header-right ttr-with-seperator">
+                <ul class="ttr-header-navigation">
+                    <li>
+                        <a href="#" class="ttr-material-button ttr-submenu-toggle">
+                            <span class="ttr-user-avatar">
+                                <img alt="" src="{{ asset('admin-assets/images/testimonials/pic3.jpg') }}" width="32" height="32">
+                            </span>
+                        </a>
+                        <div class="ttr-header-submenu">
+                            <ul>
+                                <li><a href="#">My Profile</a></li>
+                                <li><a href="{{ path('app_logout') }}">Logout</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <!-- Header END -->
+
+    <!-- Left sidebar -->
+    <div class="ttr-sidebar">
+        <div class="ttr-sidebar-wrapper content-scroll">
+            <div class="ttr-sidebar-logo">
+                <a href="{{ path('admin_user_index') }}"><img alt="" src="{{ asset('admin-assets/images/logo.png') }}" width="122" height="27"></a>
+                <div class="ttr-sidebar-toggle-button">
+                    <i class="ti-arrow-left"></i>
+                </div>
+            </div>
+            <nav class="ttr-sidebar-navi">
+                <ul>
+                    <li class="{{ app.request.get('_route') starts with 'admin_dashboard' ? 'active' : '' }}">
+                        <a href="{{ path('admin_dashboard_index') }}" class="ttr-material-button">
+                            <span class="ttr-icon"><i class="ti-home"></i></span>
+                            <span class="ttr-label">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="{{ app.request.get('_route') starts with 'admin_user' ? 'active' : '' }}">
+                        <a href="{{ path('admin_user_index') }}" class="ttr-material-button">
+                            <span class="ttr-icon"><i class="ti-user"></i></span>
+                            <span class="ttr-label">Users</span>
+                        </a>
+                    </li>
+                    <li class="ttr-seperate"></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!-- Left sidebar END -->
+
+    <!-- Main content -->
+    <main class="ttr-wrapper">
+        <div class="container-fluid">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show mt-3">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {% block admin_content %}{% endblock %}
+        </div>
+    </main>
+
+    <div class="ttr-overlay"></div>
+
+    <!-- Scripts -->
+    <script src="{{ asset('admin-assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/bootstrap/js/popper.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/bootstrap-select/bootstrap-select.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/magnific-popup/magnific-popup.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/counter/waypoints-min.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/counter/counterup.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/imagesloaded/imagesloaded.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/masonry/masonry.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/masonry/filter.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/owl-carousel/owl.carousel.js') }}"></script>
+    <script src="{{ asset('admin-assets/vendors/scroll/scrollbar.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/js/functions.js') }}"></script>
+    {% block admin_javascripts %}{% endblock %}
+</body>
+</html>

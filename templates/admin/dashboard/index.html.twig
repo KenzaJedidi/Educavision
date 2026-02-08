@@ -1,0 +1,315 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block admin_content %}
+    <div class="db-breadcrumb">
+        <h4 class="breadcrumb-title">Dashboard</h4>
+        <ul class="db-breadcrumb-list">
+            <li><a href="{{ path('admin_dashboard_index') }}"><i class="fa fa-home"></i>Home</a></li>
+            <li>Dashboard</li>
+        </ul>
+    </div>
+
+    <!-- User Stats Cards -->
+    <div class="row">
+        <div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+            <a href="{{ path('admin_user_index') }}" class="widget-card widget-bg1">
+                <div class="wc-item">
+                    <h4 class="wc-title">Total Users</h4>
+                    <span class="wc-des">All registered users</span>
+                    <span class="wc-stats">{{ totalUsers }}</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+            <a href="{{ path('admin_user_index', {'role': 'etudiant'}) }}" class="widget-card widget-bg2">
+                <div class="wc-item">
+                    <h4 class="wc-title">Students</h4>
+                    <span class="wc-des">Enrolled students</span>
+                    <span class="wc-stats">{{ etudiants }}</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+            <a href="{{ path('admin_user_index', {'role': 'professeur'}) }}" class="widget-card widget-bg3">
+                <div class="wc-item">
+                    <h4 class="wc-title">Teachers</h4>
+                    <span class="wc-des">Active instructors</span>
+                    <span class="wc-stats">{{ profs }}</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+            <a href="{{ path('admin_user_index', {'role': 'admin'}) }}" class="widget-card widget-bg4">
+                <div class="wc-item">
+                    <h4 class="wc-title">Admins</h4>
+                    <span class="wc-des">Administrators</span>
+                    <span class="wc-stats">{{ admins }}</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    <!-- User Stats Cards END -->
+
+    <!-- Course & Inscription Stats -->
+    <div class="row">
+        <div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+            <div class="widget-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; padding: 20px; color: #fff; margin-bottom: 30px;">
+                <div class="wc-item">
+                    <h4 class="wc-title" style="color:#fff;">Total Courses</h4>
+                    <span class="wc-des" style="color:rgba(255,255,255,0.7);">All courses</span>
+                    <span class="wc-stats" style="color:#fff;">{{ totalCours }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+            <div class="widget-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 10px; padding: 20px; color: #fff; margin-bottom: 30px;">
+                <div class="wc-item">
+                    <h4 class="wc-title" style="color:#fff;">Published</h4>
+                    <span class="wc-des" style="color:rgba(255,255,255,0.7);">Live courses</span>
+                    <span class="wc-stats" style="color:#fff;">{{ coursPublies }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+            <div class="widget-card" style="background: linear-gradient(135deg, #FC5C7D 0%, #6A82FB 100%); border-radius: 10px; padding: 20px; color: #fff; margin-bottom: 30px;">
+                <div class="wc-item">
+                    <h4 class="wc-title" style="color:#fff;">Enrollments</h4>
+                    <span class="wc-des" style="color:rgba(255,255,255,0.7);">Total inscriptions</span>
+                    <span class="wc-stats" style="color:#fff;">{{ totalInscriptions }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+            <div class="widget-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 10px; padding: 20px; color: #fff; margin-bottom: 30px;">
+                <div class="wc-item">
+                    <h4 class="wc-title" style="color:#fff;">Active Users</h4>
+                    <span class="wc-des" style="color:rgba(255,255,255,0.7);">Enabled accounts</span>
+                    <span class="wc-stats" style="color:#fff;">{{ activeUsers }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Course & Inscription Stats END -->
+
+    <div class="row">
+        <!-- Recent Users -->
+        <div class="col-lg-6 m-b30">
+            <div class="widget-box">
+                <div class="wc-title">
+                    <h4>Recent Users</h4>
+                </div>
+                <div class="widget-inner">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in recentUsers %}
+                                    <tr>
+                                        <td>{{ user.fullName }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>
+                                            {% if user.role == 'admin' %}
+                                                <span class="badge" style="background-color:#4c6fff;color:#fff;">Admin</span>
+                                            {% elseif user.role == 'professeur' %}
+                                                <span class="badge" style="background-color:#ff6b6b;color:#fff;">Prof</span>
+                                            {% else %}
+                                                <span class="badge" style="background-color:#51cf66;color:#fff;">Student</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ user.dateInscription|date('d/m/Y') }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr><td colspan="4" class="text-center">No users yet.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Courses -->
+        <div class="col-lg-6 m-b30">
+            <div class="widget-box">
+                <div class="wc-title">
+                    <h4>Recent Courses</h4>
+                </div>
+                <div class="widget-inner">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Level</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cours in recentCours %}
+                                    <tr>
+                                        <td>{{ cours.titre }}</td>
+                                        <td>{{ cours.categorie ?? '-' }}</td>
+                                        <td>
+                                            {% if cours.niveau == 'debutant' %}
+                                                <span class="badge" style="background-color:#51cf66;color:#fff;">Beginner</span>
+                                            {% elseif cours.niveau == 'intermediaire' %}
+                                                <span class="badge" style="background-color:#fcc419;color:#333;">Intermediate</span>
+                                            {% else %}
+                                                <span class="badge" style="background-color:#ff6b6b;color:#fff;">Advanced</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if cours.statut == 'publie' %}
+                                                <span class="badge" style="background-color:#51cf66;color:#fff;">Published</span>
+                                            {% elseif cours.statut == 'brouillon' %}
+                                                <span class="badge" style="background-color:#adb5bd;color:#333;">Draft</span>
+                                            {% else %}
+                                                <span class="badge" style="background-color:#868e96;color:#fff;">Archived</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr><td colspan="4" class="text-center">No courses yet.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Login Logs -->
+    <div class="row">
+        <div class="col-lg-12 m-b30">
+            <div class="widget-box">
+                <div class="wc-title">
+                    <h4>Recent Login Activity</h4>
+                </div>
+                <div class="widget-inner">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>IP Address</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in recentLogs %}
+                                    <tr>
+                                        <td>{{ log.email ?? (log.utilisateur ? log.utilisateur.email : '-') }}</td>
+                                        <td>{{ log.adresseIp ?? '-' }}</td>
+                                        <td>
+                                            {% if log.statut == 'succes' %}
+                                                <span class="badge" style="background-color:#51cf66;color:#fff;">Success</span>
+                                            {% else %}
+                                                <span class="badge" style="background-color:#ff6b6b;color:#fff;">Failed</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ log.typeAction ?? '-' }}</td>
+                                        <td>{{ log.dateConnexion|date('d/m/Y H:i') }}</td>
+                                    </tr>
+                                {% else %}
+                                    <tr><td colspan="5" class="text-center">No login activity yet.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Summary -->
+    <div class="row">
+        <div class="col-lg-4 m-b30">
+            <div class="widget-box">
+                <div class="wc-title">
+                    <h4>User Distribution</h4>
+                </div>
+                <div class="widget-inner">
+                    <div style="padding: 10px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span><i class="fa fa-circle" style="color:#4c6fff;"></i> Admins</span>
+                            <strong>{{ admins }}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span><i class="fa fa-circle" style="color:#ff6b6b;"></i> Teachers</span>
+                            <strong>{{ profs }}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span><i class="fa fa-circle" style="color:#51cf66;"></i> Students</span>
+                            <strong>{{ etudiants }}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                            <span><strong>Total</strong></span>
+                            <strong>{{ totalUsers }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 m-b30">
+            <div class="widget-box">
+                <div class="wc-title">
+                    <h4>Course Status</h4>
+                </div>
+                <div class="widget-inner">
+                    <div style="padding: 10px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span><i class="fa fa-circle" style="color:#51cf66;"></i> Published</span>
+                            <strong>{{ coursPublies }}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span><i class="fa fa-circle" style="color:#adb5bd;"></i> Draft</span>
+                            <strong>{{ coursBrouillon }}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                            <span><strong>Total</strong></span>
+                            <strong>{{ totalCours }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 m-b30">
+            <div class="widget-box">
+                <div class="wc-title">
+                    <h4>Enrollment Status</h4>
+                </div>
+                <div class="widget-inner">
+                    <div style="padding: 10px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span><i class="fa fa-circle" style="color:#fcc419;"></i> In Progress</span>
+                            <strong>{{ inscriptionsEnCours }}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span><i class="fa fa-circle" style="color:#51cf66;"></i> Completed</span>
+                            <strong>{{ inscriptionsCompletes }}</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                            <span><strong>Total</strong></span>
+                            <strong>{{ totalInscriptions }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

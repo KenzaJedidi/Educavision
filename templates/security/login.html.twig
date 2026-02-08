@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - Educavision{% endblock %}
+
+{% block body %}
+    <div class="account-form">
+        <div class="account-head" style="background-image:url({{ asset('assets/images/background/bg2.jpg') }});">
+            <a href="{{ path('app_home') }}"><img src="{{ asset('assets/images/logo-white-2.png') }}" alt=""></a>
+        </div>
+        <div class="account-form-inner">
+            <div class="account-container">
+                <div class="heading-bx left">
+                    <h2 class="title-head">Login to your <span>Account</span></h2>
+                    <p>Don't have an account? <a href="{{ path('app_register') }}">Create one here</a></p>
+                </div>
+
+                {% if error %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }}">{{ message }}</div>
+                    {% endfor %}
+                {% endfor %}
+
+                <form method="post" class="contact-bx">
+                    <div class="row placeani">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Email Address</label>
+                                    <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" class="form-control" autocomplete="email" required autofocus placeholder="your@email.com">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Password</label>
+                                    <input type="password" name="_password" id="inputPassword" class="form-control" autocomplete="current-password" required placeholder="••••••••">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group form-forget">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="rememberMe" name="_remember_me">
+                                    <label class="custom-control-label" for="rememberMe">Remember me</label>
+                                </div>
+                                <a href="#" class="ml-auto">Forgot Password?</a>
+                            </div>
+                        </div>
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                        <div class="col-lg-12 m-b30">
+                            <button type="submit" class="btn button-md" style="width: 100%;">Login</button>
+                        </div>
+                        <div class="col-lg-12">
+                            <h6>Login with Social media</h6>
+                            <div class="d-flex">
+                                <a class="btn flex-fill m-r5 facebook" href="#"><i class="fa fa-facebook"></i>Facebook</a>
+                                <a class="btn flex-fill m-l5 google-plus" href="#"><i class="fa fa-google-plus"></i>Google Plus</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

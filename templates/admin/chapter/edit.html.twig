@@ -1,0 +1,228 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Modifier un Chapitre - EducaVision Admin{% endblock %}
+
+{% block breadcrumb_title %}Modifier un Chapitre{% endblock %}
+
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_chapter_index') }}">Chapitres</a></li>
+    <li>Modifier</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Modifier le Chapitre: {{ chapter.titre }}</h4>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            {{ form_label(form.titre) }}
+                            {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.titre) }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {{ form_label(form.ordre) }}
+                            {{ form_widget(form.ordre, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.ordre) }}
+                            <small class="form-text text-muted">Laissez vide pour auto-générer</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.course) }}
+                    {{ form_widget(form.course, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.course) }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.teacherName) }}
+                            {{ form_widget(form.teacherName, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.teacherName) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.teacherEmail) }}
+                            {{ form_widget(form.teacherEmail, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.teacherEmail) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.description) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '8'}}) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.imageUrl) }}
+                    {{ form_widget(form.imageUrl, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.imageUrl) }}
+                    <small class="form-text text-muted">Nom du fichier image (ex: mon-chapitre.jpg)</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Enregistrer les modifications
+                    </button>
+                    <a href="{{ path('admin_chapter_show', {'id': chapter.id}) }}" class="btn btn-info">
+                        <i class="fa fa-eye"></i> Voir
+                    </a>
+                    <a href="{{ path('admin_chapter_index') }}" class="btn btn-secondary">
+                        <i class="fa fa-times"></i> Annuler
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Informations du chapitre</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>ID:</strong></td>
+                        <td>{{ chapter.id }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Créé le:</strong></td>
+                        <td>{{ chapter.createdAt|date('d/m/Y H:i') }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ordre:</strong></td>
+                        <td>
+                            {% if chapter.ordre %}
+                                <span class="badge badge-primary">{{ chapter.ordre }}</span>
+                            {% else %}
+                                <span class="text-muted">Non défini</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if chapter.course %}
+                    <tr>
+                        <td><strong>Cours:</strong></td>
+                        <td>
+                            <a href="{{ path('admin_course_show', {'id': chapter.course.id}) }}" 
+                               class="text-primary">
+                                {{ chapter.course.titre }}
+                            </a>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </table>
+
+                <h6>Actions rapides</h6>
+                <div class="btn-group-vertical w-100">
+                    {% if chapter.course %}
+                        <a href="{{ path('admin_course_show', {'id': chapter.course.id}) }}" 
+                           class="btn btn-outline-primary">
+                            <i class="fa fa-book"></i> Voir le cours
+                        </a>
+                        <a href="{{ path('front_chapitre_show', {'id': chapter.course.id, 'chapterId': chapter.id}) }}" 
+                           class="btn btn-outline-success" target="_blank">
+                            <i class="fa fa-external-link"></i> Voir sur le site
+                        </a>
+                    {% endif %}
+                    <a href="{{ path('admin_message_new') }}?course_id={{ chapter.course?.id }}" 
+                       class="btn btn-outline-info">
+                        <i class="fa fa-comments"></i> Ajouter un message
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Aperçu</h5>
+            </div>
+            <div class="card-body">
+                {% if chapter.imageUrl %}
+                    <img src="{{ asset('front-assets/images/chapters/' ~ chapter.imageUrl) }}" 
+                         alt="{{ chapter.titre }}" 
+                         class="img-fluid rounded mb-3"
+                         style="width: 100%; height: 150px; object-fit: cover;"
+                         onerror="this.src='{{ asset('assets/images/default-chapter.jpg') }}'">
+                {% else %}
+                    <div class="bg-light rounded mb-3 text-center" style="height: 150px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa fa-image fa-2x text-muted"></i>
+                    </div>
+                {% endif %}
+                
+                <h6>{{ chapter.titre }}</h6>
+                {% if chapter.description %}
+                    <p class="small text-muted">{{ chapter.description|striptags|slice(0, 100) }}...</p>
+                {% endif %}
+                
+                {% if chapter.teacherName %}
+                    <p class="small text-muted">
+                        <i class="fa fa-user"></i> {{ chapter.teacherName }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-control {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.form-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.form-actions .btn {
+    margin-right: 10px;
+}
+
+.badge-success { background-color: #28a745; color: white; }
+.badge-danger { background-color: #dc3545; color: white; }
+.badge-warning { background-color: #ffc107; color: white; }
+.badge-info { background-color: #17a2b8; color: white; }
+.badge-primary { background-color: #007bff; color: white; }
+.badge-secondary { background-color: #6c757d; color: white; }
+
+.btn-group-vertical .btn {
+    margin-bottom: 5px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,351 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Modifier Quiz - {{ quiz.titre }} - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Quiz{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_quiz_index') }}">Quiz</a></li>
+<li><a href="{{ path('admin_quiz_show', {'idquiz': quiz.idquiz}) }}">{{ quiz.titre }}</a></li>
+<li>Modifier</li>
+{% endblock %}
+
+{% block body %}
+<style>
+    .quiz-form-gradient {
+        background: linear-gradient(135deg, #ff9800 0%, #ffb347 100%);
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 16px 0 rgba(255,152,0,0.10);
+        border-radius: 1.5rem;
+        padding: 2rem 2rem 1.5rem 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .quiz-form-gradient label { 
+        color: #fff; 
+        font-weight: 500; 
+        margin-bottom: 0.5rem;
+    }
+    .quiz-form-gradient .form-label {
+        color: #fff !important;
+        font-weight: 500;
+    }
+    .quiz-form-gradient input, .quiz-form-gradient textarea {
+        border-radius: 1rem;
+        border: none;
+        box-shadow: 0 2px 8px 0 rgba(255,152,0,0.08);
+        margin-bottom: 0.5rem;
+        background-color: rgba(255,255,255,0.95);
+    }
+    .quiz-form-gradient input:focus, .quiz-form-gradient textarea:focus {
+        outline: 2px solid #ff9800;
+        box-shadow: 0 0 0 2px #ffb347;
+        background-color: #fff;
+    }
+    .quiz-form-gradient .form-control {
+        border-radius: 1rem;
+        border: none;
+        box-shadow: 0 2px 8px 0 rgba(255,152,0,0.08);
+        background-color: rgba(255,255,255,0.95);
+    }
+    .quiz-form-gradient .form-control:focus {
+        outline: 2px solid #ff9800;
+        box-shadow: 0 0 0 2px #ffb347;
+        background-color: #fff;
+    }
+    .quiz-form-gradient .btn-warning {
+        background: linear-gradient(90deg, #ff9800 0%, #ffb347 100%);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 1rem;
+        transition: background 0.2s;
+        padding: 0.75rem 2rem;
+    }
+    .quiz-form-gradient .btn-warning:hover {
+        background: linear-gradient(90deg, #ffb347 0%, #ff9800 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px 0 rgba(255,152,0,0.15);
+    }
+    .quiz-form-gradient .form-check-input {
+        background-color: rgba(255,255,255,0.9);
+        border: 2px solid #ffb347;
+        width: 3rem;
+        height: 1.5rem;
+        cursor: pointer;
+    }
+    .quiz-form-gradient .form-check-input:checked {
+        background-color: #28a745;
+        border-color: #28a745;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255,255,255,1.0%29'/%3e%3c/svg%3e");
+    }
+    .quiz-form-gradient .form-check-input:not(:checked) {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255,255,255,1.0%29'/%3e%3c/svg%3e");
+    }
+    .quiz-form-gradient .form-check-input:focus {
+        outline: 2px solid #ff9800;
+        box-shadow: 0 0 0 2px #ffb347;
+    }
+    .quiz-form-gradient .form-switch .form-check-input {
+        background-position: left center;
+        border-radius: 2rem;
+        transition: background-color 0.2s, border-color 0.2s, background-position 0.2s;
+    }
+    .quiz-form-gradient .form-switch .form-check-input:checked {
+        background-position: right center;
+    }
+    .quiz-form-gradient .invalid-feedback {
+        color: #fff;
+        background-color: rgba(220,53,69,0.9);
+        border-radius: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+    }
+    .quiz-form-gradient .was-validated .form-control:invalid {
+        border-color: #dc3545;
+        background-color: rgba(255,255,255,0.95);
+    }
+    .quiz-form-gradient .was-validated .form-control:valid {
+        border-color: #28a745;
+        background-color: rgba(255,255,255,0.95);
+    }
+    .quiz-form-gradient .form-text {
+        color: rgba(255,255,255,0.9) !important;
+        font-size: 0.875rem;
+    }
+    .question-item {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    .answers-container {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="quiz-form-gradient">
+    <h2 class="mb-4">Modifier le Quiz: {{ quiz.titre }}</h2>
+    
+    {{ form_start(form, {'attr': {'id': 'quizForm', 'novalidate': 'novalidate'}}) }}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {{ form_label(form.titre) }}
+                    {{ form_widget(form.titre, {
+                        'attr': {
+                            'class': 'form-control',
+                            'minlength': 3,
+                            'maxlength': 255,
+                            'placeholder': 'Entrez le titre du quiz'
+                        }
+                    }) }}
+                    <div class="invalid-feedback">
+                        Le titre doit contenir entre 3 et 255 caractères
+                    </div>
+                    {{ form_errors(form.titre) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fa fa-eye"></i> Visibilité du Quiz
+                    </label>
+                    <div class="card bg-light border-warning">
+                        <div class="card-body p-3">
+                            <div class="form-check form-switch">
+                                {{ form_widget(form.visible) }}
+                                {{ form_label(form.visible, null, {
+                                    'label_attr': {
+                                        'class': 'form-check-label ms-2'
+                                    }
+                                }) }}
+                            </div>
+                            <div id="visibility-status" class="mt-2">
+                                {% if quiz.visible %}
+                                    <span class="badge bg-success">
+                                        <i class="fa fa-check-circle"></i> Visible pour les étudiants
+                                    </span>
+                                    <small class="d-block text-muted mt-1">
+                                        <i class="fa fa-info-circle"></i> Les étudiants peuvent voir et accéder à ce quiz
+                                    </small>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        <i class="fa fa-eye-slash"></i> Caché pour les étudiants
+                                    </span>
+                                    <small class="d-block text-muted mt-1">
+                                        <i class="fa fa-info-circle"></i> Les étudiants ne peuvent pas voir ce quiz
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {{ form_errors(form.visible) }}
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    {{ form_label(form.description) }}
+                    {{ form_widget(form.description) }}
+                    <small class="form-text">Maximum 1000 caractères</small>
+                    {{ form_errors(form.description) }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" class="btn btn-warning" onclick="return validateForm()">
+                    <i class="fa fa-save"></i> Enregistrer les modifications
+                </button>
+                <a href="{{ path('admin_quiz_show', {'idquiz': quiz.idquiz}) }}" class="btn btn-light ms-2">
+                    <i class="fa fa-times"></i> Annuler
+                </a>
+            </div>
+        </div>
+    {{ form_end(form) }}
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Questions actuelles</h5>
+        <small class="text-muted">Visualisation des questions existantes</small>
+    </div>
+    <div class="card-body">
+        {% if quiz.questions is empty %}
+            <div class="alert alert-info">
+                <i class="fa fa-info-circle"></i>
+                Aucune question dans ce quiz.
+            </div>
+        {% else %}
+            {% for question in quiz.questions %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            Question {{ loop.index }}: {{ question.texte }}
+                        </h6>
+                        
+                        <div class="row mt-3">
+                            {% for answer in question.answers %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="alert {% if answer.correct %}alert-success{% else %}alert-secondary{% endif %}">
+                                        <strong>{{ answer.texte }}</strong>
+                                        {% if answer.correct %}
+                                            <span class="badge bg-success ms-2">Correcte</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{{ path('admin_quiz_index') }}" class="btn btn-secondary">
+        <i class="fa fa-arrow-left"></i> Retour à la liste
+    </a>
+    <a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}" class="btn btn-info ms-2" target="_blank">
+        <i class="fa fa-eye"></i> Voir le quiz
+    </a>
+</div>
+
+<script>
+function validateForm() {
+    const form = document.getElementById('quizForm');
+    const titre = form.querySelector('#quiz_titre');
+    
+    // Validation du titre
+    if (titre.value.trim().length < 3) {
+        alert('Le titre doit contenir au moins 3 caractères');
+        titre.focus();
+        return false;
+    }
+    
+    if (titre.value.trim().length > 255) {
+        alert('Le titre ne doit pas dépasser 255 caractères');
+        titre.focus();
+        return false;
+    }
+    
+    // Validation de la description
+    const description = form.querySelector('#quiz_description');
+    if (description.value.trim().length > 1000) {
+        alert('La description ne doit pas dépasser 1000 caractères');
+        description.focus();
+        return false;
+    }
+    
+    // Ajouter les classes de validation Bootstrap
+    form.classList.add('was-validated');
+    
+    return true;
+}
+
+function toggleVisibilityStatus() {
+    const checkbox = document.querySelector('#quiz_visible');
+    const statusDiv = document.getElementById('visibility-status');
+    
+    if (checkbox.checked) {
+        statusDiv.innerHTML = `
+            <span class="badge bg-success">
+                <i class="fa fa-check-circle"></i> Visible pour les étudiants
+            </span>
+            <small class="d-block text-muted mt-1">
+                <i class="fa fa-info-circle"></i> Les étudiants peuvent voir et accéder à ce quiz
+            </small>
+        `;
+    } else {
+        statusDiv.innerHTML = `
+            <span class="badge bg-danger">
+                <i class="fa fa-eye-slash"></i> Caché pour les étudiants
+            </span>
+            <small class="d-block text-muted mt-1">
+                <i class="fa fa-info-circle"></i> Les étudiants ne peuvent pas voir ce quiz
+            </small>
+        `;
+    }
+}
+
+// Validation en temps réel
+document.addEventListener('DOMContentLoaded', function() {
+    const titre = document.querySelector('#quiz_titre');
+    const description = document.querySelector('#quiz_description');
+    
+    // Validation du titre
+    titre.addEventListener('input', function() {
+        if (this.value.trim().length >= 3 && this.value.trim().length <= 255) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else {
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+        }
+    });
+    
+    // Validation de la description
+    description.addEventListener('input', function() {
+        if (this.value.trim().length <= 1000) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else {
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+        }
+    });
+    
+    // Initialiser l'état de la visibilité
+    toggleVisibilityStatus();
+});
+</script>
+{% endblock %}

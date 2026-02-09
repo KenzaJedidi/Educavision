@@ -1,0 +1,831 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Résultats - {{ quiz.titre }}{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/quiz-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Résultats du Quiz</h1>
+            <p class="text-white m-b0">{{ quiz.titre }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li><a href="{{ path('quiz_index') }}">Quiz</a></li>
+            <li><a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}">{{ quiz.titre }}</a></li>
+            <li>Résultats</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <!-- Score Summary Cards -->
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-10">
+                    <div class="result-card">
+                        <div class="result-header">
+                            <div class="result-icon">
+                                {% if percentage >= 80 %}
+                                    <div class="icon-circle success">
+                                        <i class="fas fa-trophy"></i>
+                                    </div>
+                                {% elseif percentage >= 60 %}
+                                    <div class="icon-circle warning">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                {% else %}
+                                    <div class="icon-circle danger">
+                                        <i class="fas fa-redo"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="result-title">
+                                <h2 class="mb-2">Quiz Terminé!</h2>
+                                <p class="text-muted">{{ quiz.titre }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="result-stats">
+                            <div class="row text-center">
+                                <div class="col-md-3 col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-number {% if percentage >= 80 %}text-success{% elseif percentage >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                                            {{ score }}
+                                        </div>
+                                        <div class="stat-label">Points</div>
+                                        <div class="stat-total">/ {{ totalPoints }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-number {% if percentage >= 80 %}text-success{% elseif percentage >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                                            {{ percentage }}%
+                                        </div>
+                                        <div class="stat-label">Réussite</div>
+                                        <div class="stat-total">Score</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-number text-info">
+                                            {{ totalQuestions }}
+                                        </div>
+                                        <div class="stat-label">Questions</div>
+                                        <div class="stat-total">Total</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="stat-item">
+                                        <div class="stat-number text-primary">
+                                            {{ (score / totalQuestions)|round(0, 'floor') }}
+                                        </div>
+                                        <div class="stat-label">Correctes</div>
+                                        <div class="stat-total">Réponses</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="result-progress mt-4">
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>Niveau de performance</span>
+                                    <span>{{ percentage }}%</span>
+                                </div>
+                                <div class="progress" style="height: 12px; border-radius: 10px; overflow: hidden;">
+                                    <div class="progress-bar-animated {% if percentage >= 80 %}bg-success{% elseif percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                             role="progressbar" 
+                                             style="width: {{ percentage }}%; transition: width 1.5s ease-in-out;">
+                                        <span class="progress-bar-text">{{ percentage }}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Performance Message -->
+                        <div class="result-message mt-4">
+                            <div class="message-card {% if percentage >= 80 %}success{% elseif percentage >= 60 %}warning{% else %}danger{% endif %}">
+                                <div class="message-icon">
+                                    {% if percentage >= 80 %}
+                                        <i class="fas fa-trophy"></i>
+                                    {% elseif percentage >= 60 %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="fas fa-redo"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="message-content">
+                                    <h4>
+                                        {% if percentage >= 80 %}
+                                            Excellent! 🎉
+                                        {% elseif percentage >= 60 %}
+                                            Bon travail! 👍
+                                        {% else %}
+                                            À améliorer! 💪
+                                        {% endif %}
+                                    </h4>
+                                    <p>
+                                        {% if percentage >= 80 %}
+                                            Vous avez maîtrisé ce quiz! Félicitations pour votre performance exceptionnelle.
+                                        {% elseif percentage >= 60 %}
+                                            Vous avez bien réussi ce quiz. Continuez comme ça!
+                                        {% else %}
+                                            Continuez à pratiquer pour de meilleurs résultats. Ne baissez pas les bras!
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Results -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="detailed-results">
+                        <div class="results-header">
+                            <h3 class="results-title">
+                                <i class="fas fa-list-check"></i>
+                                Détail des réponses
+                            </h3>
+                            <div class="results-summary">
+                                <span class="summary-badge correct">{{ (score / totalQuestions)|round(0, 'floor') }} correctes</span>
+                                <span class="summary-badge wrong">{{ totalQuestions - (score / totalQuestions)|round(0, 'floor') }} incorrectes</span>
+                            </div>
+                        </div>
+                        
+                        {% for result in results %}
+                            <div class="question-result {% if result.isCorrect %}correct{% else %}incorrect{% endif %}">
+                                <div class="question-header">
+                                    <div class="question-number">
+                                        <span class="number-badge">{{ loop.index }}</span>
+                                    </div>
+                                    <div class="question-content">
+                                        <h4 class="question-text">{{ result.question.texte }}</h4>
+                                        <div class="question-meta">
+                                            <span class="points-badge">{{ result.points }} points</span>
+                                            <span class="status-badge {% if result.isCorrect %}success{% else %}danger{% endif %}">
+                                                {% if result.isCorrect %}
+                                                    <i class="fas fa-check-circle"></i> Correct
+                                                {% else %}
+                                                    <i class="fas fa-times-circle"></i> Incorrect
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="question-score">
+                                        <div class="score-display {% if result.isCorrect %}positive{% else %}negative{% endif %}">
+                                            <span class="score-number">{{ result.earnedPoints }}</span>
+                                            <span class="score-total">/ {{ result.points }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="answer-details">
+                                    <div class="answer-row">
+                                        <div class="answer-col">
+                                            <label class="answer-label">
+                                                <i class="fas fa-user"></i>
+                                                Votre réponse
+                                            </label>
+                                            <div class="answer-content {% if result.isCorrect %}correct{% else %}incorrect{% endif %}">
+                                                {% for answer in result.question.answers %}
+                                                    {% if answer.id == result.userAnswerId %}
+                                                        <span class="answer-text">{{ answer.texte }}</span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% if result.userAnswerId is null %}
+                                                    <span class="answer-text empty">Non répondue</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        
+                                        {% if not result.isCorrect %}
+                                            <div class="answer-col">
+                                                <label class="answer-label">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Bonne réponse
+                                                </label>
+                                                <div class="answer-content correct">
+                                                    {% for answer in result.question.answers %}
+                                                        {% if answer.id == result.correctAnswerId %}
+                                                            <span class="answer-text">{{ answer.texte }}</span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="action-buttons">
+                        <div class="button-group">
+                            <a href="{{ path('quiz_index') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left"></i>
+                                Retour aux quiz
+                            </a>
+                            <a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}" class="btn btn-warning">
+                                <i class="fas fa-redo"></i>
+                                Recommencer
+                            </a>
+                            <a href="{{ path('front_home') }}" class="btn btn-success">
+                                <i class="fas fa-home"></i>
+                                Accueil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modern Quiz Results Styles */
+.result-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    pointer-events: none;
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.result-icon {
+    margin-right: 20px;
+}
+
+.icon-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+}
+
+.icon-circle.success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+}
+
+.icon-circle.warning {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    box-shadow: 0 10px 20px rgba(255, 193, 7, 0.3);
+}
+
+.icon-circle.danger {
+    background: linear-gradient(135deg, #dc3545, #e74c3c);
+    box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
+}
+
+.result-title h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.result-title p {
+    font-size: 18px;
+    opacity: 0.9;
+    margin: 5px 0 0 0;
+}
+
+.result-stats {
+    margin-bottom: 30px;
+}
+
+.stat-item {
+    padding: 20px 10px;
+}
+
+.stat-number {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+    margin-bottom: 2px;
+}
+
+.stat-total {
+    font-size: 18px;
+    font-weight: 500;
+    opacity: 0.7;
+}
+
+.result-progress {
+    margin-bottom: 30px;
+}
+
+.progress-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.progress-bar-animated {
+    position: relative;
+    background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.4), rgba(255,255,255,0.2));
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.progress-bar-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 600;
+    font-size: 12px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.result-message {
+    margin-bottom: 30px;
+}
+
+.message-card {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+}
+
+.message-card.success {
+    border-color: rgba(40, 167, 69, 0.3);
+}
+
+.message-card.warning {
+    border-color: rgba(255, 193, 7, 0.3);
+}
+
+.message-card.danger {
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+.message-icon {
+    font-size: 48px;
+    margin-right: 20px;
+    opacity: 0.9;
+}
+
+.message-content h4 {
+    font-size: 24px;
+    margin: 0 0 10px 0;
+}
+
+.message-content p {
+    margin: 0;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+/* Detailed Results Styles */
+.detailed-results {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.results-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.results-title i {
+    margin-right: 10px;
+    color: #667eea;
+}
+
+.results-summary {
+    display: flex;
+    gap: 10px;
+}
+
+.summary-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.summary-badge.correct {
+    background: #d4edda;
+    color: #155724;
+}
+
+.summary-badge.wrong {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.question-result {
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.question-result.correct {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+}
+
+.question-result.incorrect {
+    border-color: #dc3545;
+    background: linear-gradient(135deg, #fff8f8 0%, #ffe8e8 100%);
+}
+
+.question-header {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 15px;
+}
+
+.question-number {
+    flex-shrink: 0;
+}
+
+.number-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 16px;
+    color: white;
+}
+
+.question-result.correct .number-badge {
+    background: #28a745;
+}
+
+.question-result.incorrect .number-badge {
+    background: #dc3545;
+}
+
+.question-content {
+    flex-grow: 1;
+}
+
+.question-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+}
+
+.question-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.points-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-badge.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.question-score {
+    flex-shrink: 0;
+}
+
+.score-display {
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    min-width: 80px;
+}
+
+.score-display.positive {
+    background: #d4edda;
+    color: #155724;
+}
+
+.score-display.negative {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.score-number {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.score-total {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.answer-details {
+    padding: 0 20px 20px 75px;
+}
+
+.answer-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.answer-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.answer-content {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.answer-content.correct {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.answer-content.incorrect {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+.answer-text.empty {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* Action Buttons */
+.action-buttons {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.button-group .btn {
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.button-group .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .result-card {
+        padding: 25px;
+    }
+    
+    .result-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .result-icon {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+    
+    .stat-item {
+        padding: 15px 5px;
+    }
+    
+    .stat-number {
+        font-size: 28px;
+    }
+    
+    .message-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .message-icon {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .results-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .answer-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .button-group {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .button-group .btn {
+        width: 100%;
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .result-stats .col-md-3 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    
+    .question-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    
+    .question-score {
+        align-self: center;
+    }
+    
+    .answer-details {
+        padding-left: 20px;
+    }
+}
+
+/* Additional Styles */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.alert {
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.cours-bx {
+    transition: transform 0.2s ease;
+}
+
+.cours-bx:hover {
+    transform: translateY(-2px);
+}
+
+.display-4 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.radius-xl {
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.fa-check-circle, .fa-times-circle {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+</style>
+{% endblock %}

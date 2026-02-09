@@ -1,0 +1,351 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Statistiques des Quiz - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Quiz{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_quiz_index') }}">Quiz</a></li>
+<li>Statistiques</li>
+{% endblock %}
+
+{% block body %}
+<!-- Statistics Dashboard -->
+<section class="section-area section-sp1">
+    <div class="container">
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card bg-primary text-white p-4 rounded text-center">
+                    <i class="fa fa-list fa-3x mb-3"></i>
+                    <h3>{{ statistiques|length }}</h3>
+                    <p>Total Quiz</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card bg-success text-white p-4 rounded text-center">
+                    <i class="fa fa-users fa-3x mb-3"></i>
+                    <h3>{{ statistiques|reduce((carry, stat) => carry + stat.totalParticipants, 0) }}</h3>
+                    <p>Total Participants</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card bg-info text-white p-4 rounded text-center">
+                    <i class="fa fa-chart-line fa-3x mb-3"></i>
+                    <h3>
+                        {% if statistiques|length > 0 %}
+                            {{ (statistiques|reduce((carry, stat) => carry + stat.moyenne, 0) / statistiques|length)|number_format(1) }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </h3>
+                    <p>Moyenne Générale</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card bg-warning text-white p-4 rounded text-center">
+                    <i class="fa fa-trophy fa-3x mb-3"></i>
+                    <h3>
+                        {% if statistiques|length > 0 %}
+                            {% set maxMoyenne = 0 %}
+                            {% for stat in statistiques %}
+                                {% if stat.moyenne > maxMoyenne %}
+                                    {% set maxMoyenne = stat.moyenne %}
+                                {% endif %}
+                            {% endfor %}
+                            {{ maxMoyenne|number_format(1) }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </h3>
+                    <p>Meilleure Moyenne</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Statistics Table -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ttr-post mb-30">
+                    <div class="ttr-post-media">
+                        <h3>Statistiques Détaillées par Quiz</h3>
+                    </div>
+                    <div class="ttr-post-info">
+                        {% if statistiques|length > 0 %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Quiz</th>
+                                            <th>Participants</th>
+                                            <th>Moyenne</th>
+                                            <th>Performance</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for stat in statistiques %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ stat.quiz.titre }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">{{ stat.quiz.description|slice(0, 50) ~ '...' }}</small>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info">{{ stat.totalParticipants }}</span>
+                                                </td>
+                                                <td>
+                                                    <div class="progress" style="height: 20px;">
+                                                        <div class="progress-bar {% if stat.moyenne >= 80 %}bg-success{% elseif stat.moyenne >= 60 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                             role="progressbar" 
+                                                             style="width: {{ stat.moyenne }}%">
+                                                            {{ stat.moyenne }}%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    {% if stat.moyenne >= 80 %}
+                                                        <span class="badge bg-success">Excellent</span>
+                                                    {% elseif stat.moyenne >= 60 %}
+                                                        <span class="badge bg-warning">Bon</span>
+                                                    {% else %}
+                                                        <span class="badge bg-danger">À améliorer</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <a href="{{ path('admin_quiz_show', {'idquiz': stat.quiz.idquiz}) }}" class="btn btn-sm btn-info">
+                                                        <i class="fa fa-eye"></i> Voir
+                                                    </a>
+                                                    <a href="{{ path('admin_quiz_edit', {'idquiz': stat.quiz.idquiz}) }}" class="btn btn-sm btn-warning">
+                                                        <i class="fa fa-edit"></i> Modifier
+                                                    </a>
+                                                    <a href="{{ path('quiz_take', {'id': stat.quiz.idquiz}) }}" class="btn btn-sm btn-primary" target="_blank">
+                                                        <i class="fa fa-play"></i> Tester
+                                                    </a>
+                                                    <a href="{{ path('admin_quiz_export_csv', {'idquiz': stat.quiz.idquiz}) }}" class="btn btn-sm btn-success" title="Exporter en CSV">
+                                                        <i class="fa fa-file-csv"></i> CSV
+                                                    </a>
+                                                    <a href="{{ path('admin_quiz_export_word', {'idquiz': stat.quiz.idquiz}) }}" class="btn btn-sm btn-secondary" title="Exporter en Word">
+                                                        <i class="fa fa-file-word"></i> Word
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info text-center">
+                                <h4><i class="fa fa-info-circle"></i> Aucune statistique disponible</h4>
+                                <p>Créez des quiz et attendez que les étudiants les passent.</p>
+                                <a href="{{ path('admin_quiz_new') }}" class="btn btn-primary">
+                                    <i class="fa fa-plus"></i> Créer un Quiz
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Charts -->
+        {% if statistiques|length > 0 %}
+            <div class="row mt-4">
+                <div class="col-lg-6">
+                    <div class="ttr-post">
+                        <div class="ttr-post-media">
+                            <h4>Répartition des Performances</h4>
+                        </div>
+                        <div class="ttr-post-info">
+                            <canvas id="performanceChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="ttr-post">
+                        <div class="ttr-post-media">
+                            <h4>Participation par Quiz</h4>
+                        </div>
+                        <div class="ttr-post-info">
+                            <canvas id="participationChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% if statistiques|length > 0 %}
+<script>
+// Performance Distribution Chart
+const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+const performanceData = {
+    labels: ['Excellent (>80%)', 'Bon (60-80%)', 'À améliorer (<60%)'],
+    datasets: [{
+        label: 'Nombre de Quiz',
+        data: [
+            {{ statistiques|filter(stat => stat.moyenne >= 80)|length }},
+            {{ statistiques|filter(stat => stat.moyenne >= 60 and stat.moyenne < 80)|length }},
+            {{ statistiques|filter(stat => stat.moyenne < 60)|length }}
+        ],
+        backgroundColor: [
+            'rgba(40, 167, 69, 0.8)',
+            'rgba(255, 193, 7, 0.8)',
+            'rgba(220, 53, 69, 0.8)'
+        ],
+        borderColor: [
+            'rgba(40, 167, 69, 1)',
+            'rgba(255, 193, 7, 1)',
+            'rgba(220, 53, 69, 1)'
+        ],
+        borderWidth: 1
+    }]
+};
+
+new Chart(performanceCtx, {
+    type: 'doughnut',
+    data: performanceData,
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Participation Chart
+const participationCtx = document.getElementById('participationChart').getContext('2d');
+const participationData = {
+    labels: [
+        {% for stat in statistiques %}
+            '{{ stat.quiz.titre|slice(0, 20) ~ (stat.quiz.titre|length > 20 ? "..." : "") }}'{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ],
+    datasets: [{
+        label: 'Participants',
+        data: [
+            {% for stat in statistiques %}
+                {{ stat.totalParticipants }}{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ],
+        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+    }]
+};
+
+new Chart(participationCtx, {
+    type: 'bar',
+    data: participationData,
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
+{% endif %}
+
+<style>
+.stat-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.stat-card i {
+    opacity: 0.8;
+}
+
+.stat-card h3 {
+    margin: 10px 0 5px 0;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+.stat-card p {
+    margin: 0;
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+.progress {
+    background-color: #e9ecef;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+.table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+}
+
+.ttr-post {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.ttr-post-media {
+    background-color: #f8f9fa;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.ttr-post-media h3 {
+    margin: 0;
+    color: #333;
+    font-weight: 600;
+}
+
+.ttr-post-info {
+    padding: 1.5rem;
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.badge {
+    font-size: 0.8em;
+    padding: 0.5em 0.8em;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Détails des résultats - {{ quiz.titre }}{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/quiz-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Détails des résultats</h1>
+            <p class="text-white m-b0">{{ quiz.titre }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li><a href="{{ path('quiz_index') }}">Quiz</a></li>
+            <li><a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}">{{ quiz.titre }}</a></li>
+            <li>Détails</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="cours-bx">
+                        <div class="cours-info">
+                            <h5 class="mb-4">{{ quiz.titre }}</h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>Score:</strong> {{ result.score }}
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Date:</strong> {{ result.datepassage|date('d/m/Y H:i') }}
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Utilisateur:</strong> {{ result.utilisateur }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="heading-bx left">
+                        <h6 class="title-ext text-primary">Merci d'avoir complété ce quiz d'orientation!</h6>
+                    </div>
+                    
+                    <div class="cours-bx">
+                        <div class="cours-info text-center">
+                            <p class="lead mb-4">Votre participation a été enregistrée avec succès.</p>
+                            <div class="d-flex justify-content-center gap-3">
+                                <a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}" class="btn btn-primary radius-xl">
+                                    <i class="fas fa-redo"></i> Refaire le quiz
+                                </a>
+                                <a href="{{ path('quiz_index') }}" class="btn btn-secondary radius-xl">
+                                    <i class="fas fa-list"></i> Voir autres quiz
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

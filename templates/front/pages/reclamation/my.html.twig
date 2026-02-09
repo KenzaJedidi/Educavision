@@ -1,0 +1,78 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Mes Réclamations - EducaVision{% endblock %}
+
+{% block body %}
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/stages-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Mes Réclamations</h1>
+        </div>
+    </div>
+    <div class="breadcrumb-row">
+        <div class="container">
+            <ul class="list-inline">
+                <li><a href="{{ path('front_home') }}">Accueil</a></li>
+                <li>Mes Réclamations</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row m-b30">
+                <div class="col-md-12">
+                    <div class="filter-form bg-light p-3">
+                        <form method="post" action="{{ path('front_reclamation_my') }}" class="row g-2 align-items-center">
+                            <div class="col-md-8">
+                                <input type="email" name="email" class="form-control" placeholder="Votre email utilisé dans la réclamation" value="{{ email }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100">Afficher mes réclamations</button>
+                            </div>
+                        </form>
+                        {% if not email %}
+                            <small class="text-muted">Astuce : si vous avez déjà déposé une réclamation, nous avons mémorisé votre email et pré-rempli ce champ.</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if email and reclamations is defined and reclamations|length > 0 %}
+                <div class="row">
+                    {% for r in reclamations %}
+                        <div class="col-md-6 m-b30">
+                            <div class="offre-card">
+                                <div class="offre-header">
+                                    <div class="offre-type">
+                                        {% set badgeClass = r.status == 'traiter' ? 'badge-success' : 'badge-warning' %}
+                                        <span class="badge {{ badgeClass }}">{{ r.status == 'traiter' ? 'Traité' : 'En cours' }}</span>
+                                    </div>
+                                    <div class="offre-date">
+                                        Créée le {{ r.dateReclamation|date('d/m/Y H:i') }}
+                                    </div>
+                                </div>
+                                <div class="offre-body">
+                                    <h4>{{ r.titre }}</h4>
+                                    <p class="offre-description">{{ r.description }}</p>
+                                    <div class="offre-details">
+                                        <span><i class="fa fa-user"></i> {{ r.nom }} {{ r.prenom }}</span>
+                                        <span><i class="fa fa-at"></i> {{ r.email }}</span>
+                                        <span><i class="fa fa-id-badge"></i> {{ r.role|capitalize }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% elseif email %}
+                <div class="alert alert-info">Aucune réclamation trouvée pour l'email <strong>{{ email }}</strong>.</div>
+            {% else %}
+                <div class="alert alert-secondary">Entrez votre email pour afficher vos réclamations.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

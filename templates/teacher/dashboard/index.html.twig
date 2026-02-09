@@ -1,0 +1,195 @@
+{% extends 'teacher/layout.html.twig' %}
+
+{% block title %}Mon Dashboard - EducaVision Professeur{% endblock %}
+
+{% block breadcrumb_title %}Mon Dashboard{% endblock %}
+
+{% block breadcrumb_items %}
+<li>Dashboard</li>
+{% endblock %}
+
+{% block body %}
+<!-- Welcome & Switch -->
+<div class="mb-3 d-flex justify-content-between align-items-center flex-wrap" style="gap: 10px;">
+	<h2 class="h5 mb-0">
+		Bienvenue, <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong> !
+	</h2>
+	<a href="{{ path('front_home') }}" class="btn btn-outline-primary">
+		<i class="fa fa-external-link"></i> Voir le site public
+	</a>
+</div>
+
+<!-- Stat Cards -->
+<div class="row m-b30">
+	<div class="col-md-6 col-lg-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg1">
+			<div class="wc-item">
+				<h4 class="wc-title">Mes Cours</h4>
+				<span class="wc-des">Total de mes cours</span>
+				<span class="wc-stats counter">{{ stats.totalCourses }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Créés</span>
+					<span class="wc-number ml-auto">{{ stats.totalCourses }}</span>
+				</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-6 col-lg-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg2">
+			<div class="wc-item">
+				<h4 class="wc-title">Cours Actifs</h4>
+				<span class="wc-des">Visibles sur le site</span>
+				<span class="wc-stats counter">{{ stats.activeCourses }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.totalCourses > 0 ? ((stats.activeCourses / stats.totalCourses) * 100)|round : 0 }}%;" aria-valuenow="{{ stats.activeCourses }}" aria-valuemin="0" aria-valuemax="{{ stats.totalCourses }}"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Publiés</span>
+					<span class="wc-number ml-auto">{{ stats.totalCourses > 0 ? ((stats.activeCourses / stats.totalCourses) * 100)|round : 0 }}%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-6 col-lg-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg3">
+			<div class="wc-item">
+				<h4 class="wc-title">Cours Inactifs</h4>
+				<span class="wc-des">Brouillons / masqués</span>
+				<span class="wc-stats counter">{{ stats.inactiveCourses }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.totalCourses > 0 ? ((stats.inactiveCourses / stats.totalCourses) * 100)|round : 0 }}%;" aria-valuenow="{{ stats.inactiveCourses }}" aria-valuemin="0" aria-valuemax="{{ stats.totalCourses }}"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Masqués</span>
+					<span class="wc-number ml-auto">{{ stats.inactiveCourses }}</span>
+				</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-6 col-lg-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg4">
+			<div class="wc-item">
+				<h4 class="wc-title">Mes Chapitres</h4>
+				<span class="wc-des">Total des chapitres</span>
+				<span class="wc-stats counter">{{ stats.totalChapters }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.totalCourses > 0 ? 100 : 0 }}%;" aria-valuenow="{{ stats.totalChapters }}" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Contenus</span>
+					<span class="wc-number ml-auto">{{ stats.totalChapters }}</span>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Quick Actions + Recent Courses -->
+<div class="row">
+	<!-- Quick Actions -->
+	<div class="col-lg-4 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Actions rapides</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="d-flex flex-column" style="gap: 10px;">
+					<a href="{{ path('teacher_course_new') }}" class="btn btn-primary btn-block">
+						<i class="fa fa-plus"></i> Ajouter un cours
+					</a>
+					<a href="{{ path('teacher_chapter_new') }}" class="btn btn-info btn-block">
+						<i class="fa fa-plus"></i> Ajouter un chapitre
+					</a>
+					<a href="{{ path('teacher_course_index') }}" class="btn btn-outline-primary btn-block">
+						<i class="fa fa-list"></i> Voir tous mes cours
+					</a>
+					<a href="{{ path('teacher_chapter_index') }}" class="btn btn-outline-info btn-block">
+						<i class="fa fa-list"></i> Voir tous mes chapitres
+					</a>
+					<hr>
+					<a href="{{ path('front_cours_list') }}" class="btn btn-outline-success btn-block" target="_blank">
+						<i class="fa fa-external-link"></i> Voir les cours sur le site
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Recent Courses -->
+	<div class="col-lg-8 m-b30">
+		<div class="widget-box">
+			<div class="wc-title d-flex justify-content-between align-items-center">
+				<h4>Mes cours récents</h4>
+				<a href="{{ path('teacher_course_index') }}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+			</div>
+			<div class="widget-inner">
+				{% if recentCourses|length > 0 %}
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>Titre</th>
+								<th>Catégorie</th>
+								<th>Statut</th>
+								<th>Chapitres</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for course in recentCourses %}
+							<tr>
+								<td>
+									<strong>{{ course.titre }}</strong>
+									{% if course.description %}
+										<br><small class="text-muted">{{ course.description|striptags|slice(0, 40) }}...</small>
+									{% endif %}
+								</td>
+								<td>
+									{% if course.category %}
+										<span class="badge badge-info">{{ course.category }}</span>
+									{% else %}
+										<span class="text-muted">-</span>
+									{% endif %}
+								</td>
+								<td>
+									{% if course.status == 1 %}
+										<span class="badge badge-success">Actif</span>
+									{% else %}
+										<span class="badge badge-danger">Inactif</span>
+									{% endif %}
+								</td>
+								<td>{{ course.chapters|length }}</td>
+								<td>
+									<a href="{{ path('teacher_course_edit', {'id': course.id}) }}" class="btn btn-sm btn-warning" title="Modifier">
+										<i class="fa fa-edit"></i>
+									</a>
+									<a href="{{ path('teacher_course_show', {'id': course.id}) }}" class="btn btn-sm btn-info" title="Voir">
+										<i class="fa fa-eye"></i>
+									</a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+				{% else %}
+				<div class="text-center py-5">
+					<i class="fa fa-book fa-3x text-muted mb-3" style="display:block"></i>
+					<h5>Vous n'avez pas encore de cours</h5>
+					<p class="text-muted">Commencez par créer votre premier cours !</p>
+					<a href="{{ path('teacher_course_new') }}" class="btn btn-primary">
+						<i class="fa fa-plus"></i> Créer mon premier cours
+					</a>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block breadcrumb_title %}Modifier mon profil{% endblock %}
+
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ path('admin_profile') }}">Mon Profil</a></li>
+    <li>Modifier</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fa fa-check-circle"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+
+        <div class="card" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px 25px; border-radius: 12px 12px 0 0;">
+                <h5 style="margin: 0; color: #fff; font-weight: 600;">
+                    <i class="fa fa-edit"></i> Modifier mes informations
+                </h5>
+            </div>
+            <div class="card-body" style="padding: 30px;">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold"><i class="fa fa-user text-muted me-1"></i> Nom</label>
+                        {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.nom) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold"><i class="fa fa-user text-muted me-1"></i> Prénom</label>
+                        {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.prenom) }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold"><i class="fa fa-envelope text-muted me-1"></i> Email</label>
+                    {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.email) }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold"><i class="fa fa-phone text-muted me-1"></i> Téléphone</label>
+                        {{ form_widget(form.telephone, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.telephone) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold"><i class="fa fa-lock text-muted me-1"></i> Nouveau mot de passe</label>
+                        {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.plainPassword) }}
+                        <small class="text-muted">Laisser vide pour ne pas changer</small>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold"><i class="fa fa-map-marker text-muted me-1"></i> Adresse</label>
+                    {{ form_widget(form.adresse, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.adresse) }}
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('admin_profile') }}" class="btn btn-secondary" style="border-radius: 8px;">
+                        <i class="fa fa-arrow-left"></i> Retour
+                    </a>
+                    <button type="submit" class="btn btn-success" style="border-radius: 8px; padding: 8px 30px;">
+                        <i class="fa fa-save"></i> Enregistrer les modifications
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

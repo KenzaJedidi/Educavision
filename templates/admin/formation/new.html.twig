@@ -1,0 +1,530 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Ajouter une Formation - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Ajouter une Formation{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_formation_index') }}">Les Formations</a></li>
+<li>Nouvelle Formation</li>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+.form-wizard {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.form-wizard-header {
+    background: linear-gradient(135deg, #1E3A5F 0%, #2C5F8D 100%);
+    padding: 40px;
+    color: white;
+    text-align: center;
+}
+
+.form-wizard-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.form-wizard-header p {
+    margin: 10px 0 0 0;
+    opacity: 0.9;
+}
+
+.form-wizard-body {
+    padding: 40px;
+}
+
+.form-group-modern {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.form-group-modern label {
+    display: block;
+    font-weight: 600;
+    color: #1E3A5F;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group-modern label i {
+    color: #1E3A5F;
+    font-size: 1.1rem;
+}
+
+.form-control-modern {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    box-sizing: border-box;
+}
+
+.form-control-modern:focus {
+    outline: none;
+    border-color: #1E3A5F;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.1);
+}
+
+.form-control-modern::placeholder {
+    color: #aaa;
+}
+
+/* STYLE SPÉCIAL POUR LES LISTES DÉROULANTES (SELECT) */
+select.form-control-modern {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231E3A5F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 16px;
+    padding-right: 50px;
+    cursor: pointer;
+}
+
+select.form-control-modern:focus {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231E3A5F' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+/* Style pour les options */
+select.form-control-modern option {
+    padding: 12px;
+    background: white;
+    color: #000;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+}
+
+select.form-control-modern option:hover {
+    background: #1E3A5F;
+    color: white;
+}
+
+select.form-control-modern option:checked {
+    background: #1E3A5F;
+    color: white;
+    font-weight: 600;
+}
+
+/* Assurer que le texte affiché dans le select est en noir */
+select.form-control-modern {
+    color: #000 !important;
+}
+
+textarea.form-control-modern {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+}
+
+.input-icon-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #1E3A5F;
+    font-size: 1.2rem;
+    pointer-events: none;
+}
+
+.input-icon-wrapper .form-control-modern {
+    padding-left: 50px;
+}
+
+.form-row-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.btn-modern {
+    padding: 15px 40px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-modern.primary {
+    background: linear-gradient(135deg, #1E3A5F 0%, #2C5F8D 100%);
+    color: white;
+    box-shadow: 0 5px 15px rgba(30, 58, 95, 0.3);
+}
+
+.btn-modern.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(30, 58, 95, 0.4);
+}
+
+.btn-modern.secondary {
+    background: white;
+    color: #1E3A5F;
+    border: 2px solid #1E3A5F;
+}
+
+.btn-modern.secondary:hover {
+    background: #1E3A5F;
+    color: white;
+}
+
+.form-helper {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.form-helper i {
+    color: #1E3A5F;
+}
+
+.character-count {
+    font-size: 0.8rem;
+    color: #999;
+    text-align: right;
+    margin-top: 5px;
+}
+
+.required-star {
+    color: #F44336;
+    margin-left: 3px;
+}
+
+.info-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #1E3A5F 0%, #2C5F8D 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+.info-badge i {
+    margin-right: 8px;
+    color: white;
+}
+
+/* Tous les messages d'erreur de formulaire en rouge */
+ul.form-errors {
+    color: #dc3545 !important;
+    font-size: 0.875rem;
+    margin-top: 5px;
+    list-style: none;
+    padding: 0 !important;
+}
+
+ul.form-errors li {
+    color: #dc3545 !important;
+    padding: 5px 0;
+    margin: 0;
+    list-style: none;
+}
+
+ul.form-errors li:before {
+    content: '⚠ ';
+    font-weight: bold;
+    margin-right: 5px;
+    color: #dc3545;
+}
+
+/* Cibler tous les messages d'erreur possibles */
+.form-group-modern .errors,
+.form-group-modern ul,
+.form-group-modern li,
+[class*="error"],
+[class*="Error"],
+.invalid-feedback {
+    color: #dc3545 !important;
+}
+
+/* Pour les éléments générés par Twig form_errors */
+div ~ ul li,
+.form-group-modern ~ ul li,
+.input-icon-wrapper ~ ul li {
+    color: #dc3545 !important;
+}
+
+div ~ ul li:before,
+.form-group-modern ~ ul li:before,
+.input-icon-wrapper ~ ul li:before {
+    content: '⚠ ';
+    font-weight: bold;
+    margin-right: 5px;
+    color: #dc3545;
+}
+
+ul.form-errors li {
+    color: #dc3545 !important;
+    padding: 5px 0;
+    margin: 0;
+    list-style: none;
+}
+
+ul.form-errors li:before {
+    content: '⚠ ';
+    font-weight: bold;
+    margin-right: 5px;
+    color: #dc3545;
+}
+
+/* Pour assurer la compatibilité avec les anciens navigateurs */
+select::-ms-expand {
+    display: none;
+}
+
+/* Amélioration de l'accessibilité */
+select:focus {
+    outline: 2px solid #1E3A5F;
+    outline-offset: 2px;
+}
+
+/* Pour les mobiles */
+@media (max-width: 768px) {
+    .form-wizard-body {
+        padding: 20px;
+    }
+    
+    .form-wizard-header {
+        padding: 30px 20px;
+    }
+    
+    .form-row-modern {
+        grid-template-columns: 1fr;
+    }
+    
+    select.form-control-modern {
+        font-size: 16px; /* Empêche le zoom sur iOS */
+    }
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+	<div class="col-lg-10">
+		<div class="form-wizard">
+			<!-- En-tête -->
+			<div class="form-wizard-header">
+				<h2><i class="fa fa-book"></i> Créer une Nouvelle Formation</h2>
+				<p>Renseignez les informations de la formation pour guider les apprenants</p>
+			</div>
+			
+			<!-- Corps du formulaire -->
+			<div class="form-wizard-body">
+				<div class="info-badge">
+					<i class="fa fa-info-circle"></i>
+					Les champs marqués d'une étoile (<span class="required-star">*</span>) sont obligatoires
+				</div>
+				
+				{{ form_start(form, {'attr': {'id': 'formation-form', 'novalidate': 'novalidate'}}) }}
+				
+				<!-- Nom de la formation -->
+				<div class="form-group-modern">
+					<label>
+						<i class="fa fa-tag"></i>
+						Nom de la Formation
+						<span class="required-star">*</span>
+					</label>
+					<div class="input-icon-wrapper">
+						<i class="input-icon fa fa-graduation-cap"></i>
+						{{ form_widget(form.nom, {'attr': {'class': 'form-control-modern', 'placeholder': 'Ex: Développeur Web, Infirmier...'}}) }}
+					</div>
+					<div class="form-helper">
+						<i class="fa fa-lightbulb-o"></i>
+						Choisissez un nom clair et descriptif
+					</div>
+					{{ form_errors(form.nom) }}
+				</div>
+				
+				<!-- Durée et Niveau -->
+				<div class="form-row-modern">
+					<div class="form-group-modern">
+						<label>
+							<i class="fa fa-clock-o"></i>
+							Durée de la Formation
+							<span class="required-star">*</span>
+						</label>
+						<div class="input-icon-wrapper">
+							<i class="input-icon fa fa-calendar"></i>
+							{{ form_widget(form.duree, {'attr': {'class': 'form-control-modern', 'placeholder': 'Ex: 3 mois, 100 heures'}}) }}
+						</div>
+						<div class="form-helper">
+							<i class="fa fa-info-circle"></i>
+							Exemple : 3 mois, 100 heures, 6 semaines
+						</div>
+						{{ form_errors(form.duree) }}
+					</div>
+					
+					<div class="form-group-modern">
+						<label>
+							<i class="fa fa-signal"></i>
+							Niveau Requis
+							<span class="required-star">*</span>
+						</label>
+						<div class="input-icon-wrapper">
+							<i class="input-icon fa fa-level-up"></i>
+							{{ form_widget(form.niveau, {'attr': {'class': 'form-control-modern'}}) }}
+						</div>
+						<div class="form-helper">
+							<i class="fa fa-info-circle"></i>
+							Sélectionnez le niveau de difficulté
+						</div>
+						{{ form_errors(form.niveau) }}
+					</div>
+				</div>
+				
+				<!-- Description -->
+				<div class="form-group-modern">
+					<label>
+						<i class="fa fa-align-left"></i>
+						Description Complète
+						<span class="required-star">*</span>
+					</label>
+					{{ form_widget(form.description, {'attr': {'class': 'form-control-modern', 'placeholder': 'Décrivez la formation, ses objectifs, les débouchés...', 'rows': 6, 'id': 'description-field'}}) }}
+					<div class="character-count">
+						<span id="char-count">0</span> caractères
+					</div>
+					<div class="form-helper">
+						<i class="fa fa-lightbulb-o"></i>
+						Soyez précis pour aider les apprenants à comprendre cette formation
+					</div>
+					{{ form_errors(form.description) }}
+				</div>
+				
+				<!-- Prérequis -->
+				<div class="form-group-modern">
+					<label>
+						<i class="fa fa-check-square-o"></i>
+						Prérequis Nécessaires
+						<span class="required-star">*</span>
+					</label>
+					{{ form_widget(form.prerequisTexte, {'attr': {'class': 'form-control-modern', 'placeholder': 'Listez les connaissances ou compétences requises...', 'rows': 4}}) }}
+					<div class="form-helper">
+						<i class="fa fa-info-circle"></i>
+						Exemple : Maîtrise du français, notions en informatique...
+					</div>
+					{{ form_errors(form.prerequisTexte) }}
+				</div>
+				
+				<!-- Compétences Acquises -->
+				<div class="form-group-modern">
+					<label>
+						<i class="fa fa-trophy"></i>
+						Compétences Acquises
+						<span class="required-star">*</span>
+					</label>
+					{{ form_widget(form.competencesAcquises, {'attr': {'class': 'form-control-modern', 'placeholder': 'Décrivez les compétences que les apprenants obtiendront...', 'rows': 4}}) }}
+					<div class="form-helper">
+						<i class="fa fa-lightbulb-o"></i>
+						Exemple : Développement web, gestion de projet...
+					</div>
+					{{ form_errors(form.competencesAcquises) }}
+				</div>
+				
+				<!-- Image -->
+				<div class="form-group-modern">
+					<label>
+						<i class="fa fa-image"></i>
+						Nom de l'Image
+					</label>
+					<div class="input-icon-wrapper">
+						<i class="input-icon fa fa-picture-o"></i>
+						{{ form_widget(form.image, {'attr': {'class': 'form-control-modern', 'placeholder': 'Ex: formation.jpg'}}) }}
+					</div>
+					<div class="form-helper">
+						<i class="fa fa-info-circle"></i>
+						Entrez le nom exact du fichier (optionnel)
+					</div>
+					{{ form_errors(form.image) }}
+				</div>
+				
+				<!-- Actions -->
+				<div class="form-actions">
+					<a href="{{ path('admin_formation_index') }}" class="btn-modern secondary">
+						<i class="fa fa-times"></i>
+						Annuler
+					</a>
+					<button type="submit" class="btn-modern primary">
+						<i class="fa fa-save"></i>
+						Créer la Formation
+					</button>
+				</div>
+				
+				{{ form_end(form) }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Compteur de caractères
+const descriptionField = document.getElementById('description-field');
+const charCount = document.getElementById('char-count');
+
+if (descriptionField) {
+    descriptionField.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
+        
+        // Change la couleur selon la longueur
+        if (this.value.length < 50) {
+            charCount.style.color = '#F44336';
+        } else if (this.value.length < 150) {
+            charCount.style.color = '#FF9800';
+        } else {
+            charCount.style.color = '#4CAF50';
+        }
+    });
+    
+    // Initialiser le compteur
+    charCount.textContent = descriptionField.value.length;
+}
+
+// Animation au focus
+document.querySelectorAll('.form-control-modern').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.parentElement.classList.add('focused');
+    });
+    
+    input.addEventListener('blur', function() {
+        this.parentElement.classList.remove('focused');
+    });
+});
+</script>
+{% endblock %}

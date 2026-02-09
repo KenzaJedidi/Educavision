@@ -1,0 +1,211 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Accueil - EducaVision{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- Revolution Slider CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/vendors/revolution/css/layers.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/vendors/revolution/css/settings.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/vendors/revolution/css/navigation.css') }}">
+{% endblock %}
+
+{% block body %}
+<!-- Main Slider -->
+<div class="rev-slider">
+    <div id="rev_slider_486_1_wrapper" class="rev_slider_wrapper fullwidthbanner-container"
+        style="margin:0px auto;background-color:#ffffff;padding:0px;">
+        <div id="rev_slider_486_1" class="rev_slider fullwidthabanner" style="display:none;">
+            <ul>
+                <!-- SLIDE 1 -->
+                <li data-transition="parallaxvertical">
+                    <img src="{{ asset('front-assets/images/slider/slide1.jpg') }}" alt="" class="rev-slidebg" />
+                    
+                    <!-- Overlay -->
+                    <div class="tp-caption tp-shape tp-shapewrapper"
+                        data-x="center" data-y="middle"
+                        data-width="full" data-height="full"
+                        style="z-index: 5;background-color:rgba(2, 0, 11, 0.80);">
+                    </div>
+
+                    <!-- Title -->
+                    <div class="tp-caption Newspaper-Title tp-resizeme"
+                        data-x="center" data-y="top" data-voffset="250"
+                        data-fontsize="50" data-lineheight="55"
+                        style="z-index: 6; font-family:rubik; font-weight:700; color:#fff;">
+                        Bienvenue sur EducaVision
+                    </div>
+
+                    <!-- Subtitle -->
+                    <div class="tp-caption Newspaper-Subtitle tp-resizeme"
+                        data-x="center" data-y="top" data-voffset="210"
+                        style="z-index: 7; color:#fff; font-size:18px;">
+                        Meilleure éducation pour un meilleur avenir
+                    </div>
+
+                    <!-- Description -->
+                    <div class="tp-caption Newspaper-Subtitle tp-resizeme"
+                        data-x="center" data-y="top" data-voffset="320"
+                        data-width="800"
+                        style="z-index: 7; color:#fff; text-align:center; line-height:28px;">
+                        Plateforme intelligente d'apprentissage et de suivi pédagogique
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="tp-caption Newspaper-Button rev-btn"
+                        data-x="center" data-hoffset="90" data-y="top" data-voffset="400"
+                        style="z-index: 8; background-color:#FF9800; border-radius:30px; padding:12px 30px;">
+                        <a href="{{ path('front_cours_list') }}" style="color: white;">NOS COURS</a>
+                    </div>
+
+                    <div class="tp-caption Newspaper-Button rev-btn"
+                        data-x="center" data-hoffset="-90" data-y="top" data-voffset="400"
+                        style="z-index: 8; border-radius:30px; padding:12px 30px; border: 1px solid white;">
+                        <a href="{{ path('front_contact') }}" style="color: white;">CONTACTEZ-NOUS</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Services -->
+<div class="section-area content-inner service-info-bx">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="service-bx">
+                    <div class="action-box">
+                        <img src="{{ asset('front-assets/images/our-services/pic1.jpg') }}" alt="">
+                    </div>
+                    <div class="info-bx text-center">
+                        <div class="feature-box-sm radius bg-white">
+                            <i class="fa fa-graduation-cap text-primary"></i>
+                        </div>
+                        <h4><a href="{{ path('front_filieres') }}">Filières d'Excellence</a></h4>
+                        <a href="{{ path('front_filieres') }}" class="btn radius-xl">Découvrir</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="service-bx">
+                    <div class="action-box">
+                        <img src="{{ asset('front-assets/images/our-services/pic2.jpg') }}" alt="">
+                    </div>
+                    <div class="info-bx text-center">
+                        <div class="feature-box-sm radius bg-white">
+                            <i class="fa fa-book text-primary"></i>
+                        </div>
+                        <h4><a href="{{ path('front_cours_list') }}">Cours en Ligne</a></h4>
+                        <a href="{{ path('front_cours_list') }}" class="btn radius-xl">Explorer</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12">
+                <div class="service-bx m-b0">
+                    <div class="action-box">
+                        <img src="{{ asset('front-assets/images/our-services/pic3.jpg') }}" alt="">
+                    </div>
+                    <div class="info-bx text-center">
+                        <div class="feature-box-sm radius bg-white">
+                            <i class="fa fa-briefcase text-primary"></i>
+                        </div>
+                        <h4><a href="{{ path('front_stages') }}">Offres de Stages</a></h4>
+                        <a href="{{ path('front_stages') }}" class="btn radius-xl">Postuler</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="section-area section-sp1 ovpr-dark bg-fix online-cours"
+    style="background-image:url({{ asset('front-assets/images/background/bg1.jpg') }});">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center text-white">
+                <h2>Apprenez en Ligne</h2>
+                <h5>Construisez votre avenir dès aujourd'hui</h5>
+                <form class="cours-search" action="{{ path('front_search') }}">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="q"
+                            placeholder="Que voulez-vous apprendre aujourd'hui ?">
+                        <div class="input-group-append">
+                            <button class="btn" type="submit">Rechercher</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="mw800 m-auto">
+            <div class="row">
+                <div class="col-md-4 col-sm-6">
+                    <div class="cours-search-bx m-b30">
+                        <div class="icon-box">
+                            <h3><i class="ti-user"></i><span class="counter">5</span>K</h3>
+                        </div>
+                        <span class="cours-search-text">Plus de 5000 étudiants</span>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                    <div class="cours-search-bx m-b30">
+                        <div class="icon-box">
+                            <h3><i class="ti-book"></i><span class="counter">100</span>+</h3>
+                        </div>
+                        <span class="cours-search-text">Plus de 100 cours</span>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-12">
+                    <div class="cours-search-bx m-b30">
+                        <div class="icon-box">
+                            <h3><i class="ti-layout-list-post"></i><span class="counter">20</span>+</h3>
+                        </div>
+                        <span class="cours-search-text">20+ Filières disponibles</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <!-- Revolution Slider JS -->
+    <script src="{{ asset('front-assets/vendors/revolution/js/jquery.themepunch.tools.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/revolution/js/jquery.themepunch.revolution.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.actions.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.carousel.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.kenburn.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.layeranimation.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.navigation.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.parallax.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.slideanims.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.video.min.js') }}"></script>
+
+    <script>
+    jQuery(document).ready(function() {
+        if (jQuery("#rev_slider_486_1").revolution !== undefined) {
+            jQuery("#rev_slider_486_1").show().revolution({
+                sliderType: "standard",
+                jsFileLocation: "{{ asset('front-assets/vendors/revolution/js/') }}",
+                sliderLayout: "fullwidth",
+                delay: 9000,
+                navigation: {
+                    arrows: {
+                        style: "uranus",
+                        enable: true
+                    }
+                },
+                gridwidth: [1240, 1024, 778, 480],
+                gridheight: [768, 600, 600, 600],
+                lazyType: "none"
+            });
+        }
+    });
+    </script>
+{% endblock %}

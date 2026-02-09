@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300">
+  <defs>
+    <linearGradient id="grad-actia" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0DCAF0"/>
+      <stop offset="100%" stop-color="#006B85"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="clip">
+      <rect x="0" y="0" width="1200" height="300" rx="20" ry="20"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#clip)">
+    <rect x="0" y="0" width="1200" height="300" fill="url(#grad-actia)"/>
+    <!-- abstract shapes -->
+    <ellipse cx="950" cy="80" rx="180" ry="70" fill="#ffffff" opacity="0.08"/>
+    <ellipse cx="260" cy="240" rx="220" ry="90" fill="#000000" opacity="0.05"/>
+    <rect x="0" y="0" width="1200" height="120" fill="url(#glow)"/>
+    <!-- dotted pattern -->
+    <g fill="#ffffff" opacity="0.15">
+      <circle cx="150" cy="60" r="3"/>
+      <circle cx="180" cy="80" r="3"/>
+      <circle cx="210" cy="100" r="3"/>
+      <circle cx="240" cy="120" r="3"/>
+      <circle cx="270" cy="140" r="3"/>
+      <circle cx="300" cy="160" r="3"/>
+    </g>
+    <!-- title -->
+    <text x="60" y="210" font-family="'Segoe UI', Arial, sans-serif" font-size="80" font-weight="700" fill="#ffffff" opacity="0.95">ACTIA</text>
+    <text x="60" y="245" font-family="'Segoe UI', Arial, sans-serif" font-size="24" font-weight="500" fill="#ffffff" opacity="0.9">Stage d'immersion</text>
+  </g>
+</svg>

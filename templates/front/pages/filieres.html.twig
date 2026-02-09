@@ -1,0 +1,392 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Filières - EducaVision{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/filieres-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Nos Filières</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li>Filières</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left">
+                    <h2 class="title-head">Explorez Nos <span>Filières</span></h2>
+                    <p>Découvrez nos domaines de spécialisation et trouvez votre voie</p>
+                </div>
+            </div>
+
+            <!-- Filtres -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="search-box bg-light p-3 rounded">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input type="text" id="search-filiere" class="form-control" placeholder="Rechercher une filière...">
+                            </div>
+                            <div class="col-md-4">
+                                <select id="sort-filiere" class="form-control">
+                                    <option value="name-asc">Trier par: Nom (A-Z)</option>
+                                    <option value="name-desc">Trier par: Nom (Z-A)</option>
+                                    <option value="newest">Trier par: Plus récent</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filières dynamiques depuis la base -->
+            <div class="row" id="filiere-list">
+                {% if filieres|length > 0 %}
+                    {% for filiere in filieres %}
+                    <div class="col-md-4 col-sm-6 m-b30" data-filiere="{{ filiere.nom|lower }}">
+                        <div class="filiere-card">
+                            <div class="filiere-image">
+                                {% if filiere.image %}
+                                    <img src="{{ asset('assets/images/filieres/' ~ filiere.image) }}" 
+                                         alt="{{ filiere.nom }}" 
+                                         class="img-fluid"
+                                         style="height: 200px; width: 100%; object-fit: cover;"
+                                         onerror="this.src='{{ asset('front-assets/images/courses/pic1.jpg') }}'">
+                                {% else %}
+                                    <img src="{{ asset('front-assets/images/courses/pic1.jpg') }}" 
+                                         alt="{{ filiere.nom }}" 
+                                         class="img-fluid"
+                                         style="height: 200px; width: 100%; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <div class="filiere-content p-3">
+                                <h4><a href="{{ path('front_filiere_show', {'id': filiere.id}) }}">{{ filiere.nom }}</a></h4>
+                                <p class="text-muted mb-2">
+                                    <i class="fa fa-user"></i> Responsable: {{ filiere.responsable ?? 'Non défini' }}
+                                </p>
+                                <p>{{ filiere.description|striptags|slice(0, 150) }}...</p>
+                                <div class="filiere-meta d-flex justify-content-between">
+                                    <span class="badge badge-primary">
+                                        <i class="fa fa-briefcase"></i> {{ filiere.metiers|length }} métiers
+                                    </span>
+                                    <span class="text-muted">
+                                        <i class="fa fa-calendar"></i> {{ filiere.dateCreation|date('Y') }}
+                                    </span>
+                                </div>
+                                <div class="mt-3">
+                                    <a href="{{ path('front_filiere_show', {'id': filiere.id}) }}" class="btn btn-outline-primary btn-block">
+                                        <i class="fa fa-eye"></i> Voir détails
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <i class="fa fa-info-circle fa-2x mb-3"></i>
+                            <h4 class="alert-heading">Aucune filière disponible</h4>
+                            <p>Les filières seront bientôt disponibles. Revenez plus tard.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Statistiques -->
+            <div class="row mt-5">
+                <div class="col-md-12">
+                    <div class="stats-section bg-light p-4 rounded">
+                        <h4 class="mb-4">Nos Filières en <span>Chiffres</span></h4>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 text-center">
+                                <div class="stat-item p-3">
+                                    <i class="fa fa-graduation-cap fa-2x text-primary mb-2"></i>
+                                    <h5 class="counter">{{ filieres|length }}</h5>
+                                    <p class="text-muted">Filières</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 text-center">
+                                <div class="stat-item p-3">
+                                    <i class="fa fa-briefcase fa-2x text-primary mb-2"></i>
+                                    <h5 class="counter">
+                                        {% set total_metiers = 0 %}
+                                        {% for filiere in filieres %}
+                                            {% set total_metiers = total_metiers + filiere.metiers|length %}
+                                        {% endfor %}
+                                        {{ total_metiers }}
+                                    </h5>
+                                    <p class="text-muted">Métiers associés</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 text-center">
+                                <div class="stat-item p-3">
+                                    <i class="fa fa-user-tie fa-2x text-primary mb-2"></i>
+                                    <h5 class="counter">
+                                        {% set responsables = [] %}
+                                        {% for filiere in filieres %}
+                                            {% if filiere.responsable and filiere.responsable not in responsables %}
+                                                {% set responsables = responsables|merge([filiere.responsable]) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {{ responsables|length }}
+                                    </h5>
+                                    <p class="text-muted">Responsables</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 text-center">
+                                <div class="stat-item p-3">
+                                    <i class="fa fa-calendar-alt fa-2x text-primary mb-2"></i>
+                                    <h5>
+                                        {% if filieres|length > 0 %}
+                                            {% set oldest = filieres|sort((a, b) => a.dateCreation <=> b.dateCreation)|first %}
+                                            {{ oldest.dateCreation|date('Y') }}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    </h5>
+                                    <p class="text-muted">Depuis</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guide d'Orientation -->
+    <div class="section-area bg-gray section-sp2">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <img src="{{ asset('front-assets/images/orientation-1.jpg') }}" alt="Guide d'orientation" class="img-fluid rounded">
+                </div>
+                <div class="col-md-6">
+                    <div class="heading-bx left">
+                        <h2 class="title-head">Besoin d'aide pour choisir ?</h2>
+                        <p>Notre service d'orientation gratuit vous aide à trouver la filière qui correspond à votre profil.</p>
+                        <div class="orientation-features">
+                            <div class="feature-item d-flex align-items-start mb-3">
+                                <i class="fa fa-user-circle text-primary fa-2x mr-3 mt-1"></i>
+                                <div>
+                                    <h5>Bilan de compétences</h5>
+                                    <p class="text-muted">Évaluation de vos aptitudes et intérêts</p>
+                                </div>
+                            </div>
+                            <div class="feature-item d-flex align-items-start mb-3">
+                                <i class="fa fa-chart-line text-primary fa-2x mr-3 mt-1"></i>
+                                <div>
+                                    <h5>Analyse du marché</h5>
+                                    <p class="text-muted">Perspectives d'emploi par secteur</p>
+                                </div>
+                            </div>
+                            <div class="feature-item d-flex align-items-start mb-3">
+                                <i class="fa fa-handshake text-primary fa-2x mr-3 mt-1"></i>
+                                <div>
+                                    <h5>Accompagnement personnalisé</h5>
+                                    <p class="text-muted">Suivi individuel avec un conseiller</p>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{{ path('front_contact') }}" class="btn btn-primary mt-3">
+                            <i class="fa fa-calendar"></i> Prendre rendez-vous
+                        </a>
+                        <a href="{{ path('front_simulateur') }}" class="btn btn-primary mt-3">
+                            <i class="fa fa-calendar"></i> Simuler mon orientation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.filiere-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid #eee;
+    margin-bottom: 30px;
+}
+
+.filiere-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.filiere-image {
+    overflow: hidden;
+    height: 200px;
+}
+
+.filiere-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.filiere-card:hover .filiere-image img {
+    transform: scale(1.05);
+}
+
+.filiere-content {
+    padding: 20px;
+}
+
+.filiere-content h4 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.2rem;
+    min-height: 60px;
+}
+
+.filiere-content h4 a {
+    color: #333;
+    text-decoration: none;
+}
+
+.filiere-content h4 a:hover {
+    color: #007bff;
+}
+
+.badge-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.search-box {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.stat-item {
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+}
+
+.stat-item h5 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.bg-gray {
+    background-color: #f8f9fa !important;
+}
+
+.counter {
+    font-size: 2rem;
+    font-weight: bold;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Recherche en temps réel
+    const searchInput = document.getElementById('search-filiere');
+    const filiereCards = document.querySelectorAll('[data-filiere]');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            
+            filiereCards.forEach(card => {
+                const filiereName = card.getAttribute('data-filiere');
+                
+                if (filiereName.includes(searchTerm) || searchTerm === '') {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    // Tri des filières
+    const sortSelect = document.getElementById('sort-filiere');
+    const filiereList = document.getElementById('filiere-list');
+    
+    if (sortSelect && filiereList) {
+        sortSelect.addEventListener('change', function() {
+            const sortValue = this.value;
+            const cards = Array.from(filiereCards);
+            
+            cards.sort((a, b) => {
+                const nameA = a.querySelector('h4 a').textContent.toLowerCase();
+                const nameB = b.querySelector('h4 a').textContent.toLowerCase();
+                
+                if (sortValue === 'name-asc') {
+                    return nameA.localeCompare(nameB);
+                } else if (sortValue === 'name-desc') {
+                    return nameB.localeCompare(nameA);
+                }
+                return 0;
+            });
+            
+            // Réorganiser les cartes dans le DOM
+            cards.forEach(card => {
+                filiereList.appendChild(card);
+            });
+        });
+    }
+    
+    // Animation des compteurs
+    const counters = document.querySelectorAll('.counter');
+    
+    counters.forEach(counter => {
+        const target = parseInt(counter.textContent) || 0;
+        counter.textContent = '0';
+        
+        const increment = target / 100;
+        let current = 0;
+        
+        const updateCounter = () => {
+            if (current < target) {
+                current += increment;
+                counter.textContent = Math.floor(current);
+                setTimeout(updateCounter, 20);
+            } else {
+                counter.textContent = target;
+            }
+        };
+        
+        // Observer l'intersection pour déclencher l'animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    updateCounter();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        observer.observe(counter);
+    });
+});
+</script>
+{% endblock %}

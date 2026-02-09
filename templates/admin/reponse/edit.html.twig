@@ -1,0 +1,47 @@
+{% extends 'admin/layout.html.twig' %}
+{% block breadcrumb_title %}Réponse{% endblock %}
+{% block breadcrumb_items %}
+    <li>Réponse</li>
+{% endblock %}
+{% block body %}
+<div class="position-relative py-5" style="min-height:60vh;background:linear-gradient(135deg,#f8f9fa 0%, #fff4e6 100%);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-7">
+                <div class="card border-0 shadow-lg overflow-hidden">
+                    <div class="p-4 p-sm-5" style="background:linear-gradient(135deg,#ffc107,#e39b00);">
+                        <div class="d-flex align-items-center gap-3 text-dark">
+                            <div class="display-6"><i class="fa fa-edit"></i></div>
+                            <div>
+                                <h1 class="h3 fw-bold mb-1">Modifier la Réponse</h1>
+                                <p class="mb-0 opacity-75">Apportez les ajustements nécessaires avec clarté.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 p-sm-5 bg-white">
+                        {% if form is defined and form.vars.errors|length > 0 %}
+                            <div class="alert alert-danger mb-4">
+                                <div class="fw-bold mb-2"><i class="fa fa-exclamation-triangle"></i> Veuillez corriger les erreurs suivantes :</div>
+                                {{ form_errors(form) }}
+                            </div>
+                        {% endif %}
+
+                        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                            <div class="form-floating mb-4">
+                                {{ form_widget(form.contenu, {'attr': {'class': 'form-control', 'placeholder': 'Mettez à jour votre réponse', 'style': 'min-height:140px'}}) }}
+                                {{ form_label(form.contenu, 'Votre réponse') }}
+                                {{ form_errors(form.contenu) }}
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <a href="{{ path('reponse_index') }}" class="btn btn-outline-secondary"><i class="fa fa-arrow-left"></i> Retour</a>
+                                <button class="btn btn-warning fw-bold shadow px-4"><i class="fa fa-save"></i> Mettre à jour</button>
+                            </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

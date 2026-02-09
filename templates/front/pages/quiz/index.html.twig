@@ -1,0 +1,65 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Quiz - EducaVision{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/quiz-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Quiz d'Orientation</h1>
+            <p class="text-white m-b0">Testez vos connaissances et découvrez votre profil d'orientation</p>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li>Quiz</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            {% if quizzes is empty %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i>
+                            Aucun quiz n'est disponible pour le moment. Revenez plus tard !
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="row">
+                    {% for quiz in quizzes %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="cours-bx">
+                                <div class="cours-info">
+                                    <h5><a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}">{{ quiz.titre }}</a></h5>
+                                    <p>{{ quiz.description|slice(0, 150) }}{% if quiz.description|length > 150 %}...{% endif %}</p>
+                                    <div class="cours-price">
+                                        <span class="price">{{ quiz.questions|length }} questions</span>
+                                        <span class="date">{{ quiz.datecreation|date('d/m/Y') }}</span>
+                                    </div>
+                                </div>
+                                <div class="cours-admin">
+                                    <a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}" class="btn btn-primary radius-xl">
+                                        <i class="fas fa-play"></i> Commencer
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

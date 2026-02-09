@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300">
+  <defs>
+    <linearGradient id="grad-ey" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFC107"/>
+      <stop offset="100%" stop-color="#FF8F00"/>
+    </linearGradient>
+    <linearGradient id="stripe-ey" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="clip">
+      <rect x="0" y="0" width="1200" height="300" rx="20" ry="20"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#clip)">
+    <rect x="0" y="0" width="1200" height="300" fill="url(#grad-ey)"/>
+    <!-- abstract circles -->
+    <circle cx="110" cy="70" r="90" fill="#fff" opacity="0.08"/>
+    <circle cx="1060" cy="230" r="120" fill="#000" opacity="0.06"/>
+    <circle cx="420" cy="220" r="60" fill="#fff" opacity="0.08"/>
+    <!-- diagonal stripes -->
+    <g transform="translate(-50,0) rotate(-12,600,150)" opacity="0.6">
+      <rect x="-100" y="140" width="1400" height="18" fill="url(#stripe-ey)"/>
+      <rect x="-100" y="170" width="1400" height="12" fill="url(#stripe-ey)"/>
+      <rect x="-100" y="200" width="1400" height="8" fill="url(#stripe-ey)"/>
+    </g>
+    <!-- title -->
+    <text x="60" y="210" font-family="'Segoe UI', Arial, sans-serif" font-size="110" font-weight="700" fill="#ffffff" opacity="0.9">EY</text>
+    <text x="210" y="240" font-family="'Segoe UI', Arial, sans-serif" font-size="26" font-weight="500" fill="#ffffff" opacity="0.9">Offre de stage</text>
+  </g>
+</svg>

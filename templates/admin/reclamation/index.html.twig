@@ -1,0 +1,186 @@
+
+{% extends 'admin/layout.html.twig' %}
+{% block breadcrumb_title %}Réclamation{% endblock %}
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_dashboard') }}">Dashboard</a></li>
+    <li>Réclamation</li>
+{% endblock %}
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold text-primary"><i class="fa fa-comments"></i> Liste des Réclamations</h1>
+    <div>
+        <a href="{{ path('reclamation_export_pdf', {search: search}) }}" class="btn text-white" style="background:#dc3545;border-color:#dc3545;">
+            <i class="fa fa-file-pdf-o"></i> Exporter en PDF
+        </a>
+    </div>
+</div>
+<form method="get" class="mb-4 d-flex flex-wrap gap-2 align-items-center bg-light p-3 rounded shadow-sm" action="">
+    <input type="text" name="search" class="form-control me-2 flex-grow-1" placeholder="Recherche par nom, prénom, email ou titre..." value="{{ search|default('') }}">
+    <button class="btn btn-outline-primary" type="submit"><i class="fa fa-search"></i> Rechercher</button>
+    {% if search %}
+        <a href="{{ path('reclamation_index') }}" class="btn btn-link ms-2">Réinitialiser</a>
+    {% endif %}
+</form>
+<div class="row mb-4 g-3">
+    <div class="col-md-4">
+        <div class="card border-0 shadow h-100" style="background: linear-gradient(90deg,#2ec4b6,#20bfa9); color:#fff;">
+            <div class="card-body text-center">
+                <i class="fa fa-list fa-2x mb-2"></i>
+                <h5 class="card-title">Total</h5>
+                <p class="display-6 fw-bold">{{ total_reclamations }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow h-100" style="background: linear-gradient(90deg,#43e97b,#38f9d7); color:#fff;">
+            <div class="card-body text-center">
+                <i class="fa fa-check-circle fa-2x mb-2"></i>
+                <h5 class="card-title">Traitées</h5>
+                <p class="display-6 fw-bold">{{ traite_reclamations }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow h-100" style="background: linear-gradient(90deg,#f7971e,#ffd200); color:#fff;">
+            <div class="card-body text-center">
+                <i class="fa fa-hourglass-half fa-2x mb-2"></i>
+                <h5 class="card-title">En cours</h5>
+                <p class="display-6 fw-bold">{{ encours_reclamations }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="table-responsive mt-4">
+    <table class="table table-hover align-middle shadow-sm rounded bg-white">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th>
+                <th><i class="fa fa-user"></i> Nom</th>
+                <th><i class="fa fa-user"></i> Prénom</th>
+                <th><i class="fa fa-envelope"></i> Email</th>
+                <th><i class="fa fa-user-tag"></i> Rôle</th>
+                <th><i class="fa fa-info-circle"></i> Statut</th>
+                <th><i class="fa fa-heading"></i> Titre</th>
+                <th><i class="fa fa-align-left"></i> Description</th>
+                <th><i class="fa fa-calendar"></i> Date</th>
+                <th>Actions</th>
+                <th>Réponses</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reclamation in reclamations %}
+            <tr>
+                <td><span class="badge bg-secondary">{{ reclamation.id }}</span></td>
+                <td>{{ reclamation.nom|e }}</td>
+                <td>{{ reclamation.prenom|e }}</td>
+                <td>{{ reclamation.email|e }}</td>
+                <td><span class="badge bg-info text-dark">{{ reclamation.role|capitalize }}</span></td>
+                <td>
+                    {% if reclamation.status == 'traiter' %}
+                        <span class="badge bg-success"><i class="fa fa-check"></i> Traité</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark"><i class="fa fa-hourglass-half"></i> En cours</span>
+                    {% endif %}
+                </td>
+                <td>{{ reclamation.titre|e }}</td>
+                <td>{{ reclamation.description|e }}</td>
+                <td><span class="badge bg-light text-dark">{{ reclamation.dateReclamation|date('d/m/Y H:i') }}</span></td>
+                <td class="text-center">
+                    <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                        <a href="{{ path('reclamation_show', {'id': reclamation.id}) }}" class="btn btn-warning text-white shadow-sm p-0" title="Voir" style="width:40px;height:40px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        <form method="post" action="{{ path('reclamation_delete', {'id': reclamation.id}) }}" onsubmit="return confirm('Supprimer ?');" class="m-0">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
+                            <button class="btn btn-warning text-white shadow-sm p-0" title="Supprimer" style="width:40px;height:40px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                        <a href="{{ path('reponse_new', {'reclamation': reclamation.id}) }}" class="btn btn-warning text-white shadow-sm p-0" title="Répondre" style="width:40px;height:40px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;">
+                            <i class="fa fa-reply"></i>
+                        </a>
+                        <a href="{{ path('reponse_index') }}?reclamation={{ reclamation.id }}" class="btn btn-warning text-white shadow-sm p-0" title="Voir réponses" style="width:40px;height:40px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;">
+                            <i class="fa fa-comments"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="11" class="text-center text-muted">Aucune réclamation trouvée.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="row mt-4 justify-content-end align-items-center g-2">
+    <div class="col-auto">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="fa fa-chart-pie"></i>
+                    <strong class="small">Répartition par statut</strong>
+                </div>
+                <div style="width: 260px;">
+                    <canvas id="reclamationStatusChart" style="width:170px;height:170px;" width="170" height="170"></canvas>
+                </div>
+                <div class="mt-2 small text-muted text-truncate" style="max-width:220px;">
+                    {% for item in status_breakdown %}
+                        <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:{{ item.color }}"></span>
+                        {{ item.label }}: <strong>{{ item.value }}</strong>{% if not loop.last %} • {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-auto">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="fa fa-percent"></i>
+                    <strong class="small">Taux de traitement</strong>
+                </div>
+                <div class="progress" style="height: 16px; width: 380px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ status_breakdown[0].percent }}%" aria-valuenow="{{ status_breakdown[0].percent }}" aria-valuemin="0" aria-valuemax="100">{{ status_breakdown[0].percent }}%</div>
+                </div>
+                <small class="text-muted d-block mt-1">{{ status_breakdown[0].value }} traité(s) sur {{ total_reclamations }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        (function() {
+            const ctx = document.getElementById('reclamationStatusChart');
+            if (!ctx) return;
+            const data = {
+                labels: [{% for item in status_breakdown %}'{{ item.label }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+                datasets: [{
+                    data: [{% for item in status_breakdown %}{{ item.value }}{% if not loop.last %}, {% endif %}{% endfor %}],
+                    backgroundColor: [{% for item in status_breakdown %}'{{ item.color }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                }]
+            };
+            new Chart(ctx, {
+                type: 'doughnut',
+                data,
+                options: {
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    },
+                    cutout: '65%',
+                    maintainAspectRatio: false,
+                    aspectRatio: 2
+                }
+            });
+        })();
+    </script>
+{% endblock %}

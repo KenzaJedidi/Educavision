@@ -1,0 +1,128 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Messages Non Lus - EducaVision Admin{% endblock %}
+
+{% block breadcrumb_title %}Messages Non Lus{% endblock %}
+
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_message_index') }}">Messages</a></li>
+    <li>Non lus</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Messages Non Lus</h4>
+                <div class="card-action">
+                    {% if messages|length > 0 %}
+                        <a href="{{ path('admin_message_mark_all_read') }}" 
+                           class="btn btn-success"
+                           onclick="return confirm('Marquer tous les messages comme lus ?')">
+                            <i class="fa fa-check"></i> Tout marquer comme lu
+                        </a>
+                    {% endif %}
+                    <a href="{{ path('admin_message_index') }}" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Tous les messages
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Étudiant</th>
+                                <th>Professeur</th>
+                                <th>Messages</th>
+                                <th>Dernier message</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for message in messages %}
+                            <tr>
+                                <td>
+                                    <strong>{{ message.title }}</strong>
+                                    {% if 'Cours :' in message.title %}
+                                        <br><small class="text-muted">
+                                            <i class="fa fa-book"></i> {{ message.title|replace({'Cours : ': ''}) }}
+                                        </small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if message.student %}
+                                        <span class="badge badge-info">{{ message.student }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if message.teacher %}
+                                        <span class="badge badge-warning">{{ message.teacher }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge badge-primary">{{ message.messageCount }}</span>
+                                </td>
+                                <td>
+                                    {% if message.lastMessageAt %}
+                                        <div>
+                                            <small>{{ message.lastMessageAt|date('d/m/Y H:i') }}</small>
+                                            {% if message.lastMessage %}
+                                                <br><small class="text-muted">{{ message.lastMessage|striptags|slice(0, 30) }}...</small>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ path('admin_message_show', {'id': message.id}) }}" 
+                                           class="btn btn-sm btn-info" title="Voir">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('admin_message_reply', {'id': message.id}) }}" 
+                                           class="btn btn-sm btn-success" title="Répondre">
+                                            <i class="fa fa-reply"></i>
+                                        </a>
+                                        <a href="{{ path('admin_message_mark_read', {'id': message.id}) }}" 
+                                           class="btn btn-sm btn-success" title="Marquer comme lu">
+                                            <i class="fa fa-check"></i>
+                                        </a>
+                                        <a href="{{ path('admin_message_delete', {'id': message.id}) }}" 
+                                           class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')"
+                                           title="Supprimer">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    <div class="py-4">
+                                        <i class="fa fa-check-circle fa-3x text-success mb-3"></i>
+                                        <h5>Aucun message non lu</h5>
+                                        <p class="text-muted">Tous les messages ont été lus.</p>
+                                        <a href="{{ path('admin_message_index') }}" class="btn btn-primary">
+                                            <i class="fa fa-arrow-left"></i> Retour aux messages
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

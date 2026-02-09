@@ -1,0 +1,206 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}À Propos - EducaVision{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/about-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">À Propos d'EducaVision</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li>À Propos</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <!-- Notre Histoire -->
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="heading-bx left">
+                        <h2 class="title-head">Notre <span>Histoire</span></h2>
+                        <p>Fondée en 2010, EducaVision est née d'une vision simple : rendre l'éducation de qualité accessible à tous. 
+                        Depuis, nous avons accompagné plus de 50 000 étudiants dans leur parcours académique et professionnel.</p>
+                        <p>Notre mission est de briser les barrières géographiques et financières qui limitent l'accès à l'éducation, 
+                        en proposant des programmes innovants adaptés aux besoins du marché actuel.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img src="{{ asset('front-assets/images/about/about-img.jpg') }}" alt="Notre équipe" class="img-responsive">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nos Valeurs -->
+    <div class="section-area bg-gray section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left">
+                    <h2 class="title-head">Nos <span>Valeurs</span></h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-6 m-b30">
+                    <div class="icon-bx-wraper center">
+                        <div class="icon-bx-lg radius bg-primary">
+                            <i class="fa fa-graduation-cap text-white"></i>
+                        </div>
+                        <div class="icon-content">
+                            <h5 class="ttr-tilte">Excellence Académique</h5>
+                            <p>Nous maintenons les plus hauts standards d'enseignement</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 m-b30">
+                    <div class="icon-bx-wraper center">
+                        <div class="icon-bx-lg radius bg-primary">
+                            <i class="fa fa-users text-white"></i>
+                        </div>
+                        <div class="icon-content">
+                            <h5 class="ttr-tilte">Inclusion</h5>
+                            <p>L'éducation doit être accessible à tous, sans discrimination</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 m-b30">
+                    <div class="icon-bx-wraper center">
+                        <div class="icon-bx-lg radius bg-primary">
+                            <i class="fa fa-lightbulb text-white"></i>
+                        </div>
+                        <div class="icon-content">
+                            <h5 class="ttr-tilte">Innovation</h5>
+                            <p>Nous adoptons les technologies les plus récentes</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 m-b30">
+                    <div class="icon-bx-wraper center">
+                        <div class="icon-bx-lg radius bg-primary">
+                            <i class="fa fa-handshake text-white"></i>
+                        </div>
+                        <div class="icon-content">
+                            <h5 class="ttr-tilte">Accompagnement</h5>
+                            <p>Nous suivons nos étudiants jusqu'à leur réussite</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="section-area section-sp1" style="background-image:url({{ asset('front-assets/images/background/bg1.jpg') }}); background-size: cover;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <div class="counter-style-1">
+                        <div class="text-white">
+                            <span class="counter">50</span><span>k+</span>
+                        </div>
+                        <p class="counter-text">Étudiants Formés</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="counter-style-1">
+                        <div class="text-white">
+                            <span class="counter">200</span><span>+</span>
+                        </div>
+                        <p class="counter-text">Cours Disponibles</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="counter-style-1">
+                        <div class="text-white">
+                            <span class="counter">150</span><span>+</span>
+                        </div>
+                        <p class="counter-text">Formateurs Experts</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="counter-style-1">
+                        <div class="text-white">
+                            <span class="counter">95</span><span>%</span>
+                        </div>
+                        <p class="counter-text">Taux de Réussite</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Équipe -->
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left">
+                    <h2 class="title-head">Notre <span>Équipe</span></h2>
+                    <p>Des professionnels passionnés par l'éducation</p>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Membre 1 -->
+                <div class="col-md-3 col-sm-6 m-b30">
+                    <div class="team-member">
+                        <div class="team-img">
+                            <img src="{{ asset('front-assets/images/team/team1.jpg') }}" alt="Dr. Sarah Martin">
+                        </div>
+                        <div class="team-info">
+                            <h4>Dr. Sarah Martin</h4>
+                            <span>Directrice Pédagogique</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Membre 2 -->
+                <div class="col-md-3 col-sm-6 m-b30">
+                    <div class="team-member">
+                        <div class="team-img">
+                            <img src="{{ asset('front-assets/images/team/team2.jpg') }}" alt="Pierre Dubois">
+                        </div>
+                        <div class="team-info">
+                            <h4>Pierre Dubois</h4>
+                            <span>Responsable Informatique</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Membre 3 -->
+                <div class="col-md-3 col-sm-6 m-b30">
+                    <div class="team-member">
+                        <div class="team-img">
+                            <img src="{{ asset('front-assets/images/team/team3.jpg') }}" alt="Marie Leroy">
+                        </div>
+                        <div class="team-info">
+                            <h4>Marie Leroy</h4>
+                            <span>Coordinatrice Formation</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Membre 4 -->
+                <div class="col-md-3 col-sm-6 m-b30">
+                    <div class="team-member">
+                        <div class="team-img">
+                            <img src="{{ asset('front-assets/images/team/team4.jpg') }}" alt="Thomas Petit">
+                        </div>
+                        <div class="team-info">
+                            <h4>Thomas Petit</h4>
+                            <span>Responsable Relations Écoles</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

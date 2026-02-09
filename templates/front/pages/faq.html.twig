@@ -1,0 +1,439 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}FAQ - EducaVision{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/faq-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Foire Aux Questions</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li>FAQ</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left">
+                    <h2 class="title-head">Questions <span>Fréquentes</span></h2>
+                    <p>Trouvez rapidement des réponses à vos questions</p>
+                </div>
+            </div>
+
+            <!-- Barre de recherche FAQ -->
+            <div class="row m-b40">
+                <div class="col-md-12">
+                    <div class="faq-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Rechercher une question..." id="faqSearch">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Catégories -->
+            <div class="row m-b40">
+                <div class="col-md-12">
+                    <div class="faq-categories">
+                        <button class="btn btn-outline-primary active" data-category="all">Toutes les questions</button>
+                        <button class="btn btn-outline-primary" data-category="inscription">Inscription</button>
+                        <button class="btn btn-outline-primary" data-category="financement">Financement</button>
+                        <button class="btn btn-outline-primary" data-category="formations">Formations</button>
+                        <button class="btn btn-outline-primary" data-category="stages">Stages & Alternance</button>
+                        <button class="btn btn-outline-primary" data-category="vie-etudiante">Vie étudiante</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Accordéon -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="accordion" id="faqAccordion">
+                        <!-- Inscription -->
+                        <div class="faq-category-title">
+                            <h3><i class="fa fa-file-alt"></i> Inscription & Admission</h3>
+                        </div>
+                        
+                        <div class="card faq-item" data-category="inscription">
+                            <div class="card-header" id="heading1">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse1">
+                                        Quels sont les délais d'inscription ?
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse1" class="collapse" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    <p>Les inscriptions sont ouvertes toute l'année pour la plupart de nos formations. Cependant, nous recommandons de postuler au moins 3 mois avant le début de la formation pour les formations en présentiel et 1 mois avant pour les formations en ligne.</p>
+                                    <p>Pour les formations sélectives (concours ou entretien), les délais peuvent être plus stricts. Consultez les dates limites spécifiques à chaque formation sur notre site.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card faq-item" data-category="inscription">
+                            <div class="card-header" id="heading2">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse2">
+                                        Quels documents dois-je fournir ?
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse2" class="collapse" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    <p>Pour une inscription, vous devez fournir :</p>
+                                    <ul>
+                                        <li>CV à jour</li>
+                                        <li>Lettre de motivation</li>
+                                        <li>Copie des diplômes obtenus</li>
+                                        <li>Copie de la pièce d'identité</li>
+                                        <li>Photo d'identité</li>
+                                        <li>Pour les formations en alternance : CV et lettre de motivation adaptés</li>
+                                    </ul>
+                                    <p>Les documents spécifiques à chaque formation seront demandés lors du processus d'inscription.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card faq-item" data-category="inscription">
+                            <div class="card-header" id="heading3">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse3">
+                                        Comment se déroule la procédure d'admission ?
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse3" class="collapse" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    <p>La procédure d'admission varie selon la formation :</p>
+                                    <ol>
+                                        <li><strong>Dépôt de candidature en ligne</strong> via notre portail</li>
+                                        <li><strong>Étude du dossier</strong> par notre commission pédagogique (1-2 semaines)</li>
+                                        <li><strong>Entretien de motivation</strong> (pour certaines formations)</li>
+                                        <li><strong>Tests écrits</strong> (pour les formations sélectives)</li>
+                                        <li><strong>Réponse définitive</strong> sous 48h après l'entretien</li>
+                                        <li><strong>Inscription administrative</strong> et paiement des frais</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financement -->
+                        <div class="faq-category-title">
+                            <h3><i class="fa fa-euro-sign"></i> Financement & Aides</h3>
+                        </div>
+
+                        <div class="card faq-item" data-category="financement">
+                            <div class="card-header" id="heading4">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse4">
+                                        Quelles sont les aides financières disponibles ?
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse4" class="collapse" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    <p>Plusieurs aides financières sont disponibles :</p>
+                                    <ul>
+                                        <li><strong>CPF (Compte Personnel de Formation)</strong> : Utilisez vos droits formation</li>
+                                        <li><strong>Aides régionales</strong> : Subventions selon votre lieu de résidence</li>
+                                        <li><strong>Pôle Emploi</strong> : Prise en charge pour les demandeurs d'emploi</li>
+                                        <li><strong>OPCO</strong> : Financement pour les salariés</li>
+                                        <li><strong>Prêts étudiants</strong> : À taux préférentiel</li>
+                                        <li><strong>Bourses</strong> : Sur critères sociaux</li>
+                                    </ul>
+                                    <p>Utilisez notre <a href="{{ path('front_simulateur') }}">simulateur de financement</a> pour une estimation personnalisée.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card faq-item" data-category="financement">
+                            <div class="card-header" id="heading5">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse5">
+                                        Puis-je payer en plusieurs fois ?
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse5" class="collapse" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    <p>Oui, nous proposons plusieurs modalités de paiement :</p>
+                                    <ul>
+                                        <li><strong>Paiement en plusieurs fois sans frais</strong> : Jusqu'à 10 mensualités</li>
+                                        <li><strong>Paiement trimestriel</strong> : 3 versements égaux</li>
+                                        <li><strong>Paiement semestriel</strong> : 2 versements par an</li>
+                                        <li><strong>Paiement annuel</strong> : Avec réduction de 3%</li>
+                                    </ul>
+                                    <p>Pour les formations en alternance, les frais de formation sont pris en charge par l'entreprise et/ou l'OPCO.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Formations -->
+                        <div class="faq-category-title">
+                            <h3><i class="fa fa-graduation-cap"></i> Formations & Pédagogie</h3>
+                        </div>
+
+                        <div class="card faq-item" data-category="formations">
+                            <div class="card-header" id="heading6">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse6">
+                                        Les formations sont-elles reconnues par l'État ?
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse6" class="collapse" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    <p>Oui, la plupart de nos formations sont reconnues par l'État :</p>
+                                    <ul>
+                                        <li><strong>Diplômes d'État</strong> : BTS, Licences, Masters</li>
+                                        <li><strong>Titres RNCP</strong> : Enregistrés au Répertoire National des Certifications Professionnelles</li>
+                                        <li><strong>Certifications professionnelles</strong> : Reconnues par les branches professionnelles</li>
+                                    </ul>
+                                    <p>Chaque fiche formation précise le niveau de reconnaissance et les certifications obtenues.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card faq-item" data-category="formations">
+                            <div class="card-header" id="heading7">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse7">
+                                        Quel est le taux de réussite aux examens ?
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse7" class="collapse" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    <p>Nos taux de réussite sont excellents :</p>
+                                    <ul>
+                                        <li>BTS : 92% de réussite</li>
+                                        <li>Licences : 89% de réussite</li>
+                                        <li>Masters : 94% de réussite</li>
+                                        <li>Certifications professionnelles : 96% de réussite</li>
+                                    </ul>
+                                    <p>Ces résultats s'expliquent par :</p>
+                                    <ul>
+                                        <li>Un suivi pédagogique individualisé</li>
+                                        <li>Des examens blancs réguliers</li>
+                                        <li>Un accompagnement méthodologique</li>
+                                        <li>Des cours de soutien si nécessaire</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stages & Alternance -->
+                        <div class="faq-category-title">
+                            <h3><i class="fa fa-briefcase"></i> Stages & Alternance</h3>
+                        </div>
+
+                        <div class="card faq-item" data-category="stages">
+                            <div class="card-header" id="heading8">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse8">
+                                        L'école aide-t-elle à trouver un stage ou une alternance ?
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse8" class="collapse" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    <p>Oui, notre service stages et alternance vous accompagne dans votre recherche :</p>
+                                    <ul>
+                                        <li><strong>Plateforme de stages</strong> : Accès à plus de 1 200 offres</li>
+                                        <li><strong>Ateliers CV et entretien</strong> : Préparation aux recrutements</li>
+                                        <li><strong>Job dating</strong> : Rencontres avec nos entreprises partenaires</li>
+                                        <li><strong>Accompagnement personnalisé</strong> : Suivi individuel par un conseiller</li>
+                                        <li><strong>Réseau d'anciens</strong> : Mise en relation avec nos diplômés</li>
+                                    </ul>
+                                    <p>85% de nos étudiants en recherche d'alternance trouvent un contrat avant la rentrée.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vie étudiante -->
+                        <div class="faq-category-title">
+                            <h3><i class="fa fa-users"></i> Vie Étudiante & Services</h3>
+                        </div>
+
+                        <div class="card faq-item" data-category="vie-etudiante">
+                            <div class="card-header" id="heading9">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse9">
+                                        Quels sont les services disponibles pour les étudiants ?
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse9" class="collapse" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    <p>Nous proposons de nombreux services pour accompagner nos étudiants :</p>
+                                    <ul>
+                                        <li><strong>Bibliothèque numérique</strong> : Accès 24h/24 aux ressources pédagogiques</li>
+                                        <li><strong>Plateforme e-learning</strong> : Cours en ligne, exercices, forums</li>
+                                        <li><strong>Tutorat</strong> : Aide individualisée par des étudiants avancés</li>
+                                        <li><strong>Service orientation</strong> : Aide à la construction du projet professionnel</li>
+                                        <li><strong>Restauration</strong> : Cafétéria avec tarifs étudiants</li>
+                                        <li><strong>Associations étudiantes</strong> : BDE, clubs sportifs, culturels</li>
+                                        <li><strong>Accès handicap</strong> : Aménagements pour étudiants en situation de handicap</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card faq-item" data-category="vie-etudiante">
+                            <div class="card-header" id="heading10">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse10">
+                                        Y a-t-il un réseau d'anciens élèves ?
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapse10" class="collapse" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    <p>Oui, notre réseau d'anciens élèves "EducaVision Alumni" compte plus de 30 000 membres :</p>
+                                    <ul>
+                                        <li><strong>Plateforme dédiée</strong> : Réseau social professionnel</li>
+                                        <li><strong>Événements réguliers</strong> : Afterworks, conférences, job dating</li>
+                                        <li><strong>Mentoring</strong> : Parrainage par un ancien</li>
+                                        <li><strong>Offres d'emploi réservées</strong> : Accès aux offres des entreprises partenaires</li>
+                                        <li><strong>Réduction formation continue</strong> : -20% sur nos formations pour les anciens</li>
+                                    </ul>
+                                    <p>L'accès au réseau est gratuit et à vie pour tous nos diplômés.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question non trouvée -->
+            <div class="row m-t40">
+                <div class="col-md-12">
+                    <div class="faq-not-found text-center d-none" id="faqNotFound">
+                        <i class="fa fa-search fa-3x text-muted mb-3"></i>
+                        <h4>Aucune question trouvée</h4>
+                        <p>Aucune question ne correspond à votre recherche. Essayez d'autres mots-clés ou contactez-nous directement.</p>
+                        <a href="{{ path('front_contact') }}" class="btn btn-primary">Contactez-nous</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="row m-t40">
+                <div class="col-md-12">
+                    <div class="faq-cta bg-light p-4 text-center">
+                        <h3>Vous n'avez pas trouvé la réponse à votre question ?</h3>
+                        <p>Notre équipe est à votre disposition pour vous répondre dans les meilleurs délais</p>
+                        <a href="{{ path('front_contact') }}" class="btn btn-primary btn-lg">Poser une question</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+        // Filtrage par catégorie
+        $('.faq-categories button').click(function() {
+            var category = $(this).data('category');
+            
+            // Mise à jour des boutons actifs
+            $('.faq-categories button').removeClass('active');
+            $(this).addClass('active');
+            
+            // Filtrage des questions
+            if (category === 'all') {
+                $('.faq-item').show();
+                $('#faqNotFound').addClass('d-none');
+            } else {
+                $('.faq-item').hide();
+                $('.faq-item[data-category="' + category + '"]').show();
+                
+                // Vérifier si des questions sont visibles
+                if ($('.faq-item[data-category="' + category + '"]:visible').length === 0) {
+                    $('#faqNotFound').removeClass('d-none');
+                } else {
+                    $('#faqNotFound').addClass('d-none');
+                }
+            }
+        });
+        
+        // Recherche dans les FAQ
+        $('#faqSearch').on('keyup', function() {
+            var searchText = $(this).val().toLowerCase();
+            
+            if (searchText.length < 2) {
+                $('.faq-item').show();
+                $('.faq-category-title').show();
+                $('#faqNotFound').addClass('d-none');
+                return;
+            }
+            
+            var foundItems = 0;
+            var lastCategory = '';
+            
+            $('.faq-item').each(function() {
+                var question = $(this).find('.btn-link').text().toLowerCase();
+                var answer = $(this).find('.card-body').text().toLowerCase();
+                
+                if (question.includes(searchText) || answer.includes(searchText)) {
+                    $(this).show();
+                    foundItems++;
+                    
+                    // Afficher la catégorie parente
+                    var categoryTitle = $(this).prevAll('.faq-category-title').first();
+                    if (categoryTitle.length > 0) {
+                        categoryTitle.show();
+                    }
+                } else {
+                    $(this).hide();
+                }
+            });
+            
+            // Masquer les catégories sans questions visibles
+            $('.faq-category-title').each(function() {
+                var nextItems = $(this).nextUntil('.faq-category-title', '.faq-item:visible');
+                if (nextItems.length === 0) {
+                    $(this).hide();
+                }
+            });
+            
+            // Afficher message si aucune question trouvée
+            if (foundItems === 0) {
+                $('#faqNotFound').removeClass('d-none');
+            } else {
+                $('#faqNotFound').addClass('d-none');
+            }
+        });
+        
+        // Ouvrir la question si recherche correspondante
+        $('#faqSearch').on('search', function() {
+            if ($(this).val() === '') {
+                $('.faq-item').show();
+                $('.faq-category-title').show();
+                $('#faqNotFound').addClass('d-none');
+            }
+        });
+    });
+</script>
+{% endblock %}

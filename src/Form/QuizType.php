@@ -1,0 +1,68 @@
+<?php
+namespace App\Form;
+
+use App\Entity\Quiz;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Length;
+
+class QuizType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('titre', TextType::class, [
+                'label' => 'Titre du quiz',
+                'constraints' => [
+                    new NotBlank(['message' => 'Le titre du quiz est obligatoire.']),
+                    new Length([
+                        'min' => 3,
+                        'max' => 255,
+                        'minMessage' => 'Le titre doit contenir au moins {{ limit }} caractères.',
+                        'maxMessage' => 'Le titre ne doit pas dépasser {{ limit }} caractères.',
+                    ]),
+                ],
+                'attr' => [
+                    'placeholder' => 'Entrez le titre du quiz',
+                    'minlength' => 3,
+                    'maxlength' => 255
+                ]
+            ])
+            ->add('description', TextareaType::class, [
+                'label' => 'Description',
+                'required' => false,
+                'constraints' => [
+                    new Length([
+                        'max' => 1000,
+                        'maxMessage' => 'La description ne doit pas dépasser {{ limit }} caractères.',
+                    ]),
+                ],
+                'attr' => [
+                    'placeholder' => 'Décrivez le contenu et les objectifs de ce quiz',
+                    'rows' => 3,
+                    'maxlength' => 1000
+                ]
+            ])
+            ->add('visible', CheckboxType::class, [
+                'label' => 'Quiz visible pour les étudiants',
+                'required' => false,
+                'attr' => [
+                    'role' => 'switch',
+                    'onchange' => 'toggleVisibilityStatus()'
+                ]
+            ])
+        ;
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Quiz::class,
+        ]);
+    }
+}

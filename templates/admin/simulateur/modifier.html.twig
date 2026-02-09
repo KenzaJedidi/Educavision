@@ -1,0 +1,525 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Modifier Simulation - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Modifier Simulation{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_simulateur_index') }}">Simulateur</a></li>
+<li><a href="{{ path('admin_simulateur_resultats', {'id': simulation.id}) }}">Résultats</a></li>
+<li>Modifier</li>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary-orange: #FF9800;
+        --primary-blue: #1E3A5F;
+        --light-orange: #FFF3E0;
+        --light-blue: #E8F4FD;
+        --border-color: #E0E0E0;
+        --text-primary: #2C3E50;
+        --text-secondary: #546E7A;
+    }
+
+    .edit-wrapper {
+        background: #F9FAFC;
+        min-height: calc(100vh - 60px);
+        padding: 20px;
+    }
+
+    .edit-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* En-tête */
+    .edit-header {
+        background: white;
+        border-radius: 8px;
+        padding: 25px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 25px;
+    }
+
+    .edit-header h2 {
+        color: var(--primary-blue);
+        font-weight: 600;
+        margin: 0 0 20px 0;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+    }
+
+    .header-item h6 {
+        margin: 0 0 5px 0;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .header-item h4 {
+        margin: 0;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+    }
+
+    /* Badges */
+    .badge-light {
+        background: var(--light-blue);
+        color: var(--primary-blue);
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        margin: 2px;
+        display: inline-block;
+    }
+
+    /* Formulaire */
+    .edit-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .edit-card-header {
+        padding: 16px 20px;
+        background: var(--light-blue);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .edit-card-header h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-blue);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .edit-card-body {
+        padding: 20px;
+    }
+
+    /* Ligne de filière */
+    .filiere-row {
+        background: #FAFAFA;
+        border-radius: 8px;
+        padding: 18px;
+        margin-bottom: 15px;
+        border: 1px solid var(--border-color);
+        transition: border-color 0.2s;
+    }
+
+    .filiere-row:hover {
+        border-color: var(--primary-orange);
+    }
+
+    .filiere-content {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .filiere-content {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+    }
+
+    .filiere-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        background: var(--light-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-blue);
+        font-size: 1.2rem;
+    }
+
+    .filiere-info h5 {
+        margin: 0 0 5px 0;
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .filiere-info p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    /* Input taux */
+    .taux-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-self: end;
+    }
+
+    @media (max-width: 768px) {
+        .taux-control {
+            justify-self: start;
+        }
+    }
+
+    .taux-input {
+        width: 80px;
+        padding: 8px 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--text-primary);
+    }
+
+    .taux-input:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.1);
+    }
+
+    .percent-sign {
+        font-weight: 600;
+        color: var(--primary-orange);
+        min-width: 20px;
+    }
+
+    /* Barre de progression */
+    .progress-container {
+        min-width: 200px;
+    }
+
+    .progress-bar {
+        height: 20px;
+        border-radius: 10px;
+        background: #E0E0E0;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--primary-orange);
+        transition: width 0.3s;
+        border-radius: 10px;
+    }
+
+    .progress-label {
+        text-align: right;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    /* Actions */
+    .action-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 25px;
+        border-top: 1px solid var(--border-color);
+        margin-top: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 6px;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-success {
+        background: #4CAF50;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .btn-outline {
+        background: white;
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* Alert */
+    .alert {
+        background: var(--light-orange);
+        border-left: 4px solid var(--primary-orange);
+        border-radius: 6px;
+        padding: 15px 20px;
+        margin-top: 20px;
+    }
+
+    .alert i {
+        color: var(--primary-orange);
+        margin-right: 10px;
+    }
+
+    .alert strong {
+        color: var(--primary-blue);
+    }
+
+    .alert p {
+        margin: 5px 0 0 0;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    @media (max-width: 576px) {
+        .edit-wrapper {
+            padding: 15px;
+        }
+        
+        .header-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="edit-wrapper">
+    <div class="edit-container">
+        <!-- En-tête -->
+        <div class="edit-header">
+            <h2><i class="fas fa-edit"></i> Modifier les Taux d'Accès</h2>
+            <div class="header-grid">
+                <div class="header-item">
+                    <h6>Moyenne</h6>
+                    <h4>{{ simulation.moyenne }}/20</h4>
+                </div>
+                <div class="header-item">
+                    <h6>Spécialités</h6>
+                    <div>
+                        {% for spe in simulation.specialites %}
+                            <span class="badge-light">{{ spe }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="header-item">
+                    <h6>Date</h6>
+                    <h4>{{ simulation.dateSimulation|date('d/m/Y') }}</h4>
+                </div>
+                <div class="header-item">
+                    <h6>Référence</h6>
+                    <h4>#{{ simulation.id }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="edit-card">
+            <div class="edit-card-header">
+                <h4><i class="fas fa-sliders-h"></i> Ajuster les Pourcentages</h4>
+            </div>
+            <div class="edit-card-body">
+                <form method="post" id="edit-form">
+                    {% for filiere in filieres %}
+                        {% set taux = 0 %}
+                        {% for result in resultats %}
+                            {% if result.filiere.id == filiere.id %}
+                                {% set taux = result.pourcentage|default(0) %}
+                            {% endif %}
+                        {% endfor %}
+
+                        <div class="filiere-row">
+                            <div class="filiere-content">
+                                <div class="filiere-icon">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                
+                                <div class="filiere-info">
+                                    <h5>{{ filiere.nom }}</h5>
+                                    <p>{{ filiere.description }}</p>
+                                </div>
+
+                                <div class="taux-control">
+                                    <input type="number" 
+                                           name="taux_{{ filiere.id }}" 
+                                           class="taux-input" 
+                                           min="0" 
+                                           max="100" 
+                                           step="0.1" 
+                                           value="{{ taux }}"
+                                           data-filiere-id="{{ filiere.id }}">
+                                    <span class="percent-sign">%</span>
+                                </div>
+
+                                <div class="progress-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" 
+                                             id="progress-{{ filiere.id }}" 
+                                             style="width: {{ taux }}%">
+                                        </div>
+                                    </div>
+                                    <div class="progress-label" id="label-{{ filiere.id }}">
+                                        {{ taux }}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <div class="action-bar">
+                        <div>
+                            <div style="font-weight: 600; color: var(--primary-blue); margin-bottom: 5px;">Ajustez les taux entre 0% et 100%</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Les modifications remplaceront les calculs automatiques.</div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <a href="{{ path('admin_simulateur_resultats', {'id': simulation.id}) }}" class="btn btn-outline">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Enregistrer
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Avertissement -->
+        <div class="alert">
+            <div style="display: flex; align-items: flex-start;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>Important :</strong>
+                    <p>Les modifications manuelles remplaceront définitivement les calculs automatiques du simulateur. Utilisez cette fonction avec discernement pour corriger les résultats selon votre expertise pédagogique.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mise à jour en temps réel
+    const inputs = document.querySelectorAll('.taux-input');
+    
+    inputs.forEach(input => {
+        // Mise à jour initiale
+        updateProgressBar(input);
+        
+        // Écouteurs d'événements
+        input.addEventListener('input', function() {
+            updateProgressBar(this);
+        });
+        
+        input.addEventListener('change', function() {
+            const value = parseFloat(this.value);
+            if (isNaN(value) || value < 0 || value > 100) {
+                this.style.borderColor = '#F44336';
+            } else {
+                this.style.borderColor = '#4CAF50';
+                setTimeout(() => {
+                    this.style.borderColor = '';
+                }, 1000);
+            }
+        });
+    });
+
+    function updateProgressBar(input) {
+        const id = input.dataset.filiereId;
+        let value = parseFloat(input.value);
+        
+        // Validation
+        if (isNaN(value)) value = 0;
+        if (value < 0) value = 0;
+        if (value > 100) value = 100;
+        
+        input.value = value.toFixed(1);
+        
+        const progressBar = document.getElementById('progress-' + id);
+        const label = document.getElementById('label-' + id);
+        
+        if (progressBar) {
+            progressBar.style.width = value + '%';
+        }
+        
+        if (label) {
+            label.textContent = value.toFixed(1) + '%';
+        }
+    }
+
+    // Validation du formulaire
+    document.getElementById('edit-form').addEventListener('submit', function(e) {
+        let isValid = true;
+        const invalidInputs = [];
+        
+        inputs.forEach(input => {
+            const value = parseFloat(input.value);
+            if (isNaN(value) || value < 0 || value > 100) {
+                isValid = false;
+                invalidInputs.push(input);
+                input.style.borderColor = '#F44336';
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            
+            // Message d'erreur
+            alert('⚠️ Veuillez vérifier les valeurs !\nTous les taux doivent être des nombres compris entre 0% et 100%.');
+            
+            // Scroll vers le premier champ invalide
+            if (invalidInputs.length > 0) {
+                invalidInputs[0].scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,270 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}{{ chapter.titre }} - {{ course.titre }} - EducaVision{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/chapitre-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">{{ chapter.titre }}</h1>
+            <div class="breadcrumb-row">
+                <ul class="list-inline">
+                    <li><a href="{{ path('front_home') }}">Accueil</a></li>
+                    <li><a href="{{ path('front_cours_list') }}">Cours</a></li>
+                    <li><a href="{{ path('front_cours_show', {'id': course.id}) }}">{{ course.titre }}</a></li>
+                    <li>{{ chapter.titre }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <!-- Colonne principale -->
+                <div class="col-md-8">
+                    <!-- Contenu du chapitre -->
+                    <div class="chapter-detail-card mb-4">
+                        <div class="chapter-header">
+                            <h2>{{ chapter.titre }}</h2>
+                            
+                            <div class="chapter-meta mt-3">
+                                {% if chapter.teacherName %}
+                                    <span class="badge badge-info">
+                                        <i class="fa fa-user"></i> {{ chapter.teacherName }}
+                                    </span>
+                                {% endif %}
+                                
+                                {% if chapter.teacherEmail %}
+                                    <span class="text-muted">
+                                        <i class="fa fa-envelope"></i> {{ chapter.teacherEmail }}
+                                    </span>
+                                {% endif %}
+                                
+                                <span class="text-muted">
+                                    <i class="fa fa-calendar"></i> {{ chapter.createdAt|date('d/m/Y') }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        {% if chapter.imageUrl %}
+                        <div class="chapter-image mt-4">
+                            <img src="{{ asset('front-assets/images/chapters/' ~ chapter.imageUrl) }}" 
+                                 alt="{{ chapter.titre }}" 
+                                 class="img-fluid rounded"
+                                 style="width: 100%; height: 300px; object-fit: cover;"
+                                 onerror="this.src='{{ asset('front-assets/images/courses/pic1.jpg') }}'">
+                        </div>
+                        {% endif %}
+                        
+                        <div class="chapter-content mt-4">
+                            <h3>Contenu du chapitre</h3>
+                            <div class="chapter-description">
+                                {% if chapter.description %}
+                                    {{ chapter.description|raw }}
+                                {% else %}
+                                    <p class="text-muted">Aucun contenu disponible pour ce chapitre.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation entre chapitres -->
+                    {% if chapters|length > 1 %}
+                    <div class="chapter-navigation">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% set currentIndex = chapters|filter(ch => ch.id == chapter.id)|first ? chapters|filter(ch => ch.id == chapter.id)|keys|first : -1 %}
+                                {% if currentIndex > 0 %}
+                                    {% set prevChapter = chapters[currentIndex - 1] %}
+                                    <a href="{{ path('front_chapitre_show', {'id': course.id, 'chapterId': prevChapter.id}) }}" 
+                                       class="btn btn-outline-primary btn-block">
+                                        <i class="fa fa-arrow-left"></i> 
+                                        Chapitre précédent: {{ prevChapter.titre }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                {% if currentIndex < (chapters|length - 1) %}
+                                    {% set nextChapter = chapters[currentIndex + 1] %}
+                                    <a href="{{ path('front_chapitre_show', {'id': course.id, 'chapterId': nextChapter.id}) }}" 
+                                       class="btn btn-outline-primary btn-block">
+                                        Chapitre suivant: {{ nextChapter.titre }}
+                                        <i class="fa fa-arrow-right"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Colonne latérale -->
+                <div class="col-md-4">
+                    <!-- Actions -->
+                    <div class="chapter-actions-card mb-4">
+                        <h4>Actions</h4>
+                        <div class="action-buttons">
+                            <a href="{{ path('front_cours_message', {'id': course.id}) }}" 
+                               class="btn btn-primary btn-block mb-2">
+                                <i class="fa fa-envelope"></i> Contacter le professeur
+                            </a>
+                            
+                            <a href="{{ path('front_cours_show', {'id': course.id}) }}" 
+                               class="btn btn-outline-primary btn-block mb-2">
+                                <i class="fa fa-arrow-left"></i> Retour au cours
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Liste des chapitres -->
+                    <div class="chapters-list-card">
+                        <h4>Chapitres du cours</h4>
+                        <div class="chapters-sidebar-list">
+                            {% for chap in chapters %}
+                                <div class="chapter-sidebar-item {% if chap.id == chapter.id %}active{% endif %}">
+                                    <a href="{{ path('front_chapitre_show', {'id': course.id, 'chapterId': chap.id}) }}">
+                                        <span class="chapter-number">{{ loop.index }}</span>
+                                        <span class="chapter-title">{{ chap.titre }}</span>
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Informations du cours -->
+                    <div class="course-info-card">
+                        <h4>Informations du cours</h4>
+                        <div class="course-summary">
+                            <h5>{{ course.titre }}</h5>
+                            {% if course.category %}
+                                <p class="text-muted">
+                                    <i class="fa fa-tag"></i> {{ course.category }}
+                                </p>
+                            {% endif %}
+                            {% if course.price %}
+                                <p class="text-success">
+                                    <i class="fa fa-euro"></i> {{ course.price }}
+                                </p>
+                            {% else %}
+                                <p class="text-primary">
+                                    <i class="fa fa-gift"></i> Gratuit
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chapter-detail-card {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.chapter-meta .badge {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    margin-right: 10px;
+}
+
+.chapter-navigation {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.chapter-actions-card,
+.chapters-list-card,
+.course-info-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.chapters-sidebar-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.chapter-sidebar-item {
+    border-bottom: 1px solid #eee;
+}
+
+.chapter-sidebar-item:last-child {
+    border-bottom: none;
+}
+
+.chapter-sidebar-item a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.chapter-sidebar-item:hover a {
+    color: #007bff;
+    padding-left: 10px;
+}
+
+.chapter-sidebar-item.active a {
+    color: #007bff;
+    font-weight: bold;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.chapter-number {
+    background: #007bff;
+    color: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.chapter-sidebar-item.active .chapter-number {
+    background: #28a745;
+}
+
+.chapter-title {
+    flex-grow: 1;
+}
+
+.course-summary h5 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.course-summary p {
+    margin-bottom: 5px;
+}
+
+.badge-success { background-color: #28a745; color: white; }
+.badge-warning { background-color: #ffc107; color: white; }
+.badge-danger { background-color: #dc3545; color: white; }
+.badge-info { background-color: #17a2b8; color: white; }
+.badge-primary { background-color: #007bff; color: white; }
+</style>
+{% endblock %}

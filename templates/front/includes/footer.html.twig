@@ -1,0 +1,321 @@
+{# templates/front/includes/footer.html.twig #}
+<footer class="footer">
+    <div class="footer-top bg-dark">
+        <!-- Top Bar avec logo TRÈS GRAND -->
+        <div class="pt-exebar bg-primary py-3">
+            <div class="container">
+                <div class="d-flex flex-column flex-lg-row align-items-center justify-content-between">
+                    <!-- Logo TRÈS GRAND ET BIEN VISIBLE -->
+                    <div class="pt-logo mb-3 mb-lg-0">
+                        <a href="{{ path('front_home') }}" class="d-block">
+                            <img src="{{ asset('assets/images/logo-white.png') }}" alt="EducaVision" 
+                                 class="footer-logo-large" />
+                        </a>
+                    </div>
+                    
+                    <!-- Liens sociaux -->
+                    <div class="pt-social-link mb-3 mb-lg-0">
+                        <ul class="list-inline m-0">
+                            <li class="list-inline-item mx-2">
+                                <a href="#" class="social-icon">
+                                    <i class="fa fa-facebook"></i>
+                                </a>
+                            </li>
+                            <li class="list-inline-item mx-2">
+                                <a href="#" class="social-icon">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                            </li>
+                            <li class="list-inline-item mx-2">
+                                <a href="#" class="social-icon">
+                                    <i class="fa fa-linkedin"></i>
+                                </a>
+                            </li>
+                            <li class="list-inline-item mx-2">
+                                <a href="#" class="social-icon">
+                                    <i class="fa fa-instagram"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Bouton d'inscription -->
+                    <div class="pt-btn-join">
+                        <a href="{{ path('admin_dashboard') }}" class="btn btn-light">
+                            S'inscrire Maintenant
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal du footer -->
+        <div class="container py-4">
+            <div class="row">
+                <!-- Section Contact/Newsletter -->
+                <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+                    <div class="footer-section">
+                        <h5 class="text-white mb-3">Newsletter</h5>
+                        <p class="text-light mb-3">Restez informé des dernières actualités et formations</p>
+                        <div class="subscribe-form m-b20">
+                            <form class="subscription-form" action="{{ path('front_home') }}" method="post">
+                                <div class="ajax-message"></div>
+                                <div class="input-group">
+                                    <input name="email" required="required" class="form-control"
+                                        placeholder="Votre adresse email" type="email">
+                                    <span class="input-group-btn">
+                                        <button name="submit" value="Submit" type="submit" class="btn">
+                                            <i class="fa fa-arrow-right"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Liens rapides -->
+                <div class="col-12 col-lg-5 col-md-7 col-sm-12">
+                    <div class="row">
+                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                            <div class="widget footer_widget">
+                                <h5 class="footer-title">Navigation</h5>
+                                <ul>
+                                    <li><a href="{{ path('front_home') }}">Accueil</a></li>
+                                    <li><a href="{{ path('front_about') }}">À Propos</a></li>
+                                    <li><a href="{{ path('front_faq') }}">FAQ</a></li>
+                                    <li><a href="{{ path('front_contact') }}">Contact</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                            <div class="widget footer_widget">
+                                <h5 class="footer-title">Services</h5>
+                                <ul>
+                                    <li><a href="{{ path('front_cours_list') }}">Cours</a></li>
+                                    <li><a href="{{ path('front_formations') }}">Formations</a></li>
+                                    <li><a href="{{ path('front_filieres') }}">Filières</a></li>
+                                    <li><a href="{{ path('front_simulateur') }}">Simulateur</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                            <div class="widget footer_widget">
+                                <h5 class="footer-title">Opportunités</h5>
+                                <ul>
+                                    <li><a href="{{ path('front_stages') }}">Stages</a></li>
+                                    <li><a href="{{ path('admin_dashboard') }}">Espace Admin</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galerie avec images BEAUCOUP plus grandes -->
+                <div class="col-12 col-lg-3 col-md-5 col-sm-12 footer-col-4">
+                    <div class="widget widget_gallery gallery-grid-4">
+                        <h5 class="footer-title">Notre Galerie</h5>
+                        <div class="gallery-container">
+                            {% for i in 1..8 %}
+                            <a href="{{ asset('front-assets/images/gallery/pic' ~ i ~ '.jpg') }}" class="magnific-anchor gallery-item">
+                                <img src="{{ asset('front-assets/images/gallery/pic' ~ i ~ '.jpg') }}" alt="Galerie {{ i }}">
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 text-center">
+                    © {{ "now"|date("Y") }} EducaVision - Tous droits réservés
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+.footer {
+    font-family: 'Arial', sans-serif;
+}
+
+.footer-top {
+    background: linear-gradient(135deg, #2c3e50 0%, #1a2530 100%);
+}
+
+.footer-logo-large {
+    height: 120px;  /* TRÈS GRAND - hauteur augmentée */
+    width: auto;    /* Largeur ajustée proportionnellement */
+    max-width: 300px; /* Largeur maximum pour éviter qu'il ne devienne trop large */
+    display: block;
+    margin: 0 auto;
+}
+
+/* Garder le texte d'origine */
+.footer-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.widget ul li a {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.widget ul li a:hover {
+    color: #4dabf7;
+}
+
+.social-icon {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.social-icon:hover {
+    background: #3498db;
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-light {
+    background: white;
+    color: #2c3e50;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-light:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+.bg-primary {
+    background: #3498db !important;
+}
+
+.text-light {
+    color: #ecf0f1 !important;
+}
+
+.footer-bottom {
+    background: #1a1a1a;
+    padding: 1rem 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+/* GALERIE BEAUCOUP PLUS GRANDE */
+.gallery-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 colonnes au lieu de 4 */
+    gap: 10px; /* Plus d'espace entre les images */
+    padding: 0;
+    margin: 0;
+}
+
+.gallery-item {
+    display: block;
+    width: 100%;
+    height: 120px; /* Hauteur BEAUCOUP plus grande */
+    overflow: hidden;
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ajuste l'image pour remplir le conteneur sans déformation */
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+@media (max-width: 1200px) {
+    .gallery-item {
+        height: 110px; /* Un peu plus petit sur écran moyen */
+    }
+}
+
+@media (max-width: 992px) {
+    .gallery-container {
+        grid-template-columns: repeat(4, 1fr); /* Revenir à 4 colonnes sur tablette */
+    }
+    
+    .gallery-item {
+        height: 80px; /* Ajuster la hauteur pour 4 colonnes */
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-logo-large {
+        height: 80px; /* Réduit sur mobile mais toujours visible */
+        max-width: 200px;
+    }
+    
+    .social-icon {
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+    }
+    
+    .gallery-container {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+    
+    .gallery-item {
+        height: 70px;
+    }
+}
+
+@media (max-width: 576px) {
+    .gallery-container {
+        grid-template-columns: repeat(2, 1fr); /* 2 colonnes sur mobile */
+        gap: 10px;
+    }
+    
+    .gallery-item {
+        height: 100px; /* Plus grand sur mobile avec 2 colonnes */
+    }
+}
+
+@media (max-width: 375px) {
+    .gallery-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .gallery-item {
+        height: 90px;
+    }
+}
+</style>

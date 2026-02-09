@@ -1,0 +1,93 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Détails Candidature - Admin{% endblock %}
+
+{% block breadcrumb_title %}Offre de Stages{% endblock %}
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_offre_stage_index') }}">Offre de stages</a></li>
+    <li><a href="{{ path('admin_candidature_index') }}">Les Candidatures</a></li>
+    <li>Détails</li>
+{% endblock %}
+
+{% block body %}
+<div class="mb-3 d-flex justify-content-between align-items-center">
+    <a href="{{ path('admin_candidature_index') }}" class="btn btn-outline-secondary">Retour aux candidatures</a>
+    <span></span>
+</div>
+
+<div class="card border-0 shadow-sm mb-4 overflow-hidden">
+    <div class="p-3 p-md-4 d-flex justify-content-between align-items-center" style="background:linear-gradient(135deg,#fff2cc,#ffc107);">
+        <div class="d-flex align-items-center gap-3">
+            <div class="display-6 text-dark"><i class="fa fa-user-circle"></i></div>
+            <div>
+                <h2 class="h4 fw-bold mb-1 text-dark">Candidat: {{ c.nom }} {{ c.prenom }}</h2>
+                <div class="text-muted">Détails de la candidature</div>
+            </div>
+        </div>
+        <span class="badge {{ c.statut == 'En attente' ? 'bg-warning text-dark' : (c.statut == 'Accepté' ? 'bg-success' : 'bg-danger') }} px-3 py-2" style="border-radius:20px;">
+            <i class="fa {{ c.statut == 'Accepté' ? 'fa-check' : (c.statut == 'Refusé' ? 'fa-times' : 'fa-hourglass-half') }}"></i> {{ c.statut }}
+        </span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-2"><strong><i class="fa fa-envelope"></i> Email:</strong> {{ c.email }}</p>
+                        <p class="mb-2"><strong><i class="fa fa-phone"></i> Téléphone:</strong> {{ c.telephone ?? '—' }}</p>
+                        <p class="mb-2"><strong><i class="fa fa-graduation-cap"></i> Niveau d'étude:</strong> {{ c.niveauEtude ?? '—' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-2"><strong><i class="fa fa-calendar"></i> Date candidature:</strong> {{ c.dateCandidature|date('d/m/Y H:i') }}</p>
+                        {% if c.cv %}
+                            <p class="mb-0"><strong><i class="fa fa-file-pdf-o"></i> CV:</strong> 
+                                <a class="btn btn-warning text-dark shadow-sm" href="{{ c.cv }}" target="_blank" style="border-radius:10px;">
+                                    <i class="fa fa-file-pdf-o"></i> Ouvrir le CV
+                                </a>
+                            </p>
+                        {% else %}
+                            <p><strong>CV:</strong> —</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="my-4"></div>
+                <h5 class="fw-bold mb-3"><i class="fa fa-file-text-o"></i> Lettre de motivation</h5>
+                <div class="p-3 border rounded-3 bg-light" style="white-space:pre-line">{{ c.lettreMotivation ?? '—' }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm overflow-hidden">
+            <div class="p-3" style="background:linear-gradient(135deg,#0dcaf0,#0b7ea1); color:#fff;">
+                <h5 class="mb-0"><i class="fa fa-briefcase"></i> Offre liée</h5>
+            </div>
+            <div class="card-body">
+                {% if c.offreStage %}
+                    <p class="mb-2"><strong><i class="fa fa-tag"></i> Titre:</strong> {{ c.offreStage.titre }}</p>
+                    <p class="mb-2"><strong><i class="fa fa-building"></i> Entreprise:</strong> {{ c.offreStage.entreprise }}</p>
+                    <p class="mb-2"><strong><i class="fa fa-map-marker"></i> Lieu:</strong> {{ c.offreStage.lieu ?? '—' }}</p>
+                    <p class="mb-3"><strong><i class="fa fa-clock-o"></i> Durée:</strong> {{ c.offreStage.dureeJours }} jours</p>
+                    <p><a class="btn btn-warning text-dark shadow-sm" href="{{ path('admin_offre_stage_show', { id: c.offreStage.id }) }}" style="border-radius:10px;">Voir l'offre</a></p>
+                {% else %}
+                    <p class="text-muted">Offre introuvable</p>
+                {% endif %}
+                <hr>
+                <form method="post" action="{{ path('admin_candidature_change_status', { id: c.id }) }}" class="d-flex flex-column" style="gap:8px">
+                    <input type="hidden" name="token" value="{{ csrf_token('candidature_status_' ~ c.id) }}">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button name="status" value="Accepté" class="btn" type="submit" style="border-radius:10px; background-color:#28a745; border-color:#28a745; color:#fff;"><i class="fa fa-check"></i> Accepter</button>
+                        <button name="status" value="Refusé" class="btn" type="submit" style="border-radius:10px; background-color:#dc3545; border-color:#dc3545; color:#fff;"><i class="fa fa-times"></i> Refuser</button>
+                    </div>
+                    {% if c.statut != 'En attente' %}
+                        <button name="status" value="En attente" class="btn btn-warning" type="submit" style="border-radius:10px;"><i class="fa fa-hourglass-half"></i> Remettre en attente</button>
+                    {% endif %}
+                    <a href="{{ path('admin_candidature_index') }}" class="btn btn-outline-secondary mt-2">Retour aux candidatures</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

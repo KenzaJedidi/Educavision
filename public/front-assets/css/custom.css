@@ -1,0 +1,314 @@
+/* Styles pour les pages */
+.page-banner {
+    background-size: cover;
+    background-position: center;
+    padding: 100px 0;
+    position: relative;
+}
+
+.page-banner.ovbl-dark:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.breadcrumb-row {
+    padding: 15px 0;
+    background: #f8f9fa;
+}
+
+/* Formations */
+.formation-details {
+    padding: 15px;
+    border-top: 1px solid #eee;
+}
+
+.formation-details ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.formation-details li {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+/* Filières */
+.filiere-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 30px;
+    height: 100%;
+    transition: transform 0.3s;
+}
+
+.filiere-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.filiere-icon {
+    margin-bottom: 20px;
+}
+
+.orientation-features .feature-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.orientation-features .feature-item i {
+    font-size: 24px;
+    margin-right: 15px;
+}
+
+/* Stages */
+.offre-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.offre-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #f8f9fa;
+}
+
+.offre-body {
+    padding: 20px;
+}
+
+.offre-entreprise {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.entreprise-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.offre-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.offre-footer {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.step-card {
+    padding: 30px 15px;
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    background: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 auto 20px;
+}
+
+/* Simulateur */
+.simulator-form {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+    height: 100%;
+}
+
+.simulator-results {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 30px;
+    height: 100%;
+}
+
+.result-item {
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #eee;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.aides-list .aide-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-card {
+    text-align: center;
+    padding: 30px 15px;
+}
+
+.info-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+    color: #007bff;
+}
+
+/* Contact */
+.contact-info-box {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.contact-info-box .info-icon {
+    font-size: 24px;
+    margin-right: 15px;
+    color: #007bff;
+    margin-top: 5px;
+}
+
+.contact-form {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+/* FAQ */
+.faq-search {
+    margin-bottom: 30px;
+}
+
+.faq-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.faq-category-title {
+    margin: 30px 0 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #007bff;
+}
+
+.faq-item .card-header {
+    background: white;
+    border-bottom: 1px solid #eee;
+}
+
+.faq-item .btn-link {
+    color: #333;
+    text-decoration: none;
+    width: 100%;
+    text-align: left;
+    font-weight: 500;
+}
+
+.faq-item .btn-link:hover {
+    color: #007bff;
+}
+
+.faq-cta {
+    border-radius: 10px;
+}
+
+/* Recherche */
+.search-filters {
+    transition: all 0.3s;
+}
+
+.search-result-item {
+    display: flex;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+}
+
+.search-result-item:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.result-content {
+    flex: 1;
+    padding: 0 20px;
+}
+
+.result-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.result-meta span {
+    display: inline-flex;
+    align-items: center;
+}
+
+.result-meta i {
+    margin-right: 5px;
+}
+
+.search-stats {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.stat-number {
+    font-size: 36px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #666;
+    text-transform: uppercase;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .search-result-item {
+        flex-direction: column;
+    }
+    
+    .result-content {
+        padding: 20px 0;
+    }
+    
+    .result-actions {
+        text-align: right;
+    }
+}

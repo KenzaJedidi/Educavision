@@ -1,0 +1,97 @@
+{# templates/front/base.html.twig #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <!-- META -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="EducaVision, Education, Orientation, Formation" />
+    <meta name="author" content="EducaVision" />
+    <meta name="robots" content="index, follow" />
+    <meta name="description" content="{% block meta_description %}Plateforme intelligente d'apprentissage et de suivi pédagogique{% endblock %}" />
+    <meta property="og:title" content="{% block og_title %}EducaVision - Votre parcours éducatif{% endblock %}" />
+    <meta property="og:description" content="{% block og_description %}Plateforme d'orientation et de formation{% endblock %}" />
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- FAVICONS ICON -->
+    <link rel="icon" href="{{ asset('front-assets/images/favicon.ico') }}" type="image/x-icon" />
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('front-assets/images/favicon.png') }}" />
+
+    <!-- PAGE TITLE -->
+    <title>{% block title %}EducaVision{% endblock %}</title>
+
+    <!-- STYLESHEETS -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/assets.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/typography.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/shortcodes/shortcodes.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/style.css') }}">
+    <link class="skin" rel="stylesheet" type="text/css" href="{{ asset('front-assets/css/color/color-1.css') }}">
+
+    {% block stylesheets %}{% endblock %}
+</head>
+
+<body id="bg">
+    <div class="page-wraper">
+        <div id="loading-icon-bx"></div>
+
+        <!-- Header -->
+        {% include 'front/includes/header.html.twig' %}
+
+        <!-- Content -->
+        <div class="page-content bg-white">
+            <div class="container mt-3">
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+                {% for message in app.flashes('warning') %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+                {% for message in app.flashes('info') %}
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+            {% block body %}{% endblock %}
+        </div>
+
+        <!-- Footer -->
+        {% include 'front/includes/footer.html.twig' %}
+
+        <!-- Back to top -->
+        <button class="back-to-top fa fa-chevron-up"></button>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="{{ asset('front-assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/bootstrap/js/popper.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/bootstrap-select/bootstrap-select.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/magnific-popup/magnific-popup.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/counter/waypoints-min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/counter/counterup.min.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/imagesloaded/imagesloaded.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/masonry/masonry.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/masonry/filter.js') }}"></script>
+    <script src="{{ asset('front-assets/vendors/owl-carousel/owl.carousel.js') }}"></script>
+    <script src="{{ asset('front-assets/js/functions.js') }}"></script>
+    <script src="{{ asset('front-assets/js/contact.js') }}"></script>
+
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,224 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Messages du cours - {{ courseTitle }} - EducaVision Admin{% endblock %}
+
+{% block breadcrumb_title %}Messages du cours{% endblock %}
+
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_message_index') }}">Messages</a></li>
+    <li>{{ courseTitle }}</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Messages pour "{{ courseTitle }}"</h4>
+                <div class="card-action">
+                    <a href="{{ path('admin_message_new') }}" class="btn btn-primary">
+                        <i class="fa fa-plus"></i> Ajouter un message
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Tableau -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Étudiant</th>
+                                <th>Professeur</th>
+                                <th>Messages</th>
+                                <th>Dernier message</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for message in messages %}
+                            <tr>
+                                <td>
+                                    <strong>{{ message.title }}</strong>
+                                </td>
+                                <td>
+                                    {% if message.student %}
+                                        <span class="badge badge-info">{{ message.student }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if message.teacher %}
+                                        <span class="badge badge-warning">{{ message.teacher }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge badge-primary">{{ message.messageCount }}</span>
+                                </td>
+                                <td>
+                                    {% if message.lastMessageAt %}
+                                        <div>
+                                            <small>{{ message.lastMessageAt|date('d/m/Y H:i') }}</small>
+                                            {% if message.lastMessage %}
+                                                <br><small class="text-muted">{{ message.lastMessage|striptags|slice(0, 30) }}...</small>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if message.isRead %}
+                                        <span class="badge badge-success">Lu</span>
+                                    {% else %}
+                                        <span class="badge badge-warning">Non lu</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ path('admin_message_show', {'id': message.id}) }}" 
+                                           class="btn btn-sm btn-info" title="Voir">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('admin_message_edit', {'id': message.id}) }}" 
+                                           class="btn btn-sm btn-warning" title="Modifier">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        {% if not message.isRead %}
+                                            <a href="{{ path('admin_message_mark_read', {'id': message.id}) }}" 
+                                               class="btn btn-sm btn-success" title="Marquer comme lu">
+                                                <i class="fa fa-check"></i>
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ path('admin_message_mark_unread', {'id': message.id}) }}" 
+                                               class="btn btn-sm btn-secondary" title="Marquer comme non lu">
+                                                <i class="fa fa-envelope"></i>
+                                            </a>
+                                        {% endif %}
+                                        <a href="{{ path('admin_message_delete', {'id': message.id}) }}" 
+                                           class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')"
+                                           title="Supprimer">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <div class="py-4">
+                                        <i class="fa fa-comments fa-3x text-muted mb-3"></i>
+                                        <h5>Aucun message trouvé pour ce cours</h5>
+                                        <p class="text-muted">Aucun message n'a été trouvé pour le cours "{{ courseTitle }}".</p>
+                                        <a href="{{ path('admin_message_new') }}" class="btn btn-primary">
+                                            <i class="fa fa-plus"></i> Ajouter un message
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Statistiques -->
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="stat-box bg-primary">
+                            <div class="stat-icon">
+                                <i class="fa fa-comments"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>{{ messages|length }}</h3>
+                                <p>Total des messages</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box bg-warning">
+                            <div class="stat-icon">
+                                <i class="fa fa-envelope"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>{{ messages|filter(m => not m.isRead)|length }}</h3>
+                                <p>Messages non lus</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box bg-success">
+                            <div class="stat-icon">
+                                <i class="fa fa-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>{{ messages|filter(m => m.isRead)|length }}</h3>
+                                <p>Messages lus</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box bg-info">
+                            <div class="stat-icon">
+                                <i class="fa fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>{% set students = [] %}{% for message in messages %}{% if message.student and message.student not in students %}{% set students = students|merge([message.student]) %}{% endif %}{% endfor %}{{ students|length }}</h3>
+                                <p>Étudiants uniques</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="text-center mt-4">
+            <a href="{{ path('admin_message_index') }}" class="btn btn-secondary">
+                <i class="fa fa-arrow-left"></i> Retour à tous les messages
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-box {
+    border-radius: 10px;
+    padding: 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-box .stat-icon {
+    font-size: 2rem;
+    opacity: 0.8;
+}
+
+.stat-box .stat-info h3 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stat-box .stat-info p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+.badge-success { background-color: #28a745; color: white; }
+.badge-danger { background-color: #dc3545; color: white; }
+.badge-warning { background-color: #ffc107; color: white; }
+.badge-info { background-color: #17a2b8; color: white; }
+.badge-primary { background-color: #007bff; color: white; }
+.badge-secondary { background-color: #6c757d; color: white; }
+</style>
+{% endblock %}

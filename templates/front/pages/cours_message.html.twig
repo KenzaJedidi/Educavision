@@ -1,0 +1,276 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Contacter le professeur - {{ course.titre }} - EducaVision{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/contact-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Contacter le professeur</h1>
+            <div class="breadcrumb-row">
+                <ul class="list-inline">
+                    <li><a href="{{ path('front_home') }}">Accueil</a></li>
+                    <li><a href="{{ path('front_cours_list') }}">Cours</a></li>
+                    <li><a href="{{ path('front_cours_show', {'id': course.id}) }}">{{ course.titre }}</a></li>
+                    <li>Contacter le professeur</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <!-- Formulaire de contact -->
+                <div class="col-md-8">
+                    <div class="contact-form-card">
+                        <h3>Envoyer un message au professeur</h3>
+                        <p class="text-muted mb-4">
+                            Vous avez des questions sur le cours "<strong>{{ course.titre }}</strong>" ? 
+                            Envoyez un message directement au professeur.
+                        </p>
+                        
+                        <form method="POST" action="{{ path('front_cours_message', {'id': course.id}) }}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="student_name">Votre nom <span class="text-danger">*</span></label>
+                                        <input type="text" 
+                                               id="student_name" 
+                                               name="student_name" 
+                                               class="form-control" 
+                                               placeholder="Entrez votre nom complet"
+                                               required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="student_email">Votre email</label>
+                                        <input type="email" 
+                                               id="student_email" 
+                                               name="student_email" 
+                                               class="form-control" 
+                                               placeholder="votre.email@example.com">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="content">Votre message <span class="text-danger">*</span></label>
+                                <textarea id="content" 
+                                          name="content" 
+                                          class="form-control" 
+                                          rows="8" 
+                                          placeholder="Décrivez votre question ou votre message..."
+                                          required></textarea>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fa fa-paper-plane"></i> Envoyer le message
+                                </button>
+                                <a href="{{ path('front_cours_show', {'id': course.id}) }}" 
+                                   class="btn btn-outline-secondary btn-lg ml-2">
+                                    <i class="fa fa-arrow-left"></i> Retour au cours
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Colonne latérale -->
+                <div class="col-md-4">
+                    <!-- Informations du cours -->
+                    <div class="course-info-card mb-4">
+                        <h4>Informations du cours</h4>
+                        <div class="course-summary">
+                            <h5>{{ course.titre }}</h5>
+                            {% if course.category %}
+                                <p class="text-muted">
+                                    <i class="fa fa-tag"></i> {{ course.category }}
+                                </p>
+                            {% endif %}
+                            {% if course.description %}
+                                <p class="text-muted">
+                                    {{ course.description|striptags|slice(0, 100) }}...
+                                </p>
+                            {% endif %}
+                        </div>
+                        <div class="mt-3">
+                            <a href="{{ path('front_cours_show', {'id': course.id}) }}" 
+                               class="btn btn-outline-primary btn-block">
+                                <i class="fa fa-eye"></i> Voir le cours
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Informations de contact -->
+                    <div class="contact-info-card mb-4">
+                        <h4>Informations utiles</h4>
+                        <div class="info-list">
+                            <div class="info-item">
+                                <i class="fa fa-clock"></i>
+                                <span>Temps de réponse: 24-48h</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fa fa-envelope"></i>
+                                <span>Réponse par email</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fa fa-comments"></i>
+                                <span>Discussion suivie</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions rapides -->
+                    <div class="quick-actions-card">
+                        <h4>Actions rapides</h4>
+                        <div class="action-buttons">
+                            <a href="{{ path('front_cours_discussion', {'id': course.id}) }}" 
+                               class="btn btn-outline-info btn-block mb-2">
+                                <i class="fa fa-comments"></i> Voir les discussions
+                            </a>
+                            <a href="{{ path('front_cours_list') }}" 
+                               class="btn btn-outline-secondary btn-block">
+                                <i class="fa fa-list"></i> Autres cours
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.contact-form-card {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.form-control {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 12px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.form-actions {
+    margin-top: 30px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.course-info-card,
+.contact-info-card,
+.quick-actions-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.course-summary h5 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.course-summary p {
+    margin-bottom: 5px;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+}
+
+.info-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item i {
+    width: 20px;
+    color: #007bff;
+}
+
+.action-buttons .btn {
+    margin-bottom: 10px;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.ml-2 {
+    margin-left: 10px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validation du formulaire
+    const form = document.querySelector('form');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const studentName = document.getElementById('student_name').value.trim();
+            const content = document.getElementById('content').value.trim();
+            
+            if (!studentName) {
+                e.preventDefault();
+                alert('Veuillez entrer votre nom.');
+                document.getElementById('student_name').focus();
+                return false;
+            }
+            
+            if (!content) {
+                e.preventDefault();
+                alert('Veuillez entrer votre message.');
+                document.getElementById('content').focus();
+                return false;
+            }
+            
+            if (content.length < 10) {
+                e.preventDefault();
+                alert('Votre message doit contenir au moins 10 caractères.');
+                document.getElementById('content').focus();
+                return false;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

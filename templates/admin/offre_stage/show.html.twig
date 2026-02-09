@@ -1,0 +1,138 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Détails de l'Offre de Stage - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Détails de l'Offre{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_offre_stage_index') }}">Offres de Stage</a></li>
+<li>{{ offre_stage.titre }}</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+	<!-- Messages flash -->
+	{% for message in app.flashes('success') %}
+	<div class="col-lg-12 m-b30">
+		<div class="alert alert-success alert-dismissible fade show" role="alert">
+			<i class="fa fa-check-circle"></i> {{ message }}
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	</div>
+	{% endfor %}
+
+	<div class="col-lg-8 col-md-12">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>{{ offre_stage.titre }}</h4>
+				<span class="badge {% if offre_stage.statut == 'Ouvert' %}badge-success{% elseif offre_stage.statut == 'Fermé' %}badge-danger{% else %}badge-warning{% endif %}">
+					{{ offre_stage.statut }}
+				</span>
+			</div>
+			<div class="widget-inner">
+				<div class="row m-b30">
+					<div class="col-md-6">
+						<h5>Entreprise</h5>
+						<p class="text-muted">{{ offre_stage.entreprise }}</p>
+					</div>
+					<div class="col-md-6">
+						<h5>Lieu</h5>
+						<p class="text-muted">{{ offre_stage.lieu ?? 'Non spécifié' }}</p>
+					</div>
+				</div>
+
+				<div class="row m-b30">
+					<div class="col-md-6">
+						<h5>Date de Début</h5>
+						<p class="text-muted">{{ offre_stage.dateDebut|date('d/m/Y') }}</p>
+					</div>
+					<div class="col-md-6">
+						<h5>Date de Fin</h5>
+						<p class="text-muted">{{ offre_stage.dateFin|date('d/m/Y') }}</p>
+					</div>
+				</div>
+
+				<div class="row m-b30">
+					<div class="col-md-6">
+						<h5>Durée</h5>
+						<p class="text-muted">{{ offre_stage.dureeJours }} jour(s)</p>
+					</div>
+					<div class="col-md-6">
+						<h5>Salaire</h5>
+						<p class="text-muted">{{ offre_stage.salaire ? offre_stage.salaire|number_format(2, ',', ' ') ~ ' DT' : 'Non spécifié' }}</p>
+					</div>
+				</div>
+
+				<div class="row m-b30">
+					<div class="col-md-6">
+						<h5>Date de Création</h5>
+						<p class="text-muted">{{ offre_stage.dateCreation|date('d/m/Y à H:i') }}</p>
+					</div>
+				</div>
+
+				<hr>
+
+				<h5>Description</h5>
+				<p class="m-b30">{{ offre_stage.description }}</p>
+
+				<hr>
+
+				<div class="form-group">
+					<a href="{{ path('admin_offre_stage_edit', {'id': offre_stage.id}) }}" class="btn btn-primary">
+						<i class="fa fa-edit"></i> Modifier
+					</a>
+					<a href="{{ path('admin_offre_stage_delete', {'id': offre_stage.id}) }}" 
+					   class="btn btn-danger" 
+					   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')">
+						<i class="fa fa-trash"></i> Supprimer
+					</a>
+					<a href="{{ path('admin_offre_stage_index') }}" class="btn btn-secondary">
+						<i class="fa fa-arrow-left"></i> Retour à la liste
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Récapitulatif -->
+	<div class="col-lg-4 col-md-12">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Récapitulatif</h4>
+			</div>
+			<div class="widget-inner">
+				<ul class="list-unstyled">
+					<li class="m-b15">
+						<strong>Titre :</strong><br>
+						{{ offre_stage.titre }}
+					</li>
+					<li class="m-b15">
+						<strong>Entreprise :</strong><br>
+						{{ offre_stage.entreprise }}
+					</li>
+					<li class="m-b15">
+						<strong>Période :</strong><br>
+						{{ offre_stage.dateDebut|date('d/m/Y') }} → {{ offre_stage.dateFin|date('d/m/Y') }}
+					</li>
+					<li class="m-b15">
+						<strong>Durée :</strong><br>
+						{{ offre_stage.dureeJours }} jour(s)
+					</li>
+					<li class="m-b15">
+						<strong>Statut :</strong><br>
+						{% if offre_stage.statut == 'Ouvert' %}
+							<span class="badge badge-success">{{ offre_stage.statut }}</span>
+						{% elseif offre_stage.statut == 'Fermé' %}
+							<span class="badge badge-danger">{{ offre_stage.statut }}</span>
+						{% else %}
+							<span class="badge badge-warning">{{ offre_stage.statut }}</span>
+						{% endif %}
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

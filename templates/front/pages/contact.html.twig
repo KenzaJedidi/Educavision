@@ -1,0 +1,258 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Contact - EducaVision{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/contact-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Contactez-nous</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li>Contact</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left">
+                    <h2 class="title-head">Prenez <span>Contact</span></h2>
+                    <p>Nous sommes à votre écoute pour répondre à toutes vos questions</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Informations de contact -->
+                <div class="col-md-4">
+                    <div class="contact-info-box">
+                        <div class="info-icon">
+                            <i class="fa fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Adresse</h4>
+                            <p>123 Avenue de l'Éducation<br>75015 Paris, France</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-box">
+                        <div class="info-icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Téléphone</h4>
+                            <p>Standard : 01 23 45 67 89<br>Urgent : 06 12 34 56 78</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-box">
+                        <div class="info-icon">
+                            <i class="fa fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Email</h4>
+                            <p>info@educavision.fr<br>admissions@educavision.fr</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info-box">
+                        <div class="info-icon">
+                            <i class="fa fa-clock"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Horaires</h4>
+                            <p>Lundi - Vendredi : 9h-18h<br>Samedi : 9h-13h<br>Dimanche : Fermé</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire de contact -->
+                <div class="col-md-8">
+                    <div class="contact-form">
+                        <form id="contactForm" method="POST" action="{{ path('front_contact_submit') }}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="nom">Nom *</label>
+                                        <input type="text" class="form-control" id="nom" name="nom" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="prenom">Prénom *</label>
+                                        <input type="text" class="form-control" id="prenom" name="prenom" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email">Email *</label>
+                                        <input type="email" class="form-control" id="email" name="email" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="telephone">Téléphone</label>
+                                        <input type="tel" class="form-control" id="telephone" name="telephone">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="sujet">Sujet *</label>
+                                <select class="form-control" id="sujet" name="sujet" required>
+                                    <option value="">Sélectionnez un sujet</option>
+                                    <option value="information">Demande d'information</option>
+                                    <option value="inscription">Inscription à une formation</option>
+                                    <option value="financement">Financement de formation</option>
+                                    <option value="stage">Proposition de stage/alternance</option>
+                                    <option value="partenariat">Demande de partenariat</option>
+                                    <option value="autre">Autre demande</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="formation">Formation concernée</label>
+                                <select class="form-control" id="formation" name="formation">
+                                    <option value="">Sélectionnez une formation</option>
+                                    <option value="bts_sio">BTS SIO</option>
+                                    <option value="bachelor">Bachelor Marketing</option>
+                                    <option value="master">Master Génie Civil</option>
+                                    <option value="licence">Licence Droit</option>
+                                    <option value="toutes">Toutes les formations</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message">Message *</label>
+                                <textarea class="form-control" id="message" name="message" rows="6" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="newsletter" name="newsletter">
+                                    <label class="form-check-label" for="newsletter">
+                                        Je souhaite recevoir la newsletter et les offres promotionnelles
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="g-recaptcha" data-sitekey="votre_cle_site_recaptcha"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Envoyer le message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Carte -->
+    <div class="section-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="map" style="height: 400px; border-radius: 10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Rapide -->
+    <div class="section-area bg-gray section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left">
+                    <h2 class="title-head">Questions <span>Fréquentes</span></h2>
+                    <p>Retrouvez rapidement les réponses à vos questions</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="faq-item">
+                        <h5>Quels sont les délais de réponse ?</h5>
+                        <p>Nous nous engageons à répondre à votre demande sous 48 heures ouvrées.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h5>Comment m'inscrire à une formation ?</h5>
+                        <p>Vous pouvez postuler directement en ligne ou prendre rendez-vous avec un conseiller.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="faq-item">
+                        <h5>Quels documents fournir pour une inscription ?</h5>
+                        <p>CV, lettre de motivation, dernier diplôme et pièce d'identité sont nécessaires.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h5>Puis-je visiter le campus ?</h5>
+                        <p>Oui, nous organisons des journées portes ouvertes chaque mois sur rendez-vous.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="{{ path('front_faq') }}" class="btn btn-outline-primary">Voir toutes les FAQ</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<!-- Google Maps -->
+<script src="https://maps.googleapis.com/maps/api/js?key=VOTRE_CLE_API"></script>
+<script>
+    function initMap() {
+        var location = {lat: 48.8566, lng: 2.3522}; // Paris
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: location,
+            styles: [
+                {
+                    "featureType": "all",
+                    "elementType": "labels.text.fill",
+                    "stylers": [{"color": "#7c93a3"}]
+                }
+            ]
+        });
+        
+        var marker = new google.maps.Marker({
+            position: location,
+            map: map,
+            title: 'EducaVision Paris',
+            icon: {
+                url: '{{ asset('front-assets/images/map-marker.png') }}',
+                scaledSize: new google.maps.Size(50, 50)
+            }
+        });
+        
+        var infowindow = new google.maps.InfoWindow({
+            content: '<div style="padding: 10px;"><strong>EducaVision Paris</strong><br>123 Avenue de l\'Éducation<br>75015 Paris</div>'
+        });
+        
+        marker.addListener('click', function() {
+            infowindow.open(map, marker);
+        });
+    }
+    
+    // Initialisation de la carte
+    google.maps.event.addDomListener(window, 'load', initMap);
+</script>
+
+<!-- Recaptcha -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{% endblock %}

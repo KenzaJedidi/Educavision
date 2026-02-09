@@ -1,0 +1,114 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Mes Postulations - EducaVision{% endblock %}
+
+{% block body %}
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/stages-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Mes Postulations</h1>
+        </div>
+    </div>
+    <div class="breadcrumb-row">
+        <div class="container">
+            <ul class="list-inline">
+                <li><a href="{{ path('front_home') }}">Accueil</a></li>
+                <li>Mes Postulations</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row m-b30">
+                <div class="col-md-12">
+                    <div class="filter-form bg-light p-3">
+                        <form method="post" action="{{ path('front_candidature_my') }}#mes-postulations" class="row g-2 align-items-center">
+                            <div class="col-md-8">
+                                <input type="email" name="email" class="form-control" placeholder="Votre email utilisé lors de la candidature" value="{{ email }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100">Afficher mes candidatures</button>
+                            </div>
+                        </form>
+                        {% if not email %}
+                            <small class="text-muted">Astuce : si vous avez déjà postulé, nous avons mémorisé votre email et pré-rempli ce champ.</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                /* Compact creative card styles for Mes Postulations */
+                .c-card { border:1px solid #e9ecef; border-radius:14px; overflow:hidden; background:#fff; box-shadow:0 4px 14px rgba(0,0,0,0.06); transition:transform .2s ease, box-shadow .2s ease; }
+                .c-card:hover { transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,0.10); }
+                .c-card-header { background:linear-gradient(135deg, #4f46e5, #06b6d4); color:#fff; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; }
+                .c-card-title { font-size:1rem; font-weight:700; margin:0; display:flex; align-items:center; gap:8px; }
+                .c-status-pill { display:inline-block; border-radius:999px; padding:4px 10px; font-size:.75rem; font-weight:600; color:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.15); }
+                .c-card-body { padding:12px 14px; }
+                .c-company { display:flex; align-items:center; gap:10px; }
+                .c-logo { width:36px; height:36px; border-radius:8px; object-fit:contain; background:#fff; padding:4px; box-shadow:0 2px 6px rgba(0,0,0,0.08); }
+                .c-meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+                .c-chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; font-size:.8rem; background:#f8f9fa; border:1px solid #e9ecef; }
+                .c-actions { display:flex; gap:8px; margin-top:10px; }
+                .c-actions .btn { border-radius:999px; padding:6px 10px; font-size:.8rem; }
+            </style>
+
+            {% if email and candidatures is defined and candidatures|length > 0 %}
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center" style="gap:8px">
+                        <span class="badge bg-primary">{{ candidatures|length }}</span>
+                        <span class="text-muted">candidature(s) trouvée(s) pour <strong>{{ email }}</strong></span>
+                    </div>
+                </div>
+                <div id="mes-postulations" class="row">
+                    {% for c in candidatures %}
+                        <div class="col-lg-4 col-md-6 col-sm-12 m-b20">
+                            <div class="c-card">
+                                <div class="c-card-header">
+                                    <h3 class="c-card-title"><i class="fa fa-briefcase"></i> {{ c.offreStage.titre }}</h3>
+                                    {% set statusBg = c.statut == 'Accepté' ? '#22c55e' : (c.statut == 'En attente' ? '#f59e0b' : '#ef4444') %}
+                                    <span class="c-status-pill" style="background: {{ statusBg }}">{{ c.statut }}</span>
+                                </div>
+                                <div class="c-card-body">
+                                    <div class="text-muted" style="font-size:.8rem">Candidaté le {{ c.dateCandidature|date('d/m/Y H:i') }}</div>
+                                    <div class="c-company mt-2">
+                                        <img src="{{ asset('front-assets/images/logo.png') }}" alt="Logo" class="c-logo">
+                                        <div>
+                                            <div class="fw-semibold">{{ c.offreStage.entreprise }}</div>
+                                            <div class="text-muted" style="font-size:.85rem">{{ c.offreStage.lieu ?? '-' }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="c-meta">
+                                        <span class="c-chip"><i class="fa fa-calendar"></i> {{ c.offreStage.dureeJours }} jours</span>
+                                        <span class="c-chip"><i class="fa fa-money"></i> {{ c.offreStage.salaire ? (c.offreStage.salaire|number_format(2, ',', ' ') ~ ' DT') : '-' }}</span>
+                                    </div>
+                                    {% if c.cv %}
+                                        <div class="c-actions">
+                                            <a href="{{ c.cv }}" class="btn btn-outline-secondary btn-sm" target="_blank"><i class="fa fa-file-pdf-o"></i> Voir mon CV</a>
+                                        </div>
+                                    {% endif %}
+                                    <div class="c-actions">
+                                        <a href="{{ path('front_candidature_edit', { id: c.id, email: email }) }}" class="btn btn-outline-primary btn-sm"><i class="fa fa-pencil"></i> Modifier</a>
+                                        <form method="post" action="{{ path('front_candidature_delete', { id: c.id }) }}" onsubmit="return confirm('Supprimer cette candidature ?');">
+                                            <input type="hidden" name="token" value="{{ csrf_token('candidature_delete_' ~ c.id) }}">
+                                            <input type="hidden" name="email" value="{{ email }}">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fa fa-trash"></i> Supprimer</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% elseif email %}
+                <div class="alert alert-info">Aucune candidature trouvée pour l'email <strong>{{ email }}</strong>.</div>
+            {% else %}
+                <div class="alert alert-secondary">Entrez votre email pour afficher vos candidatures.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,268 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Détails du Cours - EducaVision Admin{% endblock %}
+
+{% block breadcrumb_title %}Détails du Cours{% endblock %}
+
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_course_index') }}">Cours</a></li>
+    <li>Détails</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">{{ course.titre }}</h4>
+                <div class="card-action">
+                    <a href="{{ path('admin_course_edit', {'id': course.id}) }}" class="btn btn-warning">
+                        <i class="fa fa-edit"></i> Modifier
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Image du cours -->
+                {% if course.imageUrl %}
+                    <div class="text-center mb-4">
+                        <img src="{{ asset('front-assets/images/courses/' ~ course.imageUrl) }}" 
+                             alt="{{ course.titre }}" 
+                             class="img-fluid rounded"
+                             style="max-height: 300px; width: auto;"
+                             onerror="this.src='{{ asset('assets/images/default-course.jpg') }}'">
+                    </div>
+                {% endif %}
+
+                <!-- Informations principales -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Informations générales</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>ID:</strong></td>
+                                <td>{{ course.id }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Titre:</strong></td>
+                                <td>{{ course.titre }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Catégorie:</strong></td>
+                                <td>
+                                    {% if course.category %}
+                                        <span class="badge badge-info">{{ course.category }}</span>
+                                    {% else %}
+                                        <span class="text-muted">Non définie</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Prix:</strong></td>
+                                <td>
+                                    {% if course.price %}
+                                        <span class="text-success">{{ course.price }} €</span>
+                                    {% else %}
+                                        <span class="text-primary">Gratuit</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Statut:</strong></td>
+                                <td>
+                                    {% if course.status == 1 %}
+                                        <span class="badge badge-success">Actif</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Inactif</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Créé le:</strong></td>
+                                <td>{{ course.createdAt|date('d/m/Y H:i') }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6>Actions rapides</h6>
+                        <div class="btn-group-vertical w-100">
+                            <a href="{{ path('admin_course_edit', {'id': course.id}) }}" class="btn btn-warning">
+                                <i class="fa fa-edit"></i> Modifier le cours
+                            </a>
+                            <a href="{{ path('admin_course_toggle_status', {'id': course.id}) }}" 
+                               class="btn {{ course.status == 1 ? 'btn-secondary' : 'btn-success' }}">
+                                <i class="fa {{ course.status == 1 ? 'fa-pause' : 'fa-play' }}"></i>
+                                {{ course.status == 1 ? 'Désactiver' : 'Activer' }} le cours
+                            </a>
+                            <a href="{{ path('admin_chapter_new') }}?course_id={{ course.id }}" class="btn btn-info">
+                                <i class="fa fa-plus"></i> Ajouter un chapitre
+                            </a>
+                            <a href="{{ path('admin_chapter_by_course', {'courseId': course.id}) }}" class="btn btn-outline-info">
+                                <i class="fa fa-list"></i> Voir les chapitres
+                            </a>
+                            <a href="{{ path('admin_message_by_course', {'courseTitle': course.titre}) }}" class="btn btn-outline-primary">
+                                <i class="fa fa-comments"></i> Voir les messages
+                            </a>
+                            <a href="{{ path('front_cours_show', {'id': course.id}) }}" 
+                               class="btn btn-outline-success" target="_blank">
+                                <i class="fa fa-external-link"></i> Voir sur le site
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                {% if course.description %}
+                    <div class="mt-4">
+                        <h6>Description</h6>
+                        <div class="bg-light p-3 rounded">
+                            {{ course.description|raw }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- PDF du cours -->
+                {% if course.pdfFile %}
+                    <div class="mt-4">
+                        <h6><i class="fa fa-file-pdf-o"></i> Document PDF du cours</h6>
+                        <div class="border rounded p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span>
+                                    <i class="fa fa-file-pdf-o text-danger fa-2x"></i>
+                                    <strong class="ml-2">{{ course.pdfFile }}</strong>
+                                </span>
+                                <a href="{{ asset('uploads/courses/pdf/' ~ course.pdfFile) }}" 
+                                   class="btn btn-sm btn-primary" target="_blank" download>
+                                    <i class="fa fa-download"></i> Télécharger
+                                </a>
+                            </div>
+                            <iframe src="{{ asset('uploads/courses/pdf/' ~ course.pdfFile) }}" 
+                                    width="100%" height="500px" 
+                                    style="border: 1px solid #ddd; border-radius: 5px;">
+                            </iframe>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Statistiques -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Statistiques</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="stat-item">
+                            <h3 class="text-primary">{{ course.chapters|length }}</h3>
+                            <p class="text-muted">Chapitres</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-item">
+                            <h3 class="text-success">{{ courseMessages|length }}</h3>
+                            <p class="text-muted">Messages</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Derniers chapitres -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Derniers chapitres</h5>
+            </div>
+            <div class="card-body">
+                {% if course.chapters|length > 0 %}
+                    {% for chapter in course.chapters|slice(0, 3) %}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <strong>{{ chapter.titre }}</strong>
+                                <br><small class="text-muted">{{ chapter.createdAt|date('d/m/Y') }}</small>
+                            </div>
+                            <a href="{{ path('admin_chapter_show', {'id': chapter.id}) }}" 
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                        </div>
+                    {% endfor %}
+                    {% if course.chapters|length > 3 %}
+                        <a href="{{ path('admin_chapter_by_course', {'courseId': course.id}) }}" 
+                           class="btn btn-sm btn-outline-info w-100">
+                            Voir tous les chapitres ({{ course.chapters|length }})
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted">Aucun chapitre pour ce cours.</p>
+                    <a href="{{ path('admin_chapter_new') }}?course_id={{ course.id }}" 
+                       class="btn btn-sm btn-primary w-100">
+                        <i class="fa fa-plus"></i> Ajouter le premier chapitre
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Messages récents -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Messages récents</h5>
+            </div>
+            <div class="card-body">
+                {% if courseMessages|length > 0 %}
+                    {% for message in courseMessages|slice(0, 3) %}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <strong>{{ message.student }}</strong>
+                                <br><small class="text-muted">{{ message.lastMessageAt|date('d/m/Y') }}</small>
+                                {% if not message.isRead %}
+                                    <span class="badge badge-warning ml-2">Non lu</span>
+                                {% endif %}
+                            </div>
+                            <a href="{{ path('admin_message_show', {'id': message.id}) }}" 
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                        </div>
+                    {% endfor %}
+                    {% if courseMessages|length > 3 %}
+                        <a href="{{ path('admin_message_by_course', {'courseTitle': course.titre}) }}" 
+                           class="btn btn-sm btn-outline-info w-100">
+                            Voir tous les messages ({{ courseMessages|length }})
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted">Aucun message pour ce cours.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-item h3 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.stat-item p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.badge-success { background-color: #28a745; color: white; }
+.badge-danger { background-color: #dc3545; color: white; }
+.badge-warning { background-color: #ffc107; color: white; }
+.badge-info { background-color: #17a2b8; color: white; }
+.badge-primary { background-color: #007bff; color: white; }
+.badge-secondary { background-color: #6c757d; color: white; }
+
+.btn-group-vertical .btn {
+    margin-bottom: 5px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,960 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Les Formations - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Les Formations{% endblock %}
+
+{% block breadcrumb_items %}
+<li>Les Formations</li>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* Variables de couleurs */
+    :root {
+        --primary-orange: #FF9800;
+        --primary-blue: #1E3A5F;
+        --light-orange: #FFF3E0;
+        --light-blue: #E8F4FD;
+        --border-color: #E0E0E0;
+        --text-primary: #2C3E50;
+        --text-secondary: #546E7A;
+        --success: #4CAF50;
+        --warning: #FF9800;
+        --danger: #F44336;
+        --export-green: #28a745;
+        --export-light-green: #E8F5E9;
+    }
+
+    .formation-wrapper {
+        background: #F9FAFC;
+        min-height: calc(100vh - 60px);
+        padding: 20px;
+    }
+
+    /* En-tête */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .page-title h2 {
+        color: var(--primary-blue);
+        font-weight: 600;
+        font-size: 1.6rem;
+        margin: 0;
+    }
+
+    .page-title p {
+        color: var(--text-secondary);
+        margin: 5px 0 0 0;
+        font-size: 0.95rem;
+    }
+
+    /* Boutons */
+    .btn {
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: var(--primary-orange);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #E68900;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(255, 152, 0, 0.2);
+    }
+
+    .btn-secondary {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .btn-outline {
+        background: white;
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    .btn-outline:hover {
+        border-color: var(--primary-orange);
+        color: var(--primary-orange);
+    }
+
+    /* BARRE DE RECHERCHE ET FILTRE EN HAUT */
+    .search-filter-container {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .search-filter-row {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        flex: 1;
+        min-width: 300px;
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 45px 12px 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.1);
+    }
+
+    .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    .filter-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 200px;
+    }
+
+    .filter-label {
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .filter-select {
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        background: white;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 180px;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.1);
+    }
+
+    .reset-btn {
+        padding: 10px 20px;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-primary);
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .reset-btn:hover {
+        border-color: var(--primary-orange);
+        color: var(--primary-orange);
+    }
+
+    /* Statistiques */
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 18px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        font-size: 1.2rem;
+    }
+
+    .stat-icon.orange {
+        background: var(--light-orange);
+        color: var(--primary-orange);
+    }
+
+    .stat-icon.blue {
+        background: var(--light-blue);
+        color: var(--primary-blue);
+    }
+
+    .stat-icon.purple {
+        background: #F3E5F5;
+        color: #7B1FA2;
+    }
+
+    .stat-icon.green {
+        background: #E8F5E9;
+        color: var(--success);
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    /* Carte de formation */
+    .formation-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        overflow: visible;
+        margin-bottom: 100px;
+        transition: all 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        position: relative;
+    }
+
+    .formation-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border-color: var(--primary-orange);
+    }
+
+    .formation-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        background: var(--light-blue);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    @media (max-width: 768px) {
+        .formation-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+    }
+
+    .formation-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 2px solid white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .formation-title {
+        flex: 1;
+    }
+
+    .formation-title h3 {
+        margin: 0 0 8px 0;
+        color: var(--primary-blue);
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+
+    .formation-meta {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .meta-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .meta-value {
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+
+    .meta-value.highlight {
+        color: var(--primary-orange);
+    }
+
+    .formation-body {
+        padding: 20px;
+        overflow: visible;
+        position: relative;
+        z-index: 1;
+    }
+
+    .formation-description {
+        margin-bottom: 20px;
+    }
+
+    .formation-description h6 {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin: 0 0 10px 0;
+        font-size: 0.95rem;
+    }
+
+    .formation-description p {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .formation-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: none;
+        font-weight: 500;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+    }
+
+    .btn-action.blue {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .btn-action.blue:hover {
+        background: #162b49;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .btn-action.orange {
+        background: var(--primary-orange);
+        color: white;
+    }
+
+    .btn-action.orange:hover {
+        background: #e68900;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .btn-action.red {
+        background: var(--danger);
+        color: white;
+    }
+
+    .btn-action.red:hover {
+        background: #d32f2f;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .btn-action.green {
+        background: var(--export-green);
+        color: white;
+    }
+
+    .btn-action.green:hover {
+        background: #218838;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .btn-action.outline {
+        background: white;
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+    /* Menu déroulant Export */
+    .export-dropdown {
+        position: relative;
+        display: inline-block;
+        z-index: 10000;
+    }
+
+    .export-dropdown-content {
+        display: none !important;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: white;
+        min-width: 180px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        border-radius: 6px;
+        z-index: 10001;
+        border: 1px solid var(--border-color);
+        margin-top: 8px;
+        padding: 0;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .export-dropdown:hover .export-dropdown-content {
+        display: block !important;
+    }
+
+    .export-option {
+        color: var(--text-primary);
+        padding: 12px 16px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.2s;
+        font-size: 0.85rem;
+    }
+
+    .export-option:hover {
+        background-color: var(--export-light-green);
+        color: var(--export-green);
+    }
+
+    .export-option i {
+        font-size: 0.9rem;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .badge-blue {
+        background: var(--light-blue);
+        color: var(--primary-blue);
+    }
+
+    .badge-orange {
+        background: var(--light-orange);
+        color: var(--primary-orange);
+    }
+
+    .badge-green {
+        background: #E8F5E9;
+        color: var(--success);
+    }
+
+    .badge-purple {
+        background: #F3E5F5;
+        color: #7B1FA2;
+    }
+
+    /* Contrôles de résultats */
+    .results-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .results-count {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    .results-count strong {
+        color: var(--primary-blue);
+        font-weight: 600;
+    }
+
+    /* État vide */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: var(--light-blue);
+        opacity: 0.5;
+    }
+
+    .empty-state h4 {
+        color: var(--text-primary);
+        margin: 0 0 10px 0;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        color: var(--text-secondary);
+        margin: 0 0 20px 0;
+        font-size: 0.95rem;
+    }
+
+    /* Messages de succès */
+    .alert {
+        padding: 15px 20px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: fadeIn 0.5s ease;
+        border-left: 4px solid;
+    }
+
+    .alert-success {
+        background: #E8F5E9;
+        border-left-color: var(--success);
+        color: #2E7D32;
+    }
+
+    .alert-info {
+        background: var(--light-blue);
+        border-left-color: var(--primary-blue);
+        color: var(--primary-blue);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .formation-wrapper {
+            padding: 15px;
+        }
+        
+        .search-filter-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .search-box {
+            min-width: 100%;
+        }
+        
+        .filter-box {
+            width: 100%;
+        }
+        
+        .filter-select {
+            width: 100%;
+        }
+        
+        .reset-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .formation-actions {
+            flex-direction: column;
+        }
+        
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .export-dropdown-content {
+            right: auto;
+            left: 0;
+            min-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="formation-wrapper">
+    <!-- En-tête -->
+    <div class="page-header">
+        <div class="page-title">
+            <h2>Gestion des Formations</h2>
+            <p>Gérez toutes les formations académiques disponibles</p>
+        </div>
+        <a href="{{ path('admin_formation_new') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nouvelle Formation
+        </a>
+    </div>
+
+    <!-- Messages de succès -->
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ message }}</span>
+        </div>
+    {% endfor %}
+
+    <!-- BARRE DE RECHERCHE ET FILTRE EN HAUT -->
+    <div class="search-filter-container">
+        <div class="search-filter-row">
+            <div class="search-box">
+                <input type="text" 
+                       id="search-input" 
+                       class="search-input" 
+                       placeholder="Rechercher une formation, une description...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            
+            <div class="filter-box">
+                <span class="filter-label">Filtrer par niveau :</span>
+                <select id="filter-niveau" class="filter-select">
+                    <option value="">Tous les niveaux</option>
+                    <option value="debutant">🎯 Débutant</option>
+                    <option value="intermediaire">📖 Intermédiaire</option>
+                    <option value="avance">⚡ Avancé</option>
+                    <option value="expert">👑 Expert</option>
+                </select>
+            </div>
+            
+            <button id="reset-filters" class="reset-btn">
+                <i class="fas fa-redo"></i> Réinitialiser
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="stat-value">{{ formations|length }}</div>
+            <div class="stat-label">Formations totales</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <div class="stat-value">
+                {% set niveaux = [] %}
+                {% for formation in formations %}
+                    {% if formation.niveau and formation.niveau not in niveaux %}
+                        {% set niveaux = niveaux|merge([formation.niveau]) %}
+                    {% endif %}
+                {% endfor %}
+                {{ niveaux|length }}
+            </div>
+            <div class="stat-label">Niveaux différents</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon purple">
+                <i class="fas fa-list-check"></i>
+            </div>
+            <div class="stat-value">
+                {% set total_prerequis = 0 %}
+                {% for formation in formations %}
+                    {% set total_prerequis = total_prerequis + formation.prerequis|length %}
+                {% endfor %}
+                {{ total_prerequis }}
+            </div>
+            <div class="stat-label">Prérequis au total</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-value">
+                {% if formations|length > 0 %}
+                    {% set durees = [] %}
+                    {% for formation in formations %}
+                        {% if formation.duree %}
+                            {% set durees = durees|merge([formation.duree]) %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ durees|length }}
+                {% else %}
+                    0
+                {% endif %}
+            </div>
+            <div class="stat-label">Durées différentes</div>
+        </div>
+    </div>
+
+    <!-- Contrôles de résultats -->
+    <div class="results-controls">
+        <div class="results-count">
+            Affichage de <strong id="filtered-count">{{ formations|length }}</strong> formation(s) sur <strong>{{ formations|length }}</strong>
+        </div>
+    </div>
+
+    <!-- Liste des formations -->
+    <div id="formation-list">
+        {% if formations|length > 0 %}
+            {% for formation in formations %}
+            <div class="formation-card" data-formation 
+                 data-search="{{ formation.nom|lower }} {{ formation.description|striptags|lower }}" 
+                 data-niveau="{{ formation.niveau|default('') }}">
+                <div class="formation-header">
+                    <div>
+                        {% if formation.image %}
+                            <img src="{{ asset('uploads/formations/' ~ formation.image) }}" 
+                                 alt="{{ formation.nom }}" 
+                                 class="formation-image"
+                                 onerror="this.src='{{ asset('assets/images/courses/pic2.jpg') }}'">
+                        {% else %}
+                            <img src="{{ asset('assets/images/courses/pic2.jpg') }}" 
+                                 alt="{{ formation.nom }}" 
+                                 class="formation-image">
+                        {% endif %}
+                    </div>
+                    <div class="formation-title">
+                        <h3>{{ formation.nom }}</h3>
+                        <div class="formation-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Niveau</span>
+                                <span class="meta-value highlight">{{ formation.niveau|default('Non défini') }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Durée</span>
+                                <span class="meta-value">{{ formation.duree|default('Non définie') }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Prérequis</span>
+                                <span class="meta-value">{{ formation.prerequis|length }} étape(s)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        {% if formation.niveau %}
+                            <span class="badge 
+                                {% if formation.niveau == 'Débutant' %}badge-blue
+                                {% elseif formation.niveau == 'Intermédiaire' %}badge-orange
+                                {% elseif formation.niveau == 'Avancé' %}badge-purple
+                                {% else %}badge-green{% endif %}">
+                                {{ formation.niveau }}
+                            </span>
+                        {% endif %}
+                        {% if formation.prerequis|length > 3 %}
+                            <span class="badge badge-green">{{ formation.prerequis|length }} prérequis</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="formation-body">
+                    <div class="formation-description">
+                        <h6>Description</h6>
+                        <p>{{ formation.description|striptags|slice(0, 200) }}{% if formation.description|striptags|length > 200 %}...{% endif %}</p>
+                    </div>
+                    <div class="formation-actions">
+                        <!-- Bouton Détails -->
+                        <a href="{{ path('admin_formation_show', {'id': formation.id}) }}" class="btn-action blue">
+                            <i class="fas fa-eye"></i> Détails
+                        </a>
+                        
+                        <!-- Bouton Modifier -->
+                        <a href="{{ path('admin_formation_edit', {'id': formation.id}) }}" class="btn-action orange">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                        
+                        <!-- Bouton Exporter avec menu déroulant -->
+                        <div class="export-dropdown">
+                            <button class="btn-action green">
+                                <i class="fas fa-file-export"></i> Exporter
+                                <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 4px;"></i>
+                            </button>
+                            <div class="export-dropdown-content">
+                                <a href="{{ path('admin_formation_export_pdf', {'id': formation.id}) }}" class="export-option" target="_blank">
+                                    <i class="fas fa-file-pdf" style="color: #e74c3c;"></i> PDF
+                                </a>
+                                <a href="{{ path('admin_formation_export_csv', {'id': formation.id}) }}" class="export-option" target="_blank">
+                                    <i class="fas fa-file-csv" style="color: #27ae60;"></i> CSV
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Bouton Supprimer -->
+                        <form method="post" action="{{ path('admin_formation_delete', {'id': formation.id}) }}" 
+                              style="display: inline;" 
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette formation ?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ formation.id) }}">
+                            <button type="submit" class="btn-action red">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-graduation-cap"></i>
+                <h4>Aucune formation disponible</h4>
+                <p>Commencez par créer votre première formation académique</p>
+                <a href="{{ path('admin_formation_new') }}" class="btn btn-primary" style="margin-top: 15px;">
+                    <i class="fas fa-plus"></i> Ajouter une Formation
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formationCards = document.querySelectorAll('[data-formation]');
+    const searchInput = document.getElementById('search-input');
+    const filterNiveau = document.getElementById('filter-niveau');
+    const resetFilters = document.getElementById('reset-filters');
+    const filteredCount = document.getElementById('filtered-count');
+
+    function updateResultsCount(visibleCount) {
+        filteredCount.textContent = visibleCount;
+    }
+
+    function filterFormationCards() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedNiveau = filterNiveau.value;
+        
+        let visibleCount = 0;
+
+        formationCards.forEach(card => {
+            const searchText = card.getAttribute('data-search');
+            const niveau = card.getAttribute('data-niveau');
+            
+            let isVisible = true;
+            
+            // Filtre par recherche
+            if (searchTerm && !searchText.includes(searchTerm)) {
+                isVisible = false;
+            }
+            
+            // Filtre par niveau
+            if (selectedNiveau && niveau !== selectedNiveau) {
+                isVisible = false;
+            }
+            
+            if (isVisible) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        updateResultsCount(visibleCount);
+    }
+
+    function resetAllFilters() {
+        searchInput.value = '';
+        filterNiveau.value = '';
+        
+        formationCards.forEach(card => {
+            card.style.display = 'block';
+        });
+        
+        updateResultsCount(formationCards.length);
+    }
+
+    // Événements
+    searchInput.addEventListener('input', filterFormationCards);
+    filterNiveau.addEventListener('change', filterFormationCards);
+    resetFilters.addEventListener('click', resetAllFilters);
+
+    // Initialisation
+    updateResultsCount(formationCards.length);
+    
+    // Masquer les messages de succès après 5 secondes
+    const successMessages = document.querySelectorAll('.alert');
+    successMessages.forEach(message => {
+        setTimeout(() => {
+            message.style.opacity = '0';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 500);
+        }, 5000);
+    });
+});
+</script>
+{% endblock %}

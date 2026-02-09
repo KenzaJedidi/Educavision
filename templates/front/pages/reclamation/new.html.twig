@@ -1,0 +1,107 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Réclamation - EducaVision{% endblock %}
+
+{% block body %}
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/stages-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Réclamation</h1>
+        </div>
+    </div>
+    <div class="breadcrumb-row">
+        <div class="container">
+            <ul class="list-inline">
+                <li><a href="{{ path('front_home') }}">Accueil</a></li>
+                <li>Réclamation</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+<div class="content-block">
+    <div class="section-area section-sp2" style="background:linear-gradient(135deg,#f8f9fa 0%, #e8f1ff 100%);">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-9">
+                    <div class="card border-0 shadow-lg overflow-hidden">
+                        <div class="p-4 p-md-5" style="background:linear-gradient(135deg,#0dcaf0,#0b7ea1);">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center text-white">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="display-6"><i class="fa fa-exclamation-circle"></i></div>
+                                    <div>
+                                        <h2 class="h4 fw-bold mb-1">Déposer une réclamation</h2>
+                                        <p class="mb-0 opacity-75">Expliquez votre problème pour que nous puissions vous aider rapidement.</p>
+                                    </div>
+                                </div>
+                                <a href="{{ path('front_reclamation_my') }}" class="btn btn-light text-dark"><i class="fa fa-user"></i> Mes réclamations</a>
+                            </div>
+                        </div>
+                        <div class="p-4 p-md-5 bg-white">
+                            {% if form is defined and form.vars.errors|length > 0 %}
+                                <div class="alert alert-danger mb-4">
+                                    <div class="fw-bold mb-2"><i class="fa fa-exclamation-triangle"></i> Veuillez corriger les erreurs suivantes :</div>
+                                    {{ form_errors(form) }}
+                                </div>
+                            {% endif %}
+
+                            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder':'Votre nom'}}) }}
+                                        {{ form_label(form.nom, 'Nom') }}
+                                        {{ form_errors(form.nom) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form_widget(form.prenom, {'attr': {'class': 'form-control', 'placeholder':'Votre prénom'}}) }}
+                                        {{ form_label(form.prenom, 'Prénom') }}
+                                        {{ form_errors(form.prenom) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder':'Votre email'}}) }}
+                                        {{ form_label(form.email, 'Email') }}
+                                        {{ form_errors(form.email) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form_widget(form.role, {'attr': {'class': 'form-select', 'placeholder':'Votre rôle'}}) }}
+                                        {{ form_label(form.role, 'Rôle') }}
+                                        {{ form_errors(form.role) }}
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'placeholder':'Sujet de la réclamation'}}) }}
+                                        {{ form_label(form.titre, 'Sujet') }}
+                                        {{ form_errors(form.titre) }}
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'style': 'min-height:150px', 'placeholder':'Décrivez votre réclamation en détail'}}) }}
+                                        {{ form_label(form.description, 'Description détaillée') }}
+                                        {{ form_errors(form.description) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 d-flex justify-content-between align-items-center">
+                                <a href="{{ path('front_home') }}" class="btn btn-outline-secondary"><i class="fa fa-arrow-left"></i> Annuler</a>
+                                <button type="submit" class="btn btn-primary px-4"><i class="fa fa-paper-plane"></i> Envoyer</button>
+                            </div>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

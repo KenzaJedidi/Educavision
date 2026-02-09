@@ -1,0 +1,236 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Modifier un Cours - EducaVision Admin{% endblock %}
+
+{% block breadcrumb_title %}Modifier un Cours{% endblock %}
+
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_course_index') }}">Cours</a></li>
+    <li>Modifier</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Modifier le Cours: {{ course.titre }}</h4>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.titre) }}
+                            {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.titre) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.category) }}
+                            {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.category) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.price) }}
+                            {{ form_widget(form.price, {'attr': {'class': 'form-control', 'step': '0.01'}}) }}
+                            {{ form_errors(form.price) }}
+                            <small class="form-text text-muted">Laissez vide pour un cours gratuit</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.status) }}
+                            {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.status) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.description) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '6'}}) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.imageUrl) }}
+                    {{ form_widget(form.imageUrl, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.imageUrl) }}
+                    <small class="form-text text-muted">Nom du fichier image (ex: mon-cours.jpg)</small>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.pdfUpload) }}
+                    {{ form_widget(form.pdfUpload, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.pdfUpload) }}
+                    {% if course.pdfFile %}
+                        <small class="form-text text-success">
+                            <i class="fa fa-file-pdf-o"></i> PDF actuel : 
+                            <a href="{{ asset('uploads/courses/pdf/' ~ course.pdfFile) }}" target="_blank">{{ course.pdfFile }}</a>
+                            — Téléchargez un nouveau fichier pour le remplacer.
+                        </small>
+                    {% else %}
+                        <small class="form-text text-muted">Fichier PDF (max 20 Mo)</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Enregistrer les modifications
+                    </button>
+                    <a href="{{ path('admin_course_show', {'id': course.id}) }}" class="btn btn-info">
+                        <i class="fa fa-eye"></i> Voir
+                    </a>
+                    <a href="{{ path('admin_course_index') }}" class="btn btn-secondary">
+                        <i class="fa fa-times"></i> Annuler
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Informations du cours</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>ID:</strong></td>
+                        <td>{{ course.id }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Créé le:</strong></td>
+                        <td>{{ course.createdAt|date('d/m/Y H:i') }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Statut actuel:</strong></td>
+                        <td>
+                            {% if course.status == 1 %}
+                                <span class="badge badge-success">Actif</span>
+                            {% else %}
+                                <span class="badge badge-danger">Inactif</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if course.price %}
+                    <tr>
+                        <td><strong>Prix:</strong></td>
+                        <td class="text-success">{{ course.price }} €</td>
+                    </tr>
+                    {% endif %}
+                    {% if course.category %}
+                    <tr>
+                        <td><strong>Catégorie:</strong></td>
+                        <td><span class="badge badge-info">{{ course.category }}</span></td>
+                    </tr>
+                    {% endif %}
+                </table>
+
+                <h6>Actions rapides</h6>
+                <div class="btn-group-vertical w-100">
+                    <a href="{{ path('admin_course_toggle_status', {'id': course.id}) }}" 
+                       class="btn {{ course.status == 1 ? 'btn-warning' : 'btn-success' }}">
+                        <i class="fa {{ course.status == 1 ? 'fa-pause' : 'fa-play' }}"></i>
+                        {{ course.status == 1 ? 'Désactiver' : 'Activer' }} le cours
+                    </a>
+                    <a href="{{ path('admin_chapter_by_course', {'courseId': course.id}) }}" 
+                       class="btn btn-info">
+                        <i class="fa fa-list"></i> Voir les chapitres
+                    </a>
+                    <a href="{{ path('admin_message_by_course', {'courseTitle': course.titre}) }}" 
+                       class="btn btn-outline-info">
+                        <i class="fa fa-comments"></i> Voir les messages
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Aperçu</h5>
+            </div>
+            <div class="card-body">
+                {% if course.imageUrl %}
+                    <img src="{{ asset('front-assets/images/courses/' ~ course.imageUrl) }}" 
+                         alt="{{ course.titre }}" 
+                         class="img-fluid rounded mb-3"
+                         style="width: 100%; height: 150px; object-fit: cover;"
+                         onerror="this.src='{{ asset('assets/images/default-course.jpg') }}'">
+                {% else %}
+                    <div class="bg-light rounded mb-3 text-center" style="height: 150px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa fa-image fa-2x text-muted"></i>
+                    </div>
+                {% endif %}
+                
+                <h6>{{ course.titre }}</h6>
+                {% if course.description %}
+                    <p class="small text-muted">{{ course.description|striptags|slice(0, 100) }}...</p>
+                {% endif %}
+                
+                <a href="{{ path('front_cours_show', {'id': course.id}) }}" 
+                   class="btn btn-sm btn-outline-primary" target="_blank">
+                    <i class="fa fa-external-link"></i> Voir sur le site
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-control {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.form-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.form-actions .btn {
+    margin-right: 10px;
+}
+
+.badge-success { background-color: #28a745; color: white; }
+.badge-danger { background-color: #dc3545; color: white; }
+.badge-warning { background-color: #ffc107; color: white; }
+.badge-info { background-color: #17a2b8; color: white; }
+.badge-primary { background-color: #007bff; color: white; }
+.badge-secondary { background-color: #6c757d; color: white; }
+
+.btn-group-vertical .btn {
+    margin-bottom: 5px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,1006 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Simulateur d'Orientation - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Simulateur d'Orientation{% endblock %}
+
+{% block breadcrumb_items %}
+<li>Simulateur d'Orientation</li>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* Variables de couleurs */
+    :root {
+        --primary-orange: #FF9800;
+        --primary-blue: #1E3A5F;
+        --light-orange: #FFF3E0;
+        --light-blue: #E8F4FD;
+        --border-color: #E0E0E0;
+        --text-primary: #2C3E50;
+        --text-secondary: #546E7A;
+        --success: #4CAF50;
+        --warning: #FF9800;
+        --danger: #F44336;
+    }
+
+    /* Structure principale */
+    .simulator-wrapper {
+        background: #F9FAFC;
+        min-height: calc(100vh - 60px);
+        padding: 20px;
+    }
+
+    /* En-tête */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .page-title h2 {
+        color: var(--primary-blue);
+        font-weight: 600;
+        font-size: 1.6rem;
+        margin: 0;
+    }
+
+    .page-title p {
+        color: var(--text-secondary);
+        margin: 5px 0 0 0;
+        font-size: 0.95rem;
+    }
+
+    /* Boutons */
+    .btn {
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: var(--primary-orange);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #E68900;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(255, 152, 0, 0.2);
+    }
+
+    .btn-secondary {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .btn-outline {
+        background: white;
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    /* Statistiques */
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 18px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        font-size: 1.2rem;
+    }
+
+    .stat-icon.orange {
+        background: var(--light-orange);
+        color: var(--primary-orange);
+    }
+
+    .stat-icon.blue {
+        background: var(--light-blue);
+        color: var(--primary-blue);
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    /* Grille principale - HISTORIQUE EN PLEINE LARGEUR */
+    .main-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    @media (min-width: 1200px) {
+        .main-grid {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            grid-template-areas: 
+                "form config"
+                "history history";
+        }
+        .form-section { grid-area: form; }
+        .config-section { grid-area: config; }
+        .history-section { grid-area: history; }
+    }
+
+    /* Cartes */
+    .card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 16px 20px;
+        background: var(--light-blue);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-header h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-blue);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .card-header h4 i {
+        color: var(--primary-orange);
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    /* Formulaire */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+
+    .form-label i {
+        margin-right: 6px;
+        color: var(--primary-orange);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.1);
+    }
+
+    /* Spécialités counter */
+    .spec-counter {
+        background: var(--light-blue);
+        padding: 10px 15px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: var(--primary-blue);
+    }
+
+    /* Checkboxes */
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 8px;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 5px;
+    }
+
+    .checkbox-item {
+        position: relative;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .checkbox-label {
+        display: block;
+        padding: 10px;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        cursor: pointer;
+        text-align: center;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        font-weight: 400;
+    }
+
+    .checkbox-item input[type="checkbox"]:checked + .checkbox-label {
+        background: var(--light-orange);
+        border-color: var(--primary-orange);
+        color: var(--primary-blue);
+        font-weight: 500;
+    }
+
+    .checkbox-label:hover {
+        border-color: var(--primary-orange);
+    }
+
+    /* Sliders */
+    .slider-group {
+        margin-bottom: 20px;
+    }
+
+    .slider-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .slider-value {
+        font-weight: 600;
+        color: var(--primary-orange);
+    }
+
+    input[type="range"] {
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: #E0E0E0;
+        outline: none;
+        -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--primary-orange);
+        cursor: pointer;
+        border: 2px solid white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    /* Total box */
+    .total-box {
+        padding: 15px;
+        background: #F8F9FA;
+        border-radius: 6px;
+        margin-top: 20px;
+        border: 1px solid var(--border-color);
+    }
+
+    .total-value {
+        font-size: 2rem;
+        font-weight: 600;
+        text-align: center;
+        margin: 10px 0;
+        color: var(--text-primary);
+    }
+
+    .total-status {
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .total-status.valid {
+        color: var(--success);
+    }
+
+    .total-status.invalid {
+        color: var(--danger);
+    }
+
+    /* HISTORIQUE EN PLEINE LARGEUR */
+    .history-full-width {
+        width: 100%;
+        margin-top: 0;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+        min-width: 1000px;
+    }
+
+    .table th {
+        background: var(--light-blue);
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--primary-blue);
+        border-bottom: 1px solid var(--border-color);
+        white-space: nowrap;
+    }
+
+    .table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
+    .table tbody tr:hover {
+        background: #F9F9F9;
+    }
+
+    /* Colonnes du tableau */
+    .col-date {
+        width: 120px;
+    }
+    
+    .col-moyenne {
+        width: 100px;
+    }
+    
+    .col-specialites {
+        width: 180px;
+    }
+    
+    .col-filiere {
+        width: 200px;
+    }
+    
+    .col-score {
+        width: 150px;
+    }
+    
+    .col-actions {
+        width: 150px;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .badge-orange {
+        background: var(--light-orange);
+        color: var(--primary-orange);
+    }
+
+    .badge-blue {
+        background: var(--light-blue);
+        color: var(--primary-blue);
+    }
+
+    .badge-success {
+        background: #E8F5E9;
+        color: var(--success);
+    }
+
+    .badge-warning {
+        background: #FFF3E0;
+        color: var(--warning);
+    }
+
+    .badge-danger {
+        background: #FFEBEE;
+        color: var(--danger);
+    }
+
+    /* Boutons actions */
+    .btn-sm {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin: 0 2px;
+    }
+
+    .btn-info {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .btn-warning {
+        background: var(--primary-orange);
+        color: white;
+    }
+
+    .btn-danger {
+        background: var(--danger);
+        color: white;
+    }
+
+    .btn-sm:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    /* Barre de progression dans tableau */
+    .score-progress {
+        width: 150px;
+        height: 20px;
+        background: #E0E0E0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+
+    .score-progress-bar {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.3s;
+    }
+
+    .score-progress-bar.high {
+        background: #4CAF50;
+    }
+
+    .score-progress-bar.medium {
+        background: #FF9800;
+    }
+
+    .score-progress-bar.low {
+        background: #F44336;
+    }
+
+    /* État vide */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-secondary);
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        opacity: 0.3;
+    }
+
+    .empty-state p {
+        margin-bottom: 15px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .simulator-wrapper {
+            padding: 15px;
+        }
+        
+        .stats-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .checkbox-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .table {
+            min-width: 700px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .checkbox-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .table th, .table td {
+            padding: 8px 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="simulator-wrapper">
+    <!-- En-tête -->
+    <div class="page-header">
+        <div class="page-title">
+            <h2>Simulateur d'Orientation</h2>
+            <p>Découvrez les filières qui correspondent à votre profil</p>
+        </div>
+        <button class="btn btn-primary" onclick="scrollToForm()">
+            <i class="fas fa-plus"></i> Nouvelle Simulation
+        </button>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-value">{{ simulations|length }}</div>
+            <div class="stat-label">Simulations effectuées</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="stat-value">6</div>
+            <div class="stat-label">Filières disponibles</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <i class="fas fa-sliders-h"></i>
+            </div>
+            <div class="stat-value">{{ config.weights.moyenne }}%</div>
+            <div class="stat-label">Poids de la moyenne</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-value">
+                {% if simulations|length > 0 %}
+                    {{ simulations[0].dateSimulation|date('H:i') }}
+                {% else %}
+                    --:--
+                {% endif %}
+            </div>
+            <div class="stat-label">Dernière simulation</div>
+        </div>
+    </div>
+
+    <!-- Grille principale -->
+    <div class="main-grid">
+        <!-- Formulaire -->
+        <section class="form-section">
+            <div class="card" id="simulation-form-card">
+                <div class="card-header">
+                    <h4><i class="fas fa-calculator"></i> Nouvelle Simulation</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ path('admin_simulateur_calcul') }}" id="simulation-form">
+                        <!-- Moyenne -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-star"></i> Moyenne Générale <span style="color: var(--danger);">*</span>
+                            </label>
+                            <div style="display: flex;">
+                                <input type="number" 
+                                       name="moyenne" 
+                                       id="moyenne"
+                                       class="form-control" 
+                                       style="border-right: 0; border-radius: 6px 0 0 6px;"
+                                       min="0" 
+                                       max="20" 
+                                       step="0.1" 
+                                       value="15.5"
+                                       required
+                                       placeholder="Ex: 15.5">
+                                <span style="background: var(--light-orange); border: 1px solid var(--border-color); border-left: 0; border-radius: 0 6px 6px 0; padding: 0 15px; display: flex; align-items: center; font-weight: 500; color: var(--primary-blue);">/20</span>
+                            </div>
+                        </div>
+
+                        <!-- Spécialités -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-book-open"></i> Spécialités <span style="color: var(--danger);">*</span>
+                            </label>
+                            
+                            <div class="spec-counter">
+                                <span>Sélectionnées</span>
+                                <span class="counter">3/3</span>
+                            </div>
+
+                            <div class="checkbox-grid">
+                                {% set specialites = ['Mathématiques', 'Physique-Chimie', 'SVT', 'NSI', 'SES', 'Littérature', 'Philosophie', 'Histoire-Géographie', 'Arts', 'Langues'] %}
+                                {% for spe in specialites %}
+                                <div class="checkbox-item">
+                                    <input type="checkbox" 
+                                           id="spe-{{ loop.index }}" 
+                                           name="specialites[]" 
+                                           value="{{ spe }}"
+                                           class="spec-checkbox"
+                                           {% if spe in ['Mathématiques', 'Physique-Chimie', 'SVT'] %}checked{% endif %}>
+                                    <label for="spe-{{ loop.index }}" class="checkbox-label">{{ spe }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Préférences -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-heart"></i> Centres d'intérêt <small style="color: var(--text-secondary);">(optionnel)</small>
+                            </label>
+
+                            <div class="checkbox-grid">
+                                {% set preferences = ['Scientifique', 'Littéraire', 'Social', 'Technique', 'Créatif', 'Analytique', 'Relationnel', 'Logique', 'Humain'] %}
+                                {% for pref in preferences %}
+                                <div class="checkbox-item">
+                                    <input type="checkbox" 
+                                           id="pref-{{ loop.index }}" 
+                                           name="preferences[]" 
+                                           value="{{ pref }}"
+                                           {% if pref in ['Scientifique', 'Technique'] %}checked{% endif %}>
+                                    <label for="pref-{{ loop.index }}" class="checkbox-label">{{ pref }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Bouton -->
+                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">
+                            <i class="fas fa-rocket"></i> Lancer la Simulation
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuration -->
+        <section class="config-section">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-cogs"></i> Configuration des Poids</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ path('admin_simulateur_config_save_weights') }}">
+                        <input type="hidden" name="weight_moyenne" id="hidden_moyenne" value="{{ config.weights.moyenne }}">
+                        <input type="hidden" name="weight_specialites" id="hidden_specialites" value="{{ config.weights.specialites }}">
+                        <input type="hidden" name="weight_preferences" id="hidden_preferences" value="{{ config.weights.preferences }}">
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>Moyenne Générale</span>
+                                <span class="slider-value" id="display_moyenne">{{ config.weights.moyenne }}%</span>
+                            </div>
+                            <input type="range" id="slider_moyenne" min="0" max="100" value="{{ config.weights.moyenne }}">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>Spécialités</span>
+                                <span class="slider-value" id="display_specialites">{{ config.weights.specialites }}%</span>
+                            </div>
+                            <input type="range" id="slider_specialites" min="0" max="100" value="{{ config.weights.specialites }}">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>Préférences</span>
+                                <span class="slider-value" id="display_preferences">{{ config.weights.preferences }}%</span>
+                            </div>
+                            <input type="range" id="slider_preferences" min="0" max="100" value="{{ config.weights.preferences }}">
+                        </div>
+
+                        {% set total = config.weights.moyenne + config.weights.specialites + config.weights.preferences %}
+                        <div class="total-box">
+                            <div style="text-align: center; color: var(--text-secondary); font-size: 0.9rem;">Total des poids</div>
+                            <div class="total-value" id="total-value">{{ total }}%</div>
+                            <div class="total-status {% if total == 100 %}valid{% else %}invalid{% endif %}" id="total-status">
+                                {% if total == 100 %}
+                                    <i class="fas fa-check-circle"></i> Configuration valide
+                                {% else %}
+                                    <i class="fas fa-times-circle"></i> Doit être 100%
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div style="text-align: right; margin-top: 20px;">
+                            <button type="submit" class="btn btn-secondary" id="save-btn" {% if total != 100 %}disabled{% endif %}>
+                                <i class="fas fa-save"></i> Sauvegarder
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- HISTORIQUE EN PLEINE LARGEUR -->
+        <section class="history-section history-full-width">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-history"></i> Historique des Simulations</h4>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    {% if simulations|length > 0 %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-date">Date</th>
+                                        <th class="col-moyenne">Moyenne</th>
+                                        <th class="col-specialites">Spécialités</th>
+                                        <th class="col-filiere">Top Filière</th>
+                                        <th class="col-score">Score Top</th>
+                                        <th class="col-actions">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sim in simulations %}
+                                    <tr>
+                                        <td style="white-space: nowrap;">
+                                            <div style="font-weight: 600; color: var(--primary-blue);">{{ sim.dateSimulation|date('d/m/Y') }}</div>
+                                            <div style="font-size: 0.85rem; color: var(--text-secondary);">{{ sim.dateSimulation|date('H:i') }}</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-orange" style="font-size: 0.9rem; padding: 6px 12px;">
+                                                {{ sim.moyenne }}/20
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if sim.specialites|length > 0 %}
+                                                {% for spe in sim.specialites|slice(0, 2) %}
+                                                    <span class="badge badge-blue" style="margin-bottom: 3px; display: inline-block; margin-right: 3px;">{{ spe }}</span>
+                                                {% endfor %}
+                                                {% if sim.specialites|length > 2 %}
+                                                    <span class="badge" style="background: #f1f5f9; color: var(--text-secondary);">+{{ sim.specialites|length - 2 }}</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <span style="color: var(--text-secondary); font-style: italic;">Aucune</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if sim.resultats|length > 0 %}
+                                                <div style="font-weight: 600; color: var(--primary-blue);">{{ sim.resultats[0].filiere.nom }}</div>
+                                                <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                                                    {% set result_count = sim.resultats|length %}
+                                                    {{ result_count }} résultat{{ result_count > 1 ? 's' : '' }}
+                                                </div>
+                                            {% else %}
+                                                <span style="color: var(--text-secondary); font-style: italic;">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if sim.resultats|length > 0 %}
+                                                {% set score = sim.resultats[0].pourcentage|default(0) %}
+                                                <div class="score-progress">
+                                                    <div class="score-progress-bar 
+                                                        {% if score >= 70 %}high
+                                                        {% elseif score >= 40 %}medium
+                                                        {% else %}low{% endif %}" 
+                                                        style="width: {{ score }}%">
+                                                    </div>
+                                                </div>
+                                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                    <span class="badge 
+                                                        {% if score >= 70 %}badge-success
+                                                        {% elseif score >= 40 %}badge-warning
+                                                        {% else %}badge-danger{% endif %}" 
+                                                        style="font-size: 0.85rem; padding: 4px 8px;">
+                                                        {{ score|round(1) }}%
+                                                    </span>
+                                                    <span style="font-size: 0.8rem; color: var(--text-secondary);">
+                                                        {% if score >= 70 %}Fort
+                                                        {% elseif score >= 40 %}Moyen
+                                                        {% else %}Faible{% endif %}
+                                                    </span>
+                                                </div>
+                                            {% else %}
+                                                <span style="color: var(--text-secondary); font-style: italic;">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td style="white-space: nowrap;">
+                                            <div style="display: flex; gap: 5px;">
+                                                <a href="{{ path('admin_simulateur_resultats', {'id': sim.id}) }}" class="btn-sm btn-info" title="Voir détails">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ path('admin_simulateur_modifier', {'id': sim.id}) }}" class="btn-sm btn-warning" title="Modifier">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form method="post" action="{{ path('admin_simulateur_supprimer', {'id': sim.id}) }}" style="display: inline;" onsubmit="return confirm('Supprimer cette simulation ?')">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sim.id) }}">
+                                                    <button type="submit" class="btn-sm btn-danger" title="Supprimer">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p style="margin-bottom: 10px; font-size: 1rem;">Aucune simulation effectuée</p>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">Commencez par créer une nouvelle simulation</p>
+                            <button class="btn btn-primary" onclick="scrollToForm()" style="padding: 10px 20px;">
+                                <i class="fas fa-plus"></i> Commencer
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Gestion des sliders
+    const sliders = [
+        { slider: 'slider_moyenne', hidden: 'hidden_moyenne', display: 'display_moyenne' },
+        { slider: 'slider_specialites', hidden: 'hidden_specialites', display: 'display_specialites' },
+        { slider: 'slider_preferences', hidden: 'hidden_preferences', display: 'display_preferences' }
+    ];
+
+    function updateTotal() {
+        const m = parseInt(document.getElementById('hidden_moyenne').value) || 0;
+        const s = parseInt(document.getElementById('hidden_specialites').value) || 0;
+        const p = parseInt(document.getElementById('hidden_preferences').value) || 0;
+        const total = m + s + p;
+
+        document.getElementById('total-value').textContent = total + '%';
+        const status = document.getElementById('total-status');
+        const btn = document.getElementById('save-btn');
+
+        if (total === 100) {
+            status.className = 'total-status valid';
+            status.innerHTML = '<i class="fas fa-check-circle"></i> Configuration valide';
+            btn.disabled = false;
+        } else {
+            status.className = 'total-status invalid';
+            status.innerHTML = '<i class="fas fa-times-circle"></i> Doit être 100%';
+            btn.disabled = true;
+        }
+    }
+
+    sliders.forEach(item => {
+        const slider = document.getElementById(item.slider);
+        slider.addEventListener('input', function() {
+            document.getElementById(item.hidden).value = this.value;
+            document.getElementById(item.display).textContent = this.value + '%';
+            updateTotal();
+        });
+    });
+
+    // 2. Gestion des spécialités
+    const specCheckboxes = document.querySelectorAll('.spec-checkbox');
+    const counter = document.querySelector('.spec-counter .counter');
+
+    function updateSpecCounter() {
+        const checked = Array.from(specCheckboxes).filter(cb => cb.checked);
+        counter.textContent = checked.length + '/3';
+
+        if (checked.length >= 3) {
+            specCheckboxes.forEach(cb => {
+                if (!cb.checked) {
+                    cb.disabled = true;
+                    cb.parentElement.style.opacity = '0.5';
+                }
+            });
+        } else {
+            specCheckboxes.forEach(cb => {
+                cb.disabled = false;
+                cb.parentElement.style.opacity = '1';
+            });
+        }
+    }
+
+    specCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            const checked = Array.from(specCheckboxes).filter(c => c.checked);
+            if (checked.length > 3) {
+                this.checked = false;
+            }
+            updateSpecCounter();
+        });
+    });
+
+    updateSpecCounter();
+
+    // 3. Validation formulaire
+    document.getElementById('simulation-form').addEventListener('submit', function(e) {
+        const moyenne = parseFloat(document.getElementById('moyenne').value);
+        if (isNaN(moyenne) || moyenne < 0 || moyenne > 20) {
+            e.preventDefault();
+            alert('⚠️ La moyenne doit être un nombre entre 0 et 20 !');
+            return;
+        }
+
+        const checked = Array.from(specCheckboxes).filter(cb => cb.checked);
+        if (checked.length !== 3) {
+            e.preventDefault();
+            alert('⚠️ Sélectionnez exactement 3 spécialités !');
+        }
+    });
+
+    // 4. Scroll vers formulaire
+    window.scrollToForm = function() {
+        document.getElementById('simulation-form-card').scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+        
+        // Ajout d'un effet visuel sur le formulaire
+        const formCard = document.getElementById('simulation-form-card');
+        formCard.style.boxShadow = '0 0 0 3px rgba(255, 152, 0, 0.2)';
+        setTimeout(() => {
+            formCard.style.boxShadow = '';
+        }, 1500);
+    };
+
+    updateTotal();
+});
+</script>
+{% endblock %}

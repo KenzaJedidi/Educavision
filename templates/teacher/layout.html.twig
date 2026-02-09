@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<!-- META ============================================= -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="keywords" content="" />
+	<meta name="author" content="" />
+	<meta name="robots" content="" />
+
+	<!-- DESCRIPTION -->
+	<meta name="description" content="EducaVision : Espace Professeur" />
+
+	<!-- OG -->
+	<meta property="og:title" content="EducaVision : Espace Professeur" />
+	<meta property="og:description" content="EducaVision : Espace Professeur" />
+	<meta name="format-detection" content="telephone=no">
+
+	<!-- FAVICONS ICON ============================================= -->
+	<link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon" />
+	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/favicon.png') }}" />
+
+	<!-- PAGE TITLE HERE ============================================= -->
+	<title>{% block title %}EducaVision - Espace Professeur{% endblock %}</title>
+
+	<!-- MOBILE SPECIFIC ============================================= -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- All PLUGINS CSS ============================================= -->
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/assets.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/vendors/calendar/fullcalendar.css') }}">
+
+	<!-- TYPOGRAPHY ============================================= -->
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/typography.css') }}">
+
+	<!-- SHORTCODES ============================================= -->
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/shortcodes/shortcodes.css') }}">
+
+	<!-- STYLESHEETS ============================================= -->
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/dashboard.css') }}">
+	<link class="skin" rel="stylesheet" type="text/css" href="{{ asset('assets/css/color/color-1.css') }}">
+
+	<style>
+		.teacher-badge {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: #fff;
+			padding: 4px 12px;
+			border-radius: 20px;
+			font-size: 11px;
+			font-weight: 600;
+			letter-spacing: 0.5px;
+			text-transform: uppercase;
+			display: inline-block;
+			margin-left: 10px;
+		}
+		.switch-view-btn {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 18px;
+			border-radius: 25px;
+			background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+			color: #fff;
+			font-weight: 600;
+			font-size: 13px;
+			text-decoration: none;
+			transition: all 0.3s ease;
+			box-shadow: 0 2px 10px rgba(17, 153, 142, 0.3);
+		}
+		.switch-view-btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+			color: #fff;
+			text-decoration: none;
+		}
+		.switch-view-btn i {
+			font-size: 14px;
+		}
+		.ttr-sidebar-navi .teacher-section-label {
+			padding: 15px 20px 5px;
+			font-size: 11px;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			color: #999;
+		}
+	</style>
+
+	{% block stylesheets %}{% endblock %}
+</head>
+
+<body class="ttr-opened-sidebar ttr-pinned-sidebar">
+
+	<!-- header start -->
+	<header class="ttr-header">
+		<div class="ttr-header-wrapper">
+			<!--sidebar menu toggler start -->
+			<div class="ttr-toggle-sidebar ttr-material-button">
+				<i class="ti-close ttr-open-icon"></i>
+				<i class="ti-menu ttr-close-icon"></i>
+			</div>
+			<!--sidebar menu toggler end -->
+			<!--logo start -->
+			<div class="ttr-logo-box">
+				<div>
+					<a href="{{ path('teacher_dashboard') }}" class="ttr-logo">
+						<img class="ttr-logo-mobile" alt="" src="{{ asset('assets/images/logo-mobile.png') }}" width="30" height="30">
+						<img class="ttr-logo-desktop" alt="" src="{{ asset('assets/images/logo-whitee.png') }}" width="120" height="20">
+					</a>
+				</div>
+			</div>
+			<!--logo end -->
+			<div class="ttr-header-menu">
+				<!-- header left menu start -->
+				<ul class="ttr-header-navigation">
+					<li>
+						<a href="{{ path('teacher_dashboard') }}" class="ttr-material-button">
+							ESPACE PROFESSEUR
+						</a>
+						<span class="teacher-badge">Professeur</span>
+					</li>
+				</ul>
+				<!-- header left menu end -->
+			</div>
+			<div class="ttr-header-right ttr-with-seperator">
+				<!-- header right menu start -->
+				<ul class="ttr-header-navigation">
+					<li>
+						<a href="{{ path('front_home') }}" class="switch-view-btn" title="Voir le site public">
+							<i class="fa fa-external-link"></i> Voir le site
+						</a>
+					</li>
+					<li>
+						<a href="#" class="ttr-material-button ttr-submenu-toggle"><span class="ttr-user-avatar"><img
+									alt="" src="{{ asset('assets/images/testimonials/pic3.jpg') }}" width="32" height="32"></span></a>
+						<div class="ttr-header-submenu">
+							<ul>
+								<li><a href="{{ path('teacher_dashboard') }}">Mon Dashboard</a></li>
+								<li><a href="{{ path('front_home') }}">Voir le site</a></li>
+								<li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+				<!-- header right menu end -->
+			</div>
+			<!--header search panel start -->
+			<div class="ttr-search-bar">
+				<form class="ttr-search-form">
+					<div class="ttr-search-input-wrapper">
+						<input type="text" name="qq" placeholder="Rechercher..." class="ttr-search-input">
+						<button type="submit" name="search" class="ttr-search-submit"><i class="ti-arrow-right"></i></button>
+					</div>
+					<span class="ttr-search-close ttr-search-toggle">
+						<i class="ti-close"></i>
+					</span>
+				</form>
+			</div>
+			<!--header search panel end -->
+		</div>
+	</header>
+	<!-- header end -->
+
+	<!-- Left sidebar menu start -->
+	<div class="ttr-sidebar">
+		<div class="ttr-sidebar-wrapper content-scroll">
+			<!-- side menu logo start -->
+			<div class="ttr-sidebar-logo">
+				<a href="#"><img alt="" src="{{ asset('assets/images/logo.png') }}" width="122" height="27"></a>
+				<div class="ttr-sidebar-toggle-button">
+					<i class="ti-arrow-left"></i>
+				</div>
+			</div>
+			<!-- side menu logo end -->
+			<!-- sidebar menu start -->
+			<nav class="ttr-sidebar-navi">
+				<ul>
+					<li>
+						<a href="{{ path('teacher_dashboard') }}" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-home"></i></span>
+							<span class="ttr-label">Dashboard</span>
+						</a>
+					</li>
+					<li class="teacher-section-label">Mes Contenus</li>
+					<li>
+						<a href="#" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-book"></i></span>
+							<span class="ttr-label">Mes Cours</span>
+							<span class="ttr-arrow-icon"><i class="fa fa-angle-down"></i></span>
+						</a>
+						<ul>
+							<li>
+								<a href="{{ path('teacher_course_index') }}" class="ttr-material-button"><span class="ttr-label">Liste des cours</span></a>
+							</li>
+							<li>
+								<a href="{{ path('teacher_course_new') }}" class="ttr-material-button"><span class="ttr-label">Ajouter un cours</span></a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a href="#" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-layers"></i></span>
+							<span class="ttr-label">Mes Chapitres</span>
+							<span class="ttr-arrow-icon"><i class="fa fa-angle-down"></i></span>
+						</a>
+						<ul>
+							<li>
+								<a href="{{ path('teacher_chapter_index') }}" class="ttr-material-button"><span class="ttr-label">Liste des chapitres</span></a>
+							</li>
+							<li>
+								<a href="{{ path('teacher_chapter_new') }}" class="ttr-material-button"><span class="ttr-label">Ajouter un chapitre</span></a>
+							</li>
+						</ul>
+					</li>
+					<li class="teacher-section-label">Navigation</li>
+					<li>
+						<a href="{{ path('front_home') }}" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-world"></i></span>
+							<span class="ttr-label">Voir le site</span>
+						</a>
+					</li>
+					<li>
+						<a href="{{ path('app_logout') }}" class="ttr-material-button">
+							<span class="ttr-icon"><i class="ti-power-off"></i></span>
+							<span class="ttr-label">Déconnexion</span>
+						</a>
+					</li>
+					<li class="ttr-seperate"></li>
+				</ul>
+			</nav>
+			<!-- sidebar menu end -->
+		</div>
+	</div>
+	<!-- Left sidebar menu end -->
+
+	<!--Main container start -->
+	<main class="ttr-wrapper">
+		<div class="container-fluid">
+			{# Global flash messages #}
+			{% for message in app.flashes('success') %}
+				<div class="alert alert-success alert-dismissible fade show" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endfor %}
+			{% for message in app.flashes('error') %}
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endfor %}
+			{% for message in app.flashes('warning') %}
+				<div class="alert alert-warning alert-dismissible fade show" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endfor %}
+			{% for message in app.flashes('info') %}
+				<div class="alert alert-info alert-dismissible fade show" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endfor %}
+			{% block breadcrumb %}
+			<div class="db-breadcrumb">
+				<h4 class="breadcrumb-title">{% block breadcrumb_title %}Espace Professeur{% endblock %}</h4>
+				<ul class="db-breadcrumb-list">
+					<li><a href="{{ path('teacher_dashboard') }}"><i class="fa fa-home"></i>Dashboard</a></li>
+					{% block breadcrumb_items %}{% endblock %}
+				</ul>
+			</div>
+			{% endblock %}
+
+			{% block body %}{% endblock %}
+		</div>
+	</main>
+	<div class="ttr-overlay"></div>
+
+	<!-- External JavaScripts -->
+	<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/bootstrap/js/popper.min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/bootstrap/js/bootstrap.min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/bootstrap-select/bootstrap-select.min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/bootstrap-touchspin/jquery.bootstrap-touchspin.js') }}"></script>
+	<script src="{{ asset('assets/vendors/magnific-popup/magnific-popup.js') }}"></script>
+	<script src="{{ asset('assets/vendors/counter/waypoints-min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/counter/counterup.min.js') }}"></script>
+	<script src="{{ asset('assets/vendors/imagesloaded/imagesloaded.js') }}"></script>
+	<script src="{{ asset('assets/vendors/masonry/masonry.js') }}"></script>
+	<script src="{{ asset('assets/vendors/masonry/filter.js') }}"></script>
+	<script src="{{ asset('assets/vendors/owl-carousel/owl.carousel.js') }}"></script>
+	<script src="{{ asset('assets/vendors/scroll/scrollbar.min.js') }}"></script>
+	<script src="{{ asset('assets/js/functions.js') }}"></script>
+	<script src="{{ asset('assets/vendors/chart/chart.min.js') }}"></script>
+	<script src="{{ asset('assets/js/admin.js') }}"></script>
+	<script src="{{ asset('assets/vendors/switcher/switcher.js') }}"></script>
+
+	{% block javascripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,96 @@
+{% extends 'teacher/layout.html.twig' %}
+
+{% block title %}Chapitres de {{ course.titre }} - EducaVision Professeur{% endblock %}
+
+{% block breadcrumb_title %}Chapitres du cours{% endblock %}
+
+{% block breadcrumb_items %}
+    <li><a href="{{ path('teacher_course_index') }}">Mes Cours</a></li>
+    <li><a href="{{ path('teacher_course_show', {'id': course.id}) }}">{{ course.titre }}</a></li>
+    <li>Chapitres</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">
+                    Chapitres de : <strong>{{ course.titre }}</strong>
+                </h4>
+                <a href="{{ path('teacher_chapter_new') }}" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Ajouter un chapitre
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Ordre</th>
+                                <th>Titre</th>
+                                <th>Description</th>
+                                <th>Créé le</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for chapter in chapters %}
+                            <tr>
+                                <td>
+                                    <span class="badge badge-primary">{{ chapter.ordre ?? '-' }}</span>
+                                </td>
+                                <td><strong>{{ chapter.titre }}</strong></td>
+                                <td>
+                                    {% if chapter.description %}
+                                        {{ chapter.description|striptags|slice(0, 60) }}...
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ chapter.createdAt|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ path('teacher_chapter_show', {'id': chapter.id}) }}" 
+                                           class="btn btn-sm btn-info" title="Voir">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('teacher_chapter_edit', {'id': chapter.id}) }}" 
+                                           class="btn btn-sm btn-warning" title="Modifier">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <a href="{{ path('teacher_chapter_delete', {'id': chapter.id}) }}" 
+                                           class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('Supprimer ce chapitre ?')"
+                                           title="Supprimer">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <div class="py-4">
+                                        <h5>Aucun chapitre pour ce cours</h5>
+                                        <a href="{{ path('teacher_chapter_new') }}" class="btn btn-primary">
+                                            <i class="fa fa-plus"></i> Ajouter un chapitre
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-3">
+                    <a href="{{ path('teacher_course_show', {'id': course.id}) }}" class="btn btn-outline-primary">
+                        <i class="fa fa-arrow-left"></i> Retour au cours
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

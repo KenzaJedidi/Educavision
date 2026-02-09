@@ -1,0 +1,704 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Les Filières - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Les Filières{% endblock %}
+
+{% block breadcrumb_items %}
+<li>Les Filières</li>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* Variables de couleurs */
+    :root {
+        --primary-orange: #FF9800;
+        --primary-blue: #1E3A5F;
+        --light-orange: #FFF3E0;
+        --light-blue: #E8F4FD;
+        --border-color: #E0E0E0;
+        --text-primary: #2C3E50;
+        --text-secondary: #546E7A;
+        --success: #4CAF50;
+        --warning: #FF9800;
+        --danger: #F44336;
+    }
+
+    .filiere-wrapper {
+        background: #F9FAFC;
+        min-height: calc(100vh - 60px);
+        padding: 20px;
+    }
+
+    /* En-tête */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .page-title h2 {
+        color: var(--primary-blue);
+        font-weight: 600;
+        font-size: 1.6rem;
+        margin: 0;
+    }
+
+    .page-title p {
+        color: var(--text-secondary);
+        margin: 5px 0 0 0;
+        font-size: 0.95rem;
+    }
+
+    /* Boutons */
+    .btn {
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: var(--primary-orange);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #E68900;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(255, 152, 0, 0.2);
+    }
+
+    /* BARRE DE RECHERCHE EN HAUT */
+    .search-container {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .search-row {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        flex: 1;
+        min-width: 300px;
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 45px 12px 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.1);
+    }
+
+    .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    /* Statistiques */
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 18px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        font-size: 1.2rem;
+    }
+
+    .stat-icon.orange {
+        background: var(--light-orange);
+        color: var(--primary-orange);
+    }
+
+    .stat-icon.blue {
+        background: var(--light-blue);
+        color: var(--primary-blue);
+    }
+
+    .stat-icon.green {
+        background: #E8F5E9;
+        color: var(--success);
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    /* Carte de filière */
+    .filiere-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .filiere-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        border-color: var(--primary-orange);
+    }
+
+    .filiere-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+        background: var(--light-blue);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    @media (max-width: 768px) {
+        .filiere-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+    }
+
+    .filiere-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 2px solid white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .filiere-title {
+        flex: 1;
+    }
+
+    .filiere-title h3 {
+        margin: 0 0 8px 0;
+        color: var(--primary-blue);
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+
+    .filiere-meta {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .meta-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .meta-value {
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+
+    .meta-value.highlight {
+        color: var(--primary-orange);
+    }
+
+    .filiere-body {
+        padding: 20px;
+    }
+
+    .filiere-description {
+        margin-bottom: 20px;
+    }
+
+    .filiere-description h6 {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin: 0 0 10px 0;
+        font-size: 0.95rem;
+    }
+
+    .filiere-description p {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .filiere-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: none;
+        font-weight: 500;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-action.blue {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .btn-action.orange {
+        background: var(--primary-orange);
+        color: white;
+    }
+
+    .btn-action.red {
+        background: var(--danger);
+        color: white;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* Badges */
+    .badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .badge-blue {
+        background: var(--light-blue);
+        color: var(--primary-blue);
+    }
+
+    .badge-orange {
+        background: var(--light-orange);
+        color: var(--primary-orange);
+    }
+
+    .badge-green {
+        background: #E8F5E9;
+        color: var(--success);
+    }
+
+    /* Contrôles de résultats */
+    .results-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .results-count {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    .results-count strong {
+        color: var(--primary-blue);
+        font-weight: 600;
+    }
+
+    /* État vide */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: var(--light-blue);
+        opacity: 0.5;
+    }
+
+    .empty-state h4 {
+        color: var(--text-primary);
+        margin: 0 0 10px 0;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        color: var(--text-secondary);
+        margin: 0 0 20px 0;
+        font-size: 0.95rem;
+    }
+
+    /* Messages de succès */
+    .alert {
+        padding: 15px 20px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: fadeIn 0.5s ease;
+        border-left: 4px solid;
+    }
+
+    .alert-success {
+        background: #E8F5E9;
+        border-left-color: var(--success);
+        color: #2E7D32;
+    }
+
+    .alert-info {
+        background: var(--light-blue);
+        border-left-color: var(--primary-blue);
+        color: var(--primary-blue);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .filiere-wrapper {
+            padding: 15px;
+        }
+        
+        .search-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .search-box {
+            min-width: 100%;
+        }
+        
+        .filiere-actions {
+            flex-direction: column;
+        }
+        
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="filiere-wrapper">
+    <!-- En-tête -->
+    <div class="page-header">
+        <div class="page-title">
+            <h2>Gestion des Filières</h2>
+            <p>Gérez toutes les filières académiques disponibles</p>
+        </div>
+        <a href="{{ path('admin_filiere_new') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nouvelle Filière
+        </a>
+    </div>
+
+    <!-- Messages de succès -->
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ message }}</span>
+        </div>
+    {% endfor %}
+
+    <!-- BARRE DE RECHERCHE EN HAUT -->
+    <div class="search-container">
+        <div class="search-row">
+            <div class="search-box">
+                <input type="text" 
+                       id="search-input" 
+                       class="search-input" 
+                       placeholder="Rechercher une filière, un responsable, une description...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="stat-value">{{ filieres|length }}</div>
+            <div class="stat-label">Filières totales</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <div class="stat-value">
+                {% set total_metiers = 0 %}
+                {% for filiere in filieres %}
+                    {% set total_metiers = total_metiers + filiere.metiers|length %}
+                {% endfor %}
+                {{ total_metiers }}
+            </div>
+            <div class="stat-label">Métiers associés</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i class="fas fa-user-tie"></i>
+            </div>
+            <div class="stat-value">
+                {% set responsables = [] %}
+                {% for filiere in filieres %}
+                    {% if filiere.responsable and filiere.responsable not in responsables %}
+                        {% set responsables = responsables|merge([filiere.responsable]) %}
+                    {% endif %}
+                {% endfor %}
+                {{ responsables|length }}
+            </div>
+            <div class="stat-label">Responsables</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-value">
+                {% if filieres|length > 0 %}
+                    {% set oldest = filieres|sort((a, b) => a.dateCreation <=> b.dateCreation)|first %}
+                    {{ oldest.dateCreation|date('Y') }}
+                {% else %}
+                    -
+                {% endif %}
+            </div>
+            <div class="stat-label">Année création</div>
+        </div>
+    </div>
+
+    <!-- Contrôles de résultats -->
+    <div class="results-controls">
+        <div class="results-count">
+            Affichage de <strong id="filtered-count">{{ filieres|length }}</strong> filière(s) sur <strong>{{ filieres|length }}</strong>
+        </div>
+    </div>
+
+    <!-- Liste des filières -->
+    <div id="filiere-list">
+        {% if filieres|length > 0 %}
+            {% for filiere in filieres %}
+            <div class="filiere-card" data-filiere 
+                 data-search="{{ filiere.nom|lower }} {{ filiere.responsable|default('')|lower }} {{ filiere.description|striptags|lower }}">
+                <div class="filiere-header">
+                    <div>
+                        {% if filiere.image %}
+                            <img src="{{ asset('assets/images/filieres/' ~ filiere.image) }}" 
+                                 alt="{{ filiere.nom }}" 
+                                 class="filiere-image"
+                                 onerror="this.src='{{ asset('assets/images/courses/pic1.jpg') }}'">
+                        {% else %}
+                            <img src="{{ asset('assets/images/courses/pic1.jpg') }}" 
+                                 alt="{{ filiere.nom }}" 
+                                 class="filiere-image">
+                        {% endif %}
+                    </div>
+                    <div class="filiere-title">
+                        <h3>{{ filiere.nom }}</h3>
+                        <div class="filiere-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Responsable</span>
+                                <span class="meta-value">{{ filiere.responsable ?? 'Non défini' }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Métiers</span>
+                                <span class="meta-value highlight">{{ filiere.metiers|length }} métier(s)</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Créée le</span>
+                                <span class="meta-value">{{ filiere.dateCreation|date('d/m/Y') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        {% if filiere.metiers|length > 0 %}
+                            <span class="badge badge-green">{{ filiere.metiers|length }} métiers</span>
+                        {% endif %}
+                        {% set currentYear = "now"|date("Y") %}
+                        {% set creationYear = filiere.dateCreation|date("Y") %}
+                        {% if (currentYear - creationYear) <= 1 %}
+                            <span class="badge badge-orange">Nouveau</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="filiere-body">
+                    <div class="filiere-description">
+                        <h6>Description</h6>
+                        <p>{{ filiere.description|striptags|slice(0, 200) }}{% if filiere.description|striptags|length > 200 %}...{% endif %}</p>
+                    </div>
+                    <div class="filiere-actions">
+                        <a href="{{ path('admin_filiere_show', {'id': filiere.id}) }}" class="btn-action blue">
+                            <i class="fas fa-eye"></i> Détails
+                        </a>
+                        <a href="{{ path('admin_filiere_edit', {'id': filiere.id}) }}" class="btn-action orange">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                        <form method="post" action="{{ path('admin_filiere_delete', {'id': filiere.id}) }}" 
+                              style="display: inline;" 
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette filière ?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ filiere.id) }}">
+                            <button type="submit" class="btn-action red">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-graduation-cap"></i>
+                <h4>Aucune filière disponible</h4>
+                <p>Commencez par créer votre première filière académique</p>
+                <a href="{{ path('admin_filiere_new') }}" class="btn btn-primary" style="margin-top: 15px;">
+                    <i class="fas fa-plus"></i> Ajouter une Filière
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const filteredCount = document.getElementById('filtered-count');
+    
+    // Récupérer toutes les cartes de filière
+    const filiereCards = document.querySelectorAll('[data-filiere]');
+    
+    // Fonction pour filtrer les cartes
+    function filterCards() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+        
+        filiereCards.forEach(card => {
+            const searchText = card.getAttribute('data-search');
+            
+            // Si pas de recherche OU si le terme de recherche est contenu dans le texte
+            if (searchTerm === '' || searchText.includes(searchTerm)) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Mettre à jour le compteur
+        filteredCount.textContent = visibleCount;
+    }
+    
+    // Écouter l'événement input sur la barre de recherche
+    searchInput.addEventListener('input', filterCards);
+    
+    // Initialiser le compteur
+    filterCards();
+    
+    // Masquer les messages de succès après 5 secondes
+    const successMessages = document.querySelectorAll('.alert');
+    successMessages.forEach(message => {
+        setTimeout(() => {
+            message.style.opacity = '0';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 500);
+        }, 5000);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Modifier ma candidature - EducaVision{% endblock %}
+
+{% block body %}
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/stages-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Modifier ma candidature</h1>
+        </div>
+    </div>
+    <div class="breadcrumb-row">
+        <div class="container">
+            <ul class="list-inline">
+                <li><a href="{{ path('front_home') }}">Accueil</a></li>
+                <li><a href="{{ path('front_candidature_my', { email: email }) }}">Mes Postulations</a></li>
+                <li>Modifier</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="apply-card">
+                <div class="apply-header">
+                    <div>
+                        <h3 class="apply-title">{{ offre.titre }}</h3>
+                        <div class="apply-meta">
+                            <span><i class="fa fa-building"></i> {{ offre.entreprise }}</span>
+                            &nbsp;•&nbsp;
+                            <span><i class="fa fa-map-marker"></i> {{ offre.lieu ?? '—' }}</span>
+                            &nbsp;•&nbsp;
+                            <span><i class="fa fa-calendar"></i> {{ offre.dureeJours ?? '—' }} jours</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="apply-body">
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                        <div class="row">
+                            <div class="col-md-6">{{ form_row(form.nom) }}</div>
+                            <div class="col-md-6">{{ form_row(form.prenom) }}</div>
+                            <div class="col-md-6">{{ form_row(form.email) }}</div>
+                            <div class="col-md-6">{{ form_row(form.telephone) }}</div>
+                            <div class="col-md-6">{{ form_row(form.niveauEtude) }}</div>
+                            <div class="col-md-6">{{ form_row(form.cv) }}</div>
+                            <div class="col-12">{{ form_row(form.lettreMotivation, {'attr': {'rows': 6, 'placeholder': 'Expliquez vos motivations et disponibilités...'}}) }}</div>
+                        </div>
+                        <div class="apply-actions">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Enregistrer les modifications</button>
+                            <a href="{{ path('front_candidature_my', { email: email }) }}" class="btn btn-outline-secondary"><i class="fa fa-arrow-left"></i> Retour</a>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

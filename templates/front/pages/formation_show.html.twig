@@ -1,0 +1,220 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}{{ formation.nom }} - EducaVision{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/formation-detail.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">{{ formation.nom }}</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li><a href="{{ path('front_formations') }}">Formations</a></li>
+            <li>{{ formation.nom }}</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <!-- Colonne principale -->
+                <div class="col-lg-8">
+                    <div class="course-detail">
+                        <div class="course-header mb-4">
+                            {% if formation.image %}
+                                <img src="{{ asset('assets/images/formations/' ~ formation.image) }}" 
+                                     alt="{{ formation.nom }}" 
+                                     class="img-fluid rounded"
+                                     style="width: 100%; height: 400px; object-fit: cover;"
+                                     onerror="this.src='{{ asset('front-assets/images/courses/pic1.jpg') }}'">
+                            {% else %}
+                                <img src="{{ asset('front-assets/images/courses/pic1.jpg') }}" 
+                                     alt="{{ formation.nom }}" 
+                                     class="img-fluid rounded"
+                                     style="width: 100%; height: 400px; object-fit: cover;">
+                            {% endif %}
+                        </div>
+
+                        <div class="course-content">
+                            <h2 class="mb-3">{{ formation.nom }}</h2>
+                            
+                            <div class="course-meta mb-4">
+                                {% if formation.duree %}
+                                    <span class="badge badge-primary mr-2">
+                                        <i class="fa fa-clock"></i> Durée: {{ formation.duree }}
+                                    </span>
+                                {% endif %}
+                                
+                                {% if formation.niveau %}
+                                    <span class="badge badge-{{ formation.niveau|lower == 'débutant' ? 'success' : (formation.niveau|lower == 'intermédiaire' ? 'warning' : 'danger') }}">
+                                        <i class="fa fa-signal"></i> Niveau: {{ formation.niveau }}
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <div class="course-description mb-5">
+                                <h4 class="mb-3">Description</h4>
+                                <div class="description-content">
+                                    {{ formation.description|raw }}
+                                </div>
+                            </div>
+
+                            {% if formation.competencesAcquises %}
+                            <div class="course-competences mb-5">
+                                <h4 class="mb-3">Compétences acquises</h4>
+                                <div class="competences-content">
+                                    {{ formation.competencesAcquises|raw }}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if formation.prerequisTexte %}
+                            <div class="course-prerequis mb-5">
+                                <h4 class="mb-3">Prérequis</h4>
+                                <div class="prerequis-content">
+                                    {{ formation.prerequisTexte|raw }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="course-sidebar">
+                        <div class="sidebar-widget mb-4">
+                            <div class="widget-box bg-light p-4 rounded">
+                                <h4 class="mb-3">Informations rapides</h4>
+                                
+                                <ul class="list-unstyled">
+                                    {% if formation.duree %}
+                                    <li class="mb-3">
+                                        <i class="fa fa-clock text-primary mr-2"></i>
+                                        <strong>Durée:</strong> {{ formation.duree }}
+                                    </li>
+                                    {% endif %}
+                                    
+                                    {% if formation.niveau %}
+                                    <li class="mb-3">
+                                        <i class="fa fa-signal text-primary mr-2"></i>
+                                        <strong>Niveau:</strong> {{ formation.niveau }}
+                                    </li>
+                                    {% endif %}
+                                    
+                                    {% if formation.prerequis %}
+                                    <li class="mb-3">
+                                        <i class="fa fa-list-check text-primary mr-2"></i>
+                                        <strong>Prérequis:</strong> {{ formation.prerequis|length }}
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                                
+                                <div class="mt-4">
+                                    <a href="{{ path('front_contact') }}" class="btn btn-primary btn-block btn-lg">
+                                        <i class="fa fa-user-plus"></i> S'inscrire à cette formation
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-widget mb-4">
+                            <div class="widget-box bg-light p-4 rounded">
+                                <h4 class="mb-3">Formations similaires</h4>
+                                {% set similarFormations = [] %}
+                                {% for other in allFormations %}
+                                    {% if other.id != formation.id and other.niveau == formation.niveau %}
+                                        {% set similarFormations = similarFormations|merge([other]) %}
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if similarFormations|length > 0 %}
+                                    {% for similar in similarFormations|slice(0, 3) %}
+                                    <div class="similar-course mb-3">
+                                        <h6>
+                                            <a href="{{ path('front_formation_show', {'id': similar.id}) }}">
+                                                {{ similar.nom }}
+                                            </a>
+                                        </h6>
+                                        <small class="text-muted">
+                                            {{ similar.niveau }} • {{ similar.duree }}
+                                        </small>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted">Aucune formation similaire pour le moment.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="sidebar-widget">
+                            <div class="widget-box bg-primary text-white p-4 rounded">
+                                <h4 class="mb-3">Besoin d'aide ?</h4>
+                                <p>Notre équipe est là pour vous conseiller dans votre choix de formation.</p>
+                                <a href="{{ path('front_contact') }}" class="btn btn-light btn-block">
+                                    <i class="fa fa-envelope"></i> Nous contacter
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.course-detail {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.course-sidebar .widget-box {
+    border: 1px solid #eee;
+}
+
+.course-content h2 {
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.description-content, .competences-content, .prerequis-content {
+    line-height: 1.8;
+    color: #555;
+}
+
+.similar-course {
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.similar-course:last-child {
+    border-bottom: none;
+}
+
+.similar-course h6 a {
+    color: #333;
+    text-decoration: none;
+}
+
+.similar-course h6 a:hover {
+    color: #007bff;
+}
+
+.badge-primary { background-color: #007bff; }
+</style>
+{% endblock %}

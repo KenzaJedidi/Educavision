@@ -1,0 +1,535 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Stages & Alternance - EducaVision{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/stages-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Stages & Alternance</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li>Stages & Alternance</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left">
+                    <h2 class="title-head reveal-title"><span class="title-accent"></span> Trouvez Votre <span>Stage ou Alternance</span></h2>
+                    <p class="reveal-text">Des opportunités professionnelles avec nos entreprises partenaires</p>
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="row m-b40">
+                <div class="col-md-3 col-sm-6 anim-up" style="animation-delay:.05s">
+                    <div class="counter-style-2">
+                        <div class="counter-text">
+                            <span class="counter stat-number" data-target="500">0</span><span>+</span>
+                            <p>Entreprises Partenaires</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 anim-up" style="animation-delay:.1s">
+                    <div class="counter-style-2">
+                        <div class="counter-text">
+                            <span class="counter stat-number" data-target="1200">0</span><span>+</span>
+                            <p>Offres Actives</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 anim-up" style="animation-delay:.15s">
+                    <div class="counter-style-2">
+                        <div class="counter-text">
+                            <span class="counter stat-number" data-target="85">0</span><span>%</span>
+                            <p>Taux d'Embauche</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 anim-up" style="animation-delay:.2s">
+                    <div class="counter-style-2">
+                        <div class="counter-text">
+                            <span class="counter stat-number" data-target="92">0</span><span>%</span>
+                            <p>Étudiants Satisfaits</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtres (créatifs et attrayants) -->
+            <div class="row m-b20 align-items-center g-3">
+                <div class="col-auto">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="fa fa-chart-pie"></i>
+                                <strong class="small">Statut des offres</strong>
+                            </div>
+                            <div style="width:220px;">
+                                <canvas id="offersStatusChart" style="width:160px;height:160px;" width="160" height="160"></canvas>
+                            </div>
+                            <div class="mt-2 small text-muted">
+                                {% for item in status_breakdown %}
+                                    <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:{{ item.color }}"></span>
+                                    {{ item.label }}: <strong>{{ item.value }}</strong>{% if not loop.last %} • {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="card border-0 shadow-sm" style="min-width:280px;">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="fa fa-building"></i>
+                                <strong class="small">Top Entreprises</strong>
+                            </div>
+                            {% set colors = [
+                                'linear-gradient(90deg,#6a11cb,#2575fc)',
+                                'linear-gradient(90deg,#43e97b,#38f9d7)',
+                                'linear-gradient(90deg,#f7971e,#ffd200)',
+                                'linear-gradient(90deg,#ff7eb3,#ff758c)',
+                                'linear-gradient(90deg,#20c997,#17a2b8)'
+                            ] %}
+                            <div class="small">
+                                {% for c in top_companies %}
+                                    {% set p = total_offers > 0 ? ((c.count / total_offers) * 100) : 0 %}
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-truncate" title="{{ c.name }}">{{ c.name }}</span>
+                                            <span class="badge bg-light text-dark">{{ c.count }}</span>
+                                        </div>
+                                        <div style="height:8px;border-radius:6px;background:#e9ecef;overflow:hidden;">
+                                            <div style="height:8px;width: {{ p|round }}%;background: {{ colors[loop.index0] ?? 'linear-gradient(90deg,#43e97b,#38f9d7)' }};"></div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="text-muted">Aucune donnée</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="fa fa-info-circle"></i>
+                                <strong class="small">Aperçu</strong>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="f-chip"><i class="fa fa-money"></i> Salaire moyen: {{ avg_salary is not null ? (avg_salary|number_format(2, ',', ' ') ~ ' DT') : '—' }}</span>
+                                <span class="f-chip"><i class="fa fa-clock-o"></i> Durée médiane: {{ median_duration is not null ? (median_duration ~ ' j') : '—' }}</span>
+                                <span class="f-chip"><i class="fa fa-briefcase"></i> Offres: {{ total_offers }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-b40">
+                <div class="col-md-12">
+                    <div class="filter-card">
+                        <div class="filter-head">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="f-dot"></span>
+                                <h3 class="mb-0">Affiner votre recherche</h3>
+                            </div>
+                            <small class="text-muted">Salaire et durée pour cibler rapidement les meilleures offres</small>
+                        </div>
+                        <form method="get" action="{{ path('front_stages') }}#offres">
+                            <div class="row g-3">
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="input-group f-input">
+                                        <span class="input-group-text"><i class="fa fa-money"></i></span>
+                                        <input type="number" step="0.01" min="0" name="minSalary" class="form-control" placeholder="Salaire min" value="{{ minSalary }}">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="input-group f-input">
+                                        <span class="input-group-text"><i class="fa fa-money"></i></span>
+                                        <input type="number" step="0.01" min="0" name="maxSalary" class="form-control" placeholder="Salaire max" value="{{ maxSalary }}">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="input-group f-input">
+                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                        <input type="number" min="0" name="minDays" class="form-control" placeholder="Jours min" value="{{ minDays }}">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="input-group f-input">
+                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                        <input type="number" min="0" name="maxDays" class="form-control" placeholder="Jours max" value="{{ maxDays }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap align-items-center justify-content-between mt-3">
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% if minSalary %}<span class="f-chip"><i class="fa fa-money"></i> Salaire ≥ {{ minSalary }} DT</span>{% endif %}
+                                    {% if maxSalary %}<span class="f-chip"><i class="fa fa-money"></i> Salaire ≤ {{ maxSalary }} DT</span>{% endif %}
+                                    {% if minDays %}<span class="f-chip"><i class="fa fa-calendar"></i> Durée ≥ {{ minDays }} j</span>{% endif %}
+                                    {% if maxDays %}<span class="f-chip"><i class="fa fa-calendar"></i> Durée ≤ {{ maxDays }} j</span>{% endif %}
+                                </div>
+                                <div class="f-actions">
+                                    <a href="{{ path('front_stages') }}#offres" class="btn btn-light">Réinitialiser</a>
+                                    <button type="submit" class="btn btn-primary">Filtrer</button>
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-3 align-items-center">
+                                <div class="col-md-9">
+                                    <div class="input-group f-input">
+                                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                        <input type="text" name="search" class="form-control" placeholder="Nom d'offre ou entreprise" value="{{ search }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <button type="submit" class="btn btn-info text-white w-100">Rechercher</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="mt-3 d-flex justify-content-end">
+                            <a href="{{ path('front_candidature_my') }}" class="btn btn-outline-primary"><i class="fa fa-user"></i> Mes postulations</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Offres dynamiques en cartes -->
+            <div id="offres" class="row">
+                {% if offres_stage is defined and offres_stage|length > 0 %}
+                    {% for offre in offres_stage %}
+                        <div class="col-sm-6 col-lg-4 m-b20">
+                            <div class="card h-100 border-0 shadow-sm overflow-hidden">
+                                {% set banners = {
+                                    'Google': 'front-assets/images/partners/google.png',
+                                    'Microsoft': 'front-assets/images/partners/microsoft.png',
+                                    'Amazon': 'front-assets/images/partners/amazon.png',
+                                    'Samsung': 'front-assets/images/partners/samsung.png',
+                                    'Orange': 'front-assets/images/partners/orange.png',
+                                    'BNP Paribas': 'front-assets/images/partners/bnp.png',
+                                    'EY': 'front-assets/images/offers/ey-banner.svg',
+                                    'ACTIA': 'front-assets/images/offers/actia-banner.svg'
+                                } %}
+                                {% set comp = offre.entreprise|default('') %}
+                                {# Try to resolve a real company image from public assets automatically #}
+                                {% set banner = company_asset(comp) %}
+                                {% if banner is null %}
+                                    {% if banners[comp] is defined %}
+                                        {% set banner = banners[comp] %}
+                                    {% else %}
+                                        {# Creative gradient banner when no real image is found #}
+                                        {% set banner = company_banner(comp, 'Offre de stage') %}
+                                    {% endif %}
+                                {% endif %}
+                                {% set imgSrc = banner matches '/^data:/' ? banner : asset(banner) %}
+                                <img src="{{ imgSrc }}" alt="Illustration de l'offre" class="w-100" style="height:90px;object-fit:cover;">
+                                <div class="p-2 d-flex justify-content-between align-items-center" style="background:linear-gradient(135deg,#eaf7ff,#d1ecf9);font-size:.85rem;">
+                                    {% set bg = offre.statut == 'Ouvert' ? '#0dcaf0' : (offre.statut == 'Fermé' ? '#dc3545' : '#ffc107') %}
+                                    {% set color = offre.statut == 'Ouvert' ? '#083b4d' : (offre.statut == 'Fermé' ? '#fff' : '#212529') %}
+                                    <span class="badge" style="background-color:{{ bg }};color:{{ color }};border-radius:20px;">{{ offre.statut }}</span>
+                                    <div class="text-muted"><i class="fa fa-calendar"></i> Début {{ offre.dateDebut ? offre.dateDebut|date('d/m/Y') : '-' }}{% if offre.dateFin %} • Fin {{ offre.dateFin|date('d/m/Y') }}{% endif %}</div>
+                                </div>
+                                <div class="card-body p-2">
+                                    <h6 class="fw-bold mb-1">{{ offre.titre }}</h6>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <img src="{{ asset('front-assets/images/logo.png') }}" alt="Logo" style="width:28px;height:28px;border-radius:6px;object-fit:contain;background:#fff;padding:2px;box-shadow:0 2px 6px rgba(0,0,0,0.08)">
+                                        <div>
+                                            <div class="mb-0" style="font-size:.9rem; font-weight:600;">{{ offre.entreprise }}</div>
+                                            <div class="text-muted" style="font-size:.8rem"><i class="fa fa-map-marker"></i> {{ offre.lieu ?? '-' }}</div>
+                                        </div>
+                                    </div>
+                                    <p class="mb-1" style="display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">{{ offre.description|default('Aucune description fournie.') }}</p>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <span class="badge bg-light text-dark" style="border-radius:14px;font-size:.8rem;"><i class="fa fa-clock-o"></i> {{ offre.dureeJours }} jours</span>
+                                        <span class="badge bg-light text-dark" style="border-radius:14px;font-size:.8rem;"><i class="fa fa-money"></i> {{ offre.salaire ? (offre.salaire|number_format(2, ',', ' ') ~ ' DT') : '-' }}</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white d-flex justify-content-end gap-2 py-1">
+                                    <a class="btn btn-warning text-dark btn-sm" href="{{ path('front_candidature_new', { id: offre.id }) }}" style="border-radius:8px;font-size:.8rem;padding:.25rem .5rem;">
+                                        Postuler
+                                    </a>
+                                    <a href="{{ path('front_stage_show', { id: offre.id }) }}" class="btn btn-outline-secondary btn-sm" style="border-radius:8px;font-size:.8rem;padding:.25rem .5rem;">Voir détails</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-md-12">
+                        <div class="alert alert-info">Aucune offre disponible pour le moment. Revenez plus tard.</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Pagination -->
+            <div class="row">
+                <div class="col-md-12">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">4</a></li>
+                            <li class="page-item"><a class="page-link" href="#">5</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Suivant</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comment ça marche -->
+    <div class="section-area bg-gray section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left">
+                    <h2 class="title-head">Comment <span>Ça Marche</span></h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="step-card text-center">
+                        <div class="step-number">1</div>
+                        <h4>Créez votre profil</h4>
+                        <p>Complétez votre CV et vos compétences</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-card text-center">
+                        <div class="step-number">2</div>
+                        <h4>Recherchez des offres</h4>
+                        <p>Utilisez nos filtres avancés</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-card text-center">
+                        <div class="step-number">3</div>
+                        <h4>Postulez</h4>
+                        <p>Envoyez votre candidature en 1 clic</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-card text-center">
+                        <div class="step-number">4</div>
+                        <h4>Suivez vos candidatures</h4>
+                        <p>Consultez l'état de vos postulations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Entreprises partenaires -->
+    <div class="section-area section-sp1">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left">
+                    <h2 class="title-head">Nos <span>Entreprises Partenaires</span></h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="partners-slider owl-carousel">
+                        <div class="partner-item">
+                            <img src="{{ asset('front-assets/images/partners/google.png') }}" alt="Google">
+                        </div>
+                        <div class="partner-item">
+                            <img src="{{ asset('front-assets/images/partners/microsoft.png') }}" alt="Microsoft">
+                        </div>
+                        <div class="partner-item">
+                            <img src="{{ asset('front-assets/images/partners/amazon.png') }}" alt="Amazon">
+                        </div>
+                        <div class="partner-item">
+                            <img src="{{ asset('front-assets/images/partners/samsung.png') }}" alt="Samsung">
+                        </div>
+                        <div class="partner-item">
+                            <img src="{{ asset('front-assets/images/partners/orange.png') }}" alt="Orange">
+                        </div>
+                        <div class="partner-item">
+                            <img src="{{ asset('front-assets/images/partners/bnp.png') }}" alt="BNP Paribas">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<style>
+/* Creative filter card */
+.filter-card{border:1px solid #eee;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+.filter-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(90deg,#f7faff,#fff)}
+.filter-head h3{font-size:1rem;font-weight:700}
+.f-dot{width:10px;height:10px;border-radius:50%;background:#1890ff;display:inline-block}
+.f-input .input-group-text{background:#f8f9fa;border-color:#e9ecef}
+.f-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:#f8f9fa;border:1px solid #e9ecef;font-size:.85rem}
+.f-actions{display:flex;gap:8px}
+/* Simple, tasteful animations */
+.title-accent{display:inline-block;width:6px;height:28px;background:#1890ff;border-radius:6px;margin-right:8px;vertical-align:middle}
+.reveal-title{opacity:0;transform:translateY(12px);transition:all .6s ease}
+.reveal-title.in{opacity:1;transform:none}
+.reveal-text{opacity:0;transform:translateY(8px);transition:all .6s ease .1s}
+.reveal-text.in{opacity:1;transform:none}
+.anim-up{opacity:0;transform:translateY(10px)}
+.anim-up.in{opacity:1;transform:none;transition:all .5s ease}
+</style>
+<script>
+    $(document).ready(function(){
+        $('.partners-slider').owlCarousel({
+            loop: true,
+            margin: 30,
+            nav: false,
+            dots: false,
+            autoplay: true,
+            responsive: {
+                0: { items: 2 },
+                600: { items: 3 },
+                1000: { items: 6 }
+            }
+        });
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    (function(){
+        var ctx = document.getElementById('offersStatusChart');
+        if(!ctx) return;
+        var data = {
+            labels: [{% for item in status_breakdown %}'{{ item.label }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for item in status_breakdown %}{{ item.value }}{% if not loop.last %}, {% endif %}{% endfor %}],
+                backgroundColor: [{% for item in status_breakdown %}'{{ item.color }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+                borderColor: '#ffffff',
+                borderWidth: 2,
+            }]
+        };
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: data,
+            options: {
+                plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                cutout: '65%',
+                maintainAspectRatio: false,
+                aspectRatio: 2
+            }
+        });
+    })();
+</script>
+<!-- Application modal -->
+<div class="modal fade" id="applyModal" tabindex="-1" role="dialog" aria-labelledby="applyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="applyModalLabel">Postuler à l'offre</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ path('front_stages_apply') }}" method="post" enctype="multipart/form-data">
+            <div class="modal-body">
+                <input type="hidden" name="job_title" id="job_title" value="">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="applicant_name">Nom *</label>
+                        <input type="text" class="form-control" id="applicant_name" name="name" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="applicant_email">Email *</label>
+                        <input type="email" class="form-control" id="applicant_email" name="email" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="applicant_phone">Téléphone</label>
+                        <input type="tel" class="form-control" id="applicant_phone" name="phone">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="applicant_cv">CV (PDF)</label>
+                        <input type="file" class="form-control-file" id="applicant_cv" name="cv">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="applicant_message">Message</label>
+                    <textarea class="form-control" id="applicant_message" name="message" rows="4"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-primary">Envoyer la candidature</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Populate job title when opening the modal
+    document.addEventListener('DOMContentLoaded', function() {
+        var applyButtons = document.querySelectorAll('.apply-btn');
+        applyButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var job = btn.getAttribute('data-job') || '';
+                var titleInput = document.getElementById('job_title');
+                if (titleInput) titleInput.value = job;
+                var modalLabel = document.getElementById('applyModalLabel');
+                if (modalLabel) modalLabel.textContent = 'Postuler : ' + job;
+            });
+        });
+
+        // Reveal animations for title and text
+        setTimeout(function(){
+            var title = document.querySelector('.reveal-title');
+            var text = document.querySelector('.reveal-text');
+            if(title) title.classList.add('in');
+            if(text) text.classList.add('in');
+        }, 150);
+
+        // IntersectionObserver to animate counters and cards when visible
+        var io = new IntersectionObserver(function(entries){
+            entries.forEach(function(entry){
+                if(entry.isIntersecting){
+                    var el = entry.target;
+                    el.classList.add('in');
+                    if(el.classList.contains('stat-number')){
+                        animateCount(el);
+                    }
+                    io.unobserve(el);
+                }
+            });
+        }, {threshold: 0.2});
+
+        document.querySelectorAll('.stat-number, .anim-up').forEach(function(el){ io.observe(el); });
+
+        function animateCount(el){
+            var target = parseFloat(el.getAttribute('data-target')) || 0;
+            var duration = 1200;
+            var startTime = null;
+            function step(ts){
+                if(!startTime) startTime = ts;
+                var progress = Math.min((ts - startTime) / duration, 1);
+                var value = Math.floor(progress * target);
+                el.textContent = value;
+                if(progress < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+    });
+</script>
+{% endblock %}

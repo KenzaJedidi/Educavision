@@ -1,0 +1,417 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Ajouter une Filière - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Ajouter une Filière{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_filiere_index') }}">Les Filières</a></li>
+<li>Nouvelle Filière</li>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+.form-wizard {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.form-wizard-header {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    padding: 40px;
+    color: white;
+    text-align: center;
+}
+
+.form-wizard-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.form-wizard-header p {
+    margin: 10px 0 0 0;
+    opacity: 0.9;
+}
+
+.form-wizard-body {
+    padding: 40px;
+}
+
+.form-group-modern {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.form-group-modern label {
+    display: block;
+    font-weight: 600;
+    color: #1E3A5F;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group-modern label i {
+    color: #FF9800;
+    font-size: 1.1rem;
+}
+
+.form-control-modern {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-control-modern:focus {
+    outline: none;
+    border-color: #FF9800;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.1);
+}
+
+.form-control-modern::placeholder {
+    color: #aaa;
+}
+
+textarea.form-control-modern {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+}
+
+.input-icon-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #FF9800;
+    font-size: 1.2rem;
+    pointer-events: none;
+}
+
+.input-icon-wrapper .form-control-modern {
+    padding-left: 50px;
+}
+
+.form-row-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.file-upload-area {
+    border: 3px dashed #e0e0e0;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+    border-color: #FF9800;
+    background: #fff8f0;
+}
+
+.file-upload-area i {
+    font-size: 3rem;
+    color: #FF9800;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.file-upload-area p {
+    margin: 0;
+    color: #666;
+}
+
+.file-upload-area input[type="file"] {
+    display: none;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.btn-modern {
+    padding: 15px 40px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-modern.primary {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    color: white;
+    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+}
+
+.btn-modern.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+}
+
+.btn-modern.secondary {
+    background: white;
+    color: #1E3A5F;
+    border: 2px solid #1E3A5F;
+}
+
+.btn-modern.secondary:hover {
+    background: #1E3A5F;
+    color: white;
+}
+
+.form-helper {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.form-helper i {
+    color: #FF9800;
+}
+
+.character-count {
+    font-size: 0.8rem;
+    color: #999;
+    text-align: right;
+    margin-top: 5px;
+}
+
+.required-star {
+    color: #F44336;
+    margin-left: 3px;
+}
+
+.info-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #1E3A5F 0%, #2C5F8D 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+.info-badge i {
+    margin-right: 8px;
+    color: #FF9800;
+}
+
+/* Tous les messages d'erreur de formulaire en rouge */
+.form-group-modern ul,
+.form-group-modern .errors,
+ul.form-errors,
+.form-group ul {
+    color: #dc3545 !important;
+    font-size: 0.875rem;
+    margin-top: 5px;
+    list-style: none;
+    padding: 0 !important;
+}
+
+.form-group-modern li,
+.form-group-modern .errors li,
+ul.form-errors li,
+.form-group li {
+    color: #dc3545 !important;
+    padding: 5px 0;
+    margin: 0;
+    list-style: none;
+}
+
+.form-group-modern li:before,
+.form-group-modern .errors li:before,
+ul.form-errors li:before,
+.form-group li:before {
+    content: '⚠ ';
+    font-weight: bold;
+    margin-right: 5px;
+    color: #dc3545;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+	<div class="col-lg-10">
+		<div class="form-wizard">
+			<!-- En-tête -->
+			<div class="form-wizard-header">
+				<h2><i class="fa fa-graduation-cap"></i> Créer une Nouvelle Filière</h2>
+				<p>Renseignez les informations de la filière pour aider les étudiants dans leur orientation</p>
+			</div>
+			
+			<!-- Corps du formulaire -->
+			<div class="form-wizard-body">
+				<div class="info-badge">
+					<i class="fa fa-info-circle"></i>
+					Les champs marqués d'une étoile (<span class="required-star">*</span>) sont obligatoires
+				</div>
+				
+				{{ form_start(form, {'attr': {'id': 'filiere-form'}}) }}
+				
+				<!-- Nom de la filière -->
+				<div class="form-group-modern">
+					<label>
+						<i class="fa fa-tag"></i>
+						Nom de la Filière
+						<span class="required-star">*</span>
+					</label>
+					<div class="input-icon-wrapper">
+						<i class="input-icon fa fa-graduation-cap"></i>
+						{{ form_widget(form.nom, {'attr': {'class': 'form-control-modern', 'placeholder': 'Ex: Médecine, Ingénierie, Droit...', 'maxlength': '100', 'required': 'required'}}) }}
+					</div>
+					<div class="form-helper">
+						<i class="fa fa-lightbulb-o"></i>
+						Choisissez un nom clair et descriptif
+					</div>
+					{{ form_errors(form.nom) }}
+				</div>
+				
+				<!-- Responsable -->
+				<div class="form-group-modern">
+					<label>
+						<i class="fa fa-user"></i>
+						Responsable de la Filière
+					</label>
+					<div class="input-icon-wrapper">
+						<i class="input-icon fa fa-user-circle"></i>
+						{{ form_widget(form.responsable, {'attr': {'class': 'form-control-modern', 'placeholder': 'Nom du responsable académique'}}) }}
+					</div>
+					<div class="form-helper">
+						<i class="fa fa-info-circle"></i>
+						Optionnel - Personne de contact pour cette filière
+					</div>
+					{{ form_errors(form.responsable) }}
+				</div>
+				
+				<!-- Description -->
+				<div class="form-group-modern">
+					<label>
+						<i class="fa fa-align-left"></i>
+						Description Complète
+						<span class="required-star">*</span>
+					</label>
+					{{ form_widget(form.description, {'attr': {'class': 'form-control-modern', 'placeholder': 'Décrivez la filière, ses objectifs, les débouchés professionnels, les compétences développées...', 'rows': 6, 'id': 'description-field', 'required': 'required'}}) }}
+					<div class="character-count">
+						<span id="char-count">0</span> caractères
+					</div>
+					<div class="form-helper">
+						<i class="fa fa-lightbulb-o"></i>
+						Soyez précis et engageant pour aider les étudiants à comprendre la filière
+					</div>
+					{{ form_errors(form.description) }}
+				</div>
+				
+				<!-- Image -->
+				<div class="form-group-modern">
+    <label>
+        <i class="fa fa-image"></i>
+        Nom de l'Image
+    </label>
+    <div class="input-icon-wrapper">
+        <i class="input-icon fa fa-picture-o"></i>
+        {{ form_widget(form.image, {'attr': {'class': 'form-control-modern', 'placeholder': 'Ex: medecine.jpg'}}) }}
+    </div>
+    <div class="form-helper">
+        <i class="fa fa-info-circle"></i>
+        Entrez le nom exact du fichier présent dans assets/images/filieres/ (ex: medecine.jpg)
+    </div>
+    {{ form_errors(form.image) }}
+</div>
+				
+				<!-- Actions -->
+				<div class="form-actions">
+					<a href="{{ path('admin_filiere_index') }}" class="btn-modern secondary">
+						<i class="fa fa-times"></i>
+						Annuler
+					</a>
+					<button type="submit" class="btn-modern primary">
+						<i class="fa fa-save"></i>
+						Créer la Filière
+					</button>
+				</div>
+				
+				{{ form_end(form) }}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Compteur de caractères
+const descriptionField = document.getElementById('description-field');
+const charCount = document.getElementById('char-count');
+
+if (descriptionField) {
+    descriptionField.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
+        
+        // Change la couleur selon la longueur
+        if (this.value.length < 50) {
+            charCount.style.color = '#F44336';
+        } else if (this.value.length < 150) {
+            charCount.style.color = '#FF9800';
+        } else {
+            charCount.style.color = '#4CAF50';
+        }
+    });
+}
+
+// Prévisualisation de l'image
+const fileInput = document.getElementById('file-input');
+if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name;
+        if (fileName) {
+            document.querySelector('.file-upload-area p strong').textContent = '✓ ' + fileName;
+            document.querySelector('.file-upload-area').style.borderColor = '#FF9800';
+            document.querySelector('.file-upload-area').style.background = '#fff8f0';
+        }
+    });
+}
+
+// Animation au focus
+document.querySelectorAll('.form-control-modern').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.parentElement.classList.add('focused');
+    });
+    
+    input.addEventListener('blur', function() {
+        this.parentElement.classList.remove('focused');
+    });
+});
+</script>
+{% endblock %}

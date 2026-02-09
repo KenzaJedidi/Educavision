@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Export Réclamations</title>
+    <style>
+        html, body { font-family: DejaVu Sans, Arial, sans-serif; color:#222; }
+        h1 { font-size: 20px; margin: 0 0 8px; }
+        .meta { font-size: 12px; margin-bottom: 12px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 6px 8px; font-size: 12px; }
+        th { background: #f0f3f7; text-align: left; }
+        tr:nth-child(even) { background: #fafafa; }
+        .badge { display:inline-block; padding:2px 6px; border-radius:4px; font-size:11px; }
+        .badge-info { background:#e7f5ff; color:#004085; }
+        .badge-warning { background:#fff3cd; color:#856404; }
+        .badge-success { background:#d4edda; color:#155724; }
+    </style>
+</head>
+<body>
+    <h1>Liste des Réclamations</h1>
+    <div class="meta">
+        Généré le {{ generatedAt|date('d/m/Y H:i') }}{% if search %} • Filtre: "{{ search }}"{% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>Statut</th>
+                <th>Titre</th>
+                <th>Date</th>
+                <th>Réponses</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reclamations %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.nom }}</td>
+                    <td>{{ r.prenom }}</td>
+                    <td>{{ r.email }}</td>
+                    <td>{{ r.role|capitalize }}</td>
+                    <td>
+                        {% if r.status == 'traiter' %}
+                            <span class="badge badge-success">Traité</span>
+                        {% else %}
+                            <span class="badge badge-warning">En cours</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ r.titre }}</td>
+                    <td>{{ r.dateReclamation|date('d/m/Y H:i') }}</td>
+                    <td>{{ r.reponses|length }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="9">Aucune réclamation trouvée.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,166 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Nos Cours - EducaVision{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Improve readability and image visibility on the courses page */
+        .content-block { z-index: 2; position: relative; padding-top: 30px; }
+        .page-banner { margin-bottom: 20px; }
+        .cours-bx .action-box img {
+            height: 180px;
+            object-fit: cover;
+            display: block;
+            width: 100%;
+        }
+        .cours-bx .info-bx h5 a { color: #1f1f1f; font-weight: 700; font-size: 1.05rem; }
+        .cours-bx { background: #fff; }
+        .cours-more-info .price h5 { color: #e68a00; }
+        .cours-star li { margin-right: 2px; }
+        /* Ensure large CTA/hero sections do not overlap cards */
+        .section-area { z-index: 1; }
+        /* Make text more legible on colored backgrounds */
+        .title-head, .heading-bx p { color: #111; }
+        /* Add spacing inside the container */
+        .cours-bx .action-box { padding: 0; }
+    </style>
+{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/banner1.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Nos Cours</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li>Nos Cours</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left mb-4">
+                    <h2 class="title-head">Découvrez Nos <span>Cours</span></h2>
+                    <p>Explorez notre catalogue de cours en ligne et développez vos compétences</p>
+                </div>
+            </div>
+
+            {# Search / Filters row #}
+            <div class="row mb-4">
+                <div class="col-lg-8 col-md-7">
+                    <form action="{{ path('front_search') }}" method="get" class="form-inline">
+                        <div class="input-group w-100">
+                            <input type="text" name="q" class="form-control" placeholder="Rechercher un cours, mot-clé...">
+                            <div class="input-group-append">
+                                <button class="btn btn-warning" type="submit">Rechercher</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-lg-4 col-md-5 text-right">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">Catégorie</button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="#">Informatique</a>
+                            <a class="dropdown-item" href="#">Sciences</a>
+                            <a class="dropdown-item" href="#">Langues</a>
+                            <a class="dropdown-item" href="#">Tous</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Cards grid with gutters and consistent heights #}
+            <div class="row g-4">
+                {# Prepare a default courses array if controller does not pass one #}
+                {% set courses = courses is defined ? courses : [
+                    {
+                        title: 'Introduction à la Programmation',
+                        category: 'Informatique',
+                        lessons: 15,
+                        image: asset('front-assets/images/courses/pic1.jpg'),
+                        price: 'Gratuit',
+                        rating: 4
+                    },
+                    {
+                        title: 'Mathématiques Avancées',
+                        category: 'Sciences',
+                        lessons: 20,
+                        image: asset('front-assets/images/courses/pic2.jpg'),
+                        price: 'Gratuit',
+                        rating: 5
+                    },
+                    {
+                        title: 'Français - Littérature',
+                        category: 'Langues',
+                        lessons: 12,
+                        image: asset('front-assets/images/courses/pic3.jpg'),
+                        price: 'Gratuit',
+                        rating: 4
+                    }
+                ] %}
+
+                {% for course in courses %}
+                    <div class="col-md-6 col-lg-4 col-sm-6">
+                        <div class="cours-bx h-100 d-flex flex-column shadow-sm p-3 bg-white rounded">
+                            <div class="action-box mb-3">
+                                <img src="{{ course.image }}" alt="{{ course.title }}" class="img-fluid w-100 rounded">
+                                <a href="#" class="btn mt-2">En savoir plus</a>
+                            </div>
+                            <div class="info-bx text-center flex-grow-1">
+                                <h5 class="mb-2"><a href="#">{{ course.title }}</a></h5>
+                                <span class="text-muted">{{ course.category }}</span>
+                            </div>
+                            <div class="cours-more-info mt-3 d-flex align-items-center justify-content-between">
+                                <div class="review">
+                                    <span class="d-block small text-muted">{{ course.lessons }} Leçons</span>
+                                    <ul class="cours-star list-unstyled d-inline-block mb-0">
+                                        {% for i in 1..5 %}
+                                            <li class="d-inline-block {{ i <= course.rating ? 'active text-warning' : 'text-secondary' }}"><i class="fa fa-star"></i></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="price">
+                                    <h5 class="mb-0">{{ course.price }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12">
+                        <p>Aucun cours trouvé.</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {# Pagination #}
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled"><a class="page-link" href="#">Préc</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Suiv</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

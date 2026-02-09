@@ -1,0 +1,352 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Résultats - Simulateur d'Orientation{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary-orange: #FF9800;
+        --primary-blue: #1E3A5F;
+        --light-orange: #FFF3E0;
+        --light-blue: #E8F4FD;
+        --success: #4CAF50;
+        --warning: #FF9800;
+        --danger: #F44336;
+    }
+
+    .results-page {
+        background: #F9FAFC;
+        padding: 40px 0;
+    }
+
+    .results-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* En-tête */
+    .results-header {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-left: 5px solid var(--primary-orange);
+    }
+
+    .results-header h1 {
+        color: var(--primary-blue);
+        margin: 0 0 20px 0;
+        font-size: 2rem;
+    }
+
+    .header-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .info-item h6 {
+        color: #718096;
+        font-size: 0.9rem;
+        margin: 0 0 5px 0;
+    }
+
+    .info-item h3 {
+        color: var(--primary-blue);
+        margin: 0;
+        font-size: 1.3rem;
+    }
+
+    /* Carte de filière */
+    .filiere-result {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-left: 5px solid;
+        transition: transform 0.3s;
+    }
+
+    .filiere-result:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .filiere-result.rank-1 {
+        border-left-color: #FFD700;
+        background: linear-gradient(135deg, #fff 0%, #fffbf0 100%);
+    }
+
+    .filiere-result.rank-2 {
+        border-left-color: #C0C0C0;
+    }
+
+    .filiere-result.rank-3 {
+        border-left-color: #CD7F32;
+    }
+
+    .filiere-content {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .rank-badge {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .rank-badge.gold {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+    }
+
+    .rank-badge.silver {
+        background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+    }
+
+    .rank-badge.bronze {
+        background: linear-gradient(135deg, #CD7F32, #8B4513);
+    }
+
+    .rank-badge.other {
+        background: var(--primary-blue);
+    }
+
+    .filiere-info {
+        flex: 1;
+    }
+
+    .filiere-info h4 {
+        color: var(--primary-blue);
+        margin: 0 0 8px 0;
+        font-size: 1.3rem;
+    }
+
+    .filiere-info p {
+        color: #718096;
+        margin: 0 0 15px 0;
+        font-size: 0.95rem;
+    }
+
+    .progress-bar-container {
+        height: 30px;
+        background: #E2E8F0;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 15px;
+        color: white;
+        font-weight: 600;
+        transition: width 1s ease;
+    }
+
+    .progress-bar-fill.high {
+        background: linear-gradient(90deg, #4CAF50, #66BB6A);
+    }
+
+    .progress-bar-fill.medium {
+        background: linear-gradient(90deg, #FF9800, #FFB74D);
+    }
+
+    .progress-bar-fill.low {
+        background: linear-gradient(90deg, #F44336, #EF5350);
+    }
+
+    .score-display {
+        text-align: center;
+        min-width: 100px;
+    }
+
+    .score-display h2 {
+        color: var(--primary-orange);
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .score-display span {
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    /* Actions */
+    .action-buttons {
+        margin-top: 40px;
+        text-align: center;
+    }
+
+    .btn {
+        padding: 12px 25px;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        margin: 0 5px;
+    }
+
+    .btn-primary {
+        background: var(--primary-orange);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    @media (max-width: 768px) {
+        .filiere-content {
+            flex-direction: column;
+        }
+
+        .score-display {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/banner1.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Résultats de Simulation</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li><a href="{{ path('front_simulateur') }}">Simulateur</a></li>
+            <li>Résultats</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Résultats -->
+<div class="results-page">
+    <div class="results-container">
+        <!-- En-tête -->
+        <div class="results-header">
+            <h1><i class="fas fa-chart-line"></i> Vos Résultats d'Orientation</h1>
+            <div class="header-info">
+                <div class="info-item">
+                    <h6>Moyenne</h6>
+                    <h3>{{ simulation.moyenne }}/20</h3>
+                </div>
+                <div class="info-item">
+                    <h6>Spécialités</h6>
+                    <h3>{{ simulation.specialites|length }} sélectionnées</h3>
+                </div>
+                <div class="info-item">
+                    <h6>Date</h6>
+                    <h3>{{ simulation.dateSimulation|date('d/m/Y') }}</h3>
+                </div>
+                {% if resultats|length > 0 %}
+                <div class="info-item">
+                    <h6>Meilleure correspondance</h6>
+                    <h3>{{ resultats[0].filiere.nom }}</h3>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Liste des filières -->
+        {% for result in resultats %}
+            {% set score = result.pourcentage|default(0) %}
+            {% set rank = loop.index %}
+            
+            <div class="filiere-result rank-{{ rank <= 3 ? rank : 'other' }}">
+                <div class="filiere-content">
+                    <div class="rank-badge {% if rank == 1 %}gold{% elseif rank == 2 %}silver{% elseif rank == 3 %}bronze{% else %}other{% endif %}">
+                        {{ rank }}
+                    </div>
+                    
+                    <div class="filiere-info">
+                        <h4>{{ result.filiere.nom }}</h4>
+                        <p>{{ result.filiere.description }}</p>
+                        
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill {% if score >= 70 %}high{% elseif score >= 40 %}medium{% else %}low{% endif %}"
+                                 style="width: {{ score }}%">
+                                {{ score }}%
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-display">
+                        <h2>{{ score }}%</h2>
+                        <span>
+                            {% if score >= 70 %}Fort
+                            {% elseif score >= 40 %}Moyen
+                            {% else %}Faible{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+        <!-- Actions -->
+        <div class="action-buttons">
+            <a href="{{ path('front_simulateur') }}" class="btn btn-primary">
+                <i class="fas fa-redo"></i> Nouvelle Simulation
+            </a>
+            <button onclick="window.print()" class="btn btn-secondary">
+                <i class="fas fa-print"></i> Imprimer
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation des barres de progression
+    const progressBars = document.querySelectorAll('.progress-bar-fill');
+    progressBars.forEach((bar, index) => {
+        const width = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => {
+            bar.style.width = width;
+        }, 200 + (index * 100));
+    });
+});
+</script>
+{% endblock %}

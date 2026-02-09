@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Formation {{ formation.nom }} - Export PDF</title>
+    <style>
+        * { font-family: Arial, sans-serif; }
+        body { margin: 40px; color: #333; }
+        h1 { color: #1E3A5F; border-bottom: 2px solid #FF9800; padding-bottom: 10px; }
+        h2 { color: #1E3A5F; margin-top: 30px; }
+        .header-info { background: #F8F9FA; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .info-row { display: flex; margin-bottom: 10px; }
+        .label { font-weight: bold; width: 150px; color: #546E7A; }
+        .value { flex: 1; }
+        .badge { 
+            display: inline-block; 
+            padding: 4px 10px; 
+            border-radius: 12px; 
+            font-size: 12px; 
+            font-weight: bold;
+            margin: 2px;
+        }
+        .badge-blue { background: #E8F4FD; color: #1E3A5F; }
+        .badge-orange { background: #FFF3E0; color: #FF9800; }
+        .prerequis-list { margin-left: 20px; }
+        .prerequis-item { margin: 8px 0; }
+        .footer { 
+            margin-top: 50px; 
+            padding-top: 20px; 
+            border-top: 1px solid #E0E0E0; 
+            font-size: 12px; 
+            color: #546E7A; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Formation : {{ formation.nom }}</h1>
+    
+    <div class="header-info">
+        <div class="info-row">
+            <span class="label">ID :</span>
+            <span class="value">{{ formation.id }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Niveau :</span>
+            <span class="value">
+                {% if formation.niveau %}
+                    <span class="badge 
+                        {% if formation.niveau == 'Débutant' %}badge-blue
+                        {% elseif formation.niveau == 'Intermédiaire' %}badge-orange
+                        {% else %}badge-blue{% endif %}">
+                        {{ formation.niveau }}
+                    </span>
+                {% else %}
+                    Non défini
+                {% endif %}
+            </span>
+        </div>
+        <div class="info-row">
+            <span class="label">Durée :</span>
+            <span class="value">{{ formation.duree|default('Non définie') }}</span>
+        </div>
+    </div>
+    
+    <div>
+        <h2>Description</h2>
+        <div>{{ formation.description|raw }}</div>
+    </div>
+    
+    <div>
+        <h2>Prérequis ({{ formation.prerequis|length }})</h2>
+        {% if formation.prerequis|length > 0 %}
+            <div class="prerequis-list">
+                {% for prerequis in formation.prerequis %}
+                    <div class="prerequis-item">
+                        • {{ prerequis.nom }}
+                        {% if prerequis.description %}
+                            : {{ prerequis.description|striptags|slice(0, 100) }}{% if prerequis.description|striptags|length > 100 %}...{% endif %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Aucun prérequis nécessaire.</p>
+        {% endif %}
+    </div>
+    
+    <div class="footer">
+        <p>Document généré le {{ "now"|date('d/m/Y à H:i') }}</p>
+        <p>EducaVision - Système de gestion des formations</p>
+    </div>
+</body>
+</html>

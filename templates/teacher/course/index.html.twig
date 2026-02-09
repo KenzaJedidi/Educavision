@@ -1,0 +1,209 @@
+{% extends 'teacher/layout.html.twig' %}
+
+{% block title %}Mes Cours - EducaVision Professeur{% endblock %}
+
+{% block breadcrumb_title %}Mes Cours{% endblock %}
+
+{% block breadcrumb_items %}
+    <li>Cours</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">Mes Cours</h4>
+                <a href="{{ path('teacher_course_new') }}" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Ajouter un cours
+                </a>
+            </div>
+            <div class="card-body">
+                <!-- Filtres -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <form method="GET" class="form-inline">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="text" name="search" class="form-control" placeholder="Rechercher..." value="{{ search }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <select name="category" class="form-control">
+                                        <option value="">Toutes les catégories</option>
+                                        {% for category in categories %}
+                                            <option value="{{ category }}" {% if selectedCategory == category %}selected{% endif %}>
+                                                {{ category }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select name="status" class="form-control">
+                                        <option value="">Tous les statuts</option>
+                                        <option value="1" {% if selectedStatus == '1' %}selected{% endif %}>Actif</option>
+                                        <option value="0" {% if selectedStatus == '0' %}selected{% endif %}>Inactif</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-info">
+                                        <i class="fa fa-search"></i> Filtrer
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tableau -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Titre</th>
+                                <th>Catégorie</th>
+                                <th>Prix</th>
+                                <th>Statut</th>
+                                <th>Chapitres</th>
+                                <th>Créé le</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in courses %}
+                            <tr>
+                                <td>{{ course.id }}</td>
+                                <td>
+                                    <strong>{{ course.titre }}</strong>
+                                    {% if course.description %}
+                                        <br><small class="text-muted">{{ course.description|striptags|slice(0, 50) }}...</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if course.category %}
+                                        <span class="badge badge-info">{{ course.category }}</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if course.price %}
+                                        <span class="text-success">{{ course.price }} €</span>
+                                    {% else %}
+                                        <span class="text-primary">Gratuit</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if course.status == 1 %}
+                                        <span class="badge badge-success">Actif</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Inactif</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ path('teacher_chapter_by_course', {'courseId': course.id}) }}">
+                                        {{ course.chapters|length }} chapitre(s)
+                                    </a>
+                                </td>
+                                <td>{{ course.createdAt|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ path('teacher_course_show', {'id': course.id}) }}" 
+                                           class="btn btn-sm btn-info" title="Voir">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('teacher_course_edit', {'id': course.id}) }}" 
+                                           class="btn btn-sm btn-warning" title="Modifier">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <a href="{{ path('teacher_course_toggle_status', {'id': course.id}) }}" 
+                                           class="btn btn-sm {{ course.status == 1 ? 'btn-secondary' : 'btn-success' }}" 
+                                           title="{{ course.status == 1 ? 'Désactiver' : 'Activer' }}">
+                                            <i class="fa {{ course.status == 1 ? 'fa-pause' : 'fa-play' }}"></i>
+                                        </a>
+                                        <a href="{{ path('teacher_course_delete', {'id': course.id}) }}" 
+                                           class="btn btn-sm btn-danger" 
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce cours ?')"
+                                           title="Supprimer">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center">
+                                    <div class="py-4">
+                                        <i class="fa fa-book fa-3x text-muted mb-3" style="display:block"></i>
+                                        <h5>Aucun cours trouvé</h5>
+                                        <p class="text-muted">Commencez par ajouter votre premier cours.</p>
+                                        <a href="{{ path('teacher_course_new') }}" class="btn btn-primary">
+                                            <i class="fa fa-plus"></i> Ajouter un cours
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Statistiques -->
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="stat-box bg-primary">
+                            <div class="stat-icon">
+                                <i class="fa fa-book"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>{{ courses|length }}</h3>
+                                <p>Total de mes cours</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box bg-success">
+                            <div class="stat-icon">
+                                <i class="fa fa-check"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>{{ courses|filter(c => c.status == 1)|length }}</h3>
+                                <p>Cours actifs</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box bg-warning">
+                            <div class="stat-icon">
+                                <i class="fa fa-tags"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>{{ categories|length }}</h3>
+                                <p>Catégories</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-box {
+    border-radius: 8px;
+    padding: 20px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+.stat-box .stat-icon { font-size: 2rem; opacity: 0.8; }
+.stat-box .stat-info h3 { margin: 0; font-size: 1.5rem; }
+.stat-box .stat-info p { margin: 0; opacity: 0.85; font-size: 0.85rem; }
+.bg-primary { background: #4c8bf5; }
+.bg-success { background: #34a853; }
+.bg-warning { background: #fbbc05; }
+</style>
+{% endblock %}

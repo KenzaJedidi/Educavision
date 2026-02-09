@@ -1,0 +1,703 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Nouveau Quiz - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Quiz{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_quiz_index') }}">Quiz</a></li>
+<li>Nouveau</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="h5 mb-0">Créer un nouveau Quiz</h2>
+            <a href="{{ path('admin_quiz_index') }}" class="btn btn-secondary">
+                <i class="fa fa-arrow-left"></i> Retour
+            </a>
+        </div>
+
+        <form method="post" action="{{ path('admin_quiz_new') }}" id="quizForm" novalidate>
+            <input type="hidden" name="_token" value="{{ csrf_token('quiz_new') }}">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Informations générales</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="titre" class="form-label">Titre du Quiz <span class="text-danger">*</span></label>
+                                        <input type="text" 
+                                               name="titre" 
+                                               id="titre" 
+                                               class="form-control" 
+                                               required 
+                                               minlength="3" 
+                                               maxlength="255"
+                                               placeholder="Entrez le titre du quiz">
+                                        <div class="invalid-feedback">
+                                            Le titre doit contenir entre 3 et 255 caractères
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="duree" class="form-label">Durée (minutes) <span class="text-danger">*</span></label>
+                                        <input type="number" 
+                                               name="duree" 
+                                               id="duree" 
+                                               class="form-control" 
+                                               required 
+                                               min="1" 
+                                               max="180"
+                                               value="30"
+                                               placeholder="30">
+                                        <div class="form-text">
+                                            Durée du quiz en minutes (1-180 min)
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            La durée doit être comprise entre 1 et 180 minutes
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Visibilité</label>
+                                        <div class="form-check mt-2">
+                                            <input type="checkbox" 
+                                                   name="visible" 
+                                                   id="visible" 
+                                                   class="form-check-input" 
+                                                   value="1">
+                                            <label class="form-check-label" for="visible">
+                                                Rendre ce quiz visible pour les utilisateurs
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="description" class="form-label">Description</label>
+                                        <textarea name="description" 
+                                                  id="description" 
+                                                  class="form-control" 
+                                                  rows="3" 
+                                                  maxlength="1000"
+                                                  placeholder="Décrivez le contenu et les objectifs de ce quiz"></textarea>
+                                        <small class="form-text text-muted">Maximum 1000 caractères</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Questions <span class="text-danger">*</span></h5>
+                            <small class="text-muted">Au minimum une question avec une réponse correcte est requise</small>
+                        </div>
+                        <div class="card-body">
+                            <div id="questions-container">
+                                <div class="question-item border p-3 mb-3" data-question-index="0">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6>Question 1</h6>
+                                        <button type="button" class="btn btn-sm btn-danger remove-question" onclick="removeQuestion(this)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="question_0_texte" class="form-label">Question <span class="text-danger">*</span></label>
+                                                <input type="text" 
+                                                       name="questions[0][texte]" 
+                                                       id="question_0_texte"
+                                                       class="form-control question-texte" 
+                                                       required 
+                                                       minlength="5" 
+                                                       maxlength="500"
+                                                       placeholder="Entrez votre question ici">
+                                                <div class="invalid-feedback">
+                                                    La question doit contenir entre 5 et 500 caractères
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="question_0_points" class="form-label">Points <span class="text-danger">*</span></label>
+                                                <input type="number" 
+                                                       name="questions[0][points]" 
+                                                       id="question_0_points"
+                                                       class="form-control question-points" 
+                                                       required 
+                                                       min="1" 
+                                                       max="100"
+                                                       value="10"
+                                                       placeholder="10">
+                                                <div class="form-text">
+                                                    Points attribués à cette question (1-100)
+                                                </div>
+                                                <div class="invalid-feedback">
+                                                    Les points doivent être compris entre 1 et 100
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="answers-container">
+                                        <h6 class="mb-3">Réponses <span class="text-danger">*</span></h6>
+                                        <small class="text-muted">Au minimum 2 réponses, dont au moins 1 correcte obligatoire</small>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <div class="form-check">
+                                                        <input type="checkbox" 
+                                                               name="questions[0][correct_answers][]" 
+                                                               value="0" 
+                                                               class="form-check-input correct-checkbox" 
+                                                               required>
+                                                        <label class="form-check-label">
+                                                            <strong>Réponse correcte</strong>
+                                                        </label>
+                                                    </div>
+                                                    <input type="text" 
+                                                           name="questions[0][answers][0]" 
+                                                           class="form-control answer-texte" 
+                                                           required 
+                                                           minlength="1" 
+                                                           maxlength="255"
+                                                           placeholder="Texte de la réponse 1">
+                                                    <div class="invalid-feedback">
+                                                        Une réponse est obligatoire
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <div class="form-check">
+                                                        <input type="checkbox" 
+                                                               name="questions[0][correct_answers][]" 
+                                                               value="1" 
+                                                               class="form-check-input correct-checkbox" 
+                                                               required>
+                                                        <label class="form-check-label">
+                                                            <strong>Réponse correcte</strong>
+                                                        </label>
+                                                    </div>
+                                                    <input type="text" 
+                                                           name="questions[0][answers][1]" 
+                                                           class="form-control answer-texte" 
+                                                           required 
+                                                           minlength="1" 
+                                                           maxlength="255"
+                                                           placeholder="Texte de la réponse 2">
+                                                    <div class="invalid-feedback">
+                                                        Une réponse est obligatoire
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <div class="form-check">
+                                                        <input type="checkbox" 
+                                                               name="questions[0][correct_answers][]" 
+                                                               value="2" 
+                                                               class="form-check-input correct-checkbox">
+                                                        <label class="form-check-label">
+                                                            <strong>Réponse correcte</strong>
+                                                        </label>
+                                                    </div>
+                                                    <input type="text" 
+                                                           name="questions[0][answers][2]" 
+                                                           class="form-control answer-texte" 
+                                                           minlength="1" 
+                                                           maxlength="255"
+                                                           placeholder="Texte de la réponse 3 (optionnel)">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <div class="form-check">
+                                                        <input type="checkbox" 
+                                                               name="questions[0][correct_answers][]" 
+                                                               value="3" 
+                                                               class="form-check-input correct-checkbox">
+                                                        <label class="form-check-label">
+                                                            <strong>Réponse correcte</strong>
+                                                        </label>
+                                                    </div>
+                                                    <input type="text" 
+                                                           name="questions[0][answers][3]" 
+                                                           class="form-control answer-texte" 
+                                                           minlength="1" 
+                                                           maxlength="255"
+                                                           placeholder="Texte de la réponse 4 (optionnel)">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addAnswer(0)">
+                                                    <i class="fa fa-plus"></i> Ajouter une réponse
+                                                </button>
+                                                <small class="text-muted ms-2">Vous pouvez ajouter jusqu'à 6 réponses par question</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-info" onclick="addQuestion()">
+                                <i class="fa fa-plus"></i> Ajouter une question
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('admin_quiz_index') }}" class="btn btn-secondary">
+                            <i class="fa fa-times"></i> Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary" onclick="return validateForm()">
+                            <i class="fa fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.question-item {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.answers-container {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.invalid-feedback {
+    display: none;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.was-validated .form-control:invalid ~ .invalid-feedback {
+    display: block;
+}
+
+.was-validated .form-control:invalid {
+    border-color: #dc3545;
+}
+
+.was-validated .form-control:valid {
+    border-color: #28a745;
+}
+
+.correct-checkbox {
+    transform: scale(1.2);
+    margin-right: 0.5rem;
+}
+
+.correct-checkbox:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255,255,255,1.0%29'/%3e%3c/svg%3e");
+}
+
+.correct-checkbox:not(:checked) {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%28255,255,255,1.0%29'/%3e%3c/svg%3e");
+}
+
+.correct-checkbox:focus {
+    outline: 2px solid #ff9800;
+    box-shadow: 0 0 0 2px #ffb347;
+}
+
+.answer-texte {
+    margin-bottom: 0.5rem;
+}
+
+.btn-outline-danger {
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+}
+</style>
+
+<script>
+let questionCount = 1;
+let answerCounts = {}; // Stocker le nombre de réponses par question
+
+function addQuestion() {
+    const container = document.getElementById('questions-container');
+    const questionIndex = questionCount;
+    answerCounts[questionIndex] = 4; // Initialiser avec 4 réponses
+    
+    const questionHtml = `
+        <div class="question-item border p-3 mb-3" data-question-index="${questionIndex}">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6>Question ${questionIndex + 1}</h6>
+                <button type="button" class="btn btn-sm btn-danger remove-question" onclick="removeQuestion(this)">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="form-label">Texte de la question <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               name="questions[${questionIndex}][texte]" 
+                               class="form-control question-texte" 
+                               required 
+                               minlength="5" 
+                               maxlength="500"
+                               placeholder="Entrez votre question ici">
+                        <div class="invalid-feedback">
+                            La question doit contenir entre 5 et 500 caractères
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Points <span class="text-danger">*</span></label>
+                        <input type="number" 
+                               name="questions[${questionIndex}][points]" 
+                               class="form-control question-points" 
+                               required 
+                               min="1" 
+                               max="100"
+                               value="10"
+                               placeholder="10">
+                        <div class="form-text">
+                            Points attribués à cette question (1-100)
+                        </div>
+                        <div class="invalid-feedback">
+                            Les points doivent être compris entre 1 et 100
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="answers-container">
+                <h6 class="mb-3">Réponses <span class="text-danger">*</span></h6>
+                <small class="text-muted">Au minimum 2 réponses, dont au moins 1 correcte obligatoire</small>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" 
+                                       name="questions[${questionIndex}][correct_answers][]" 
+                                       value="0" 
+                                       class="form-check-input correct-checkbox" 
+                                       required>
+                                <label class="form-check-label">
+                                    <strong>Réponse correcte</strong>
+                                </label>
+                            </div>
+                            <input type="text" 
+                                   name="questions[${questionIndex}][answers][0]" 
+                                   class="form-control answer-texte" 
+                                   required 
+                                   minlength="1" 
+                                   maxlength="255"
+                                   placeholder="Texte de la réponse 1">
+                            <div class="invalid-feedback">
+                                Une réponse est obligatoire
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" 
+                                       name="questions[${questionIndex}][correct_answers][]" 
+                                       value="1" 
+                                       class="form-check-input correct-checkbox" 
+                                       required>
+                                <label class="form-check-label">
+                                    <strong>Réponse correcte</strong>
+                                </label>
+                            </div>
+                            <input type="text" 
+                                   name="questions[${questionIndex}][answers][1]" 
+                                   class="form-control answer-texte" 
+                                   required 
+                                   minlength="1" 
+                                   maxlength="255"
+                                   placeholder="Texte de la réponse 2">
+                            <div class="invalid-feedback">
+                                Une réponse est obligatoire
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" 
+                                       name="questions[${questionIndex}][correct_answers][]" 
+                                       value="2" 
+                                       class="form-check-input correct-checkbox">
+                                <label class="form-check-label">
+                                    <strong>Réponse correcte</strong>
+                                </label>
+                            </div>
+                            <input type="text" 
+                                   name="questions[${questionIndex}][answers][2]" 
+                                   class="form-control answer-texte" 
+                                   minlength="1" 
+                                   maxlength="255"
+                                   placeholder="Texte de la réponse 3 (optionnel)">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" 
+                                       name="questions[${questionIndex}][correct_answers][]" 
+                                       value="3" 
+                                       class="form-check-input correct-checkbox">
+                                <label class="form-check-label">
+                                    <strong>Réponse correcte</strong>
+                                </label>
+                            </div>
+                            <input type="text" 
+                                   name="questions[${questionIndex}][answers][3]" 
+                                   class="form-control answer-texte" 
+                                   minlength="1" 
+                                   maxlength="255"
+                                   placeholder="Texte de la réponse 4 (optionnel)">
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addAnswer(${questionIndex})">
+                            <i class="fa fa-plus"></i> Ajouter une réponse
+                        </button>
+                        <small class="text-muted ms-2">Vous pouvez ajouter jusqu'à 6 réponses par question</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = questionHtml;
+    container.appendChild(tempDiv.firstElementChild);
+    questionCount++;
+}
+
+function addAnswer(questionIndex) {
+    const questionItem = document.querySelector(`[data-question-index="${questionIndex}"]`);
+    const answersRow = questionItem.querySelector('.answers-container .row');
+    const currentAnswerCount = answerCounts[questionIndex] || 4;
+    
+    if (currentAnswerCount >= 6) {
+        alert('Maximum 6 réponses par question');
+        return;
+    }
+    
+    const answerIndex = currentAnswerCount;
+    const answerHtml = `
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="form-check">
+                    <input type="checkbox" 
+                           name="questions[${questionIndex}][correct_answers][]" 
+                           value="${answerIndex}" 
+                           class="form-check-input correct-checkbox">
+                    <label class="form-check-label">
+                        <strong>Réponse correcte</strong>
+                    </label>
+                </div>
+                <input type="text" 
+                       name="questions[${questionIndex}][answers][${answerIndex}]" 
+                       class="form-control answer-texte" 
+                       minlength="1" 
+                       maxlength="255"
+                       placeholder="Texte de la réponse ${answerIndex + 1}">
+                <button type="button" class="btn btn-sm btn-outline-danger mt-1" onclick="removeAnswer(this, ${questionIndex})">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = answerHtml;
+    answersRow.appendChild(tempDiv.firstElementChild);
+    answerCounts[questionIndex] = currentAnswerCount + 1;
+}
+
+function removeAnswer(button, questionIndex) {
+    const answerGroup = button.closest('.col-md-6');
+    const questionItem = button.closest('.question-item');
+    const allAnswers = questionItem.querySelectorAll('.answers-container .col-md-6');
+    
+    if (allAnswers.length <= 2) {
+        alert('Minimum 2 réponses par question');
+        return;
+    }
+    
+    answerGroup.remove();
+    answerCounts[questionIndex] = Math.max(2, (answerCounts[questionIndex] || 4) - 1);
+    
+    // Mettre à jour les indices des réponses restantes
+    updateAnswerIndices(questionIndex);
+}
+
+function updateAnswerIndices(questionIndex) {
+    const questionItem = document.querySelector(`[data-question-index="${questionIndex}"]`);
+    const answerGroups = questionItem.querySelectorAll('.answers-container .col-md-6');
+    
+    answerGroups.forEach((group, index) => {
+        const checkbox = group.querySelector('.correct-checkbox');
+        const input = group.querySelector('.answer-texte');
+        const removeBtn = group.querySelector('.btn-outline-danger');
+        
+        if (checkbox) {
+            checkbox.name = `questions[${questionIndex}][correct_answers][]`;
+            checkbox.value = index;
+        }
+        
+        if (input) {
+            input.name = `questions[${questionIndex}][answers][${index}]`;
+            input.placeholder = `Texte de la réponse ${index + 1}`;
+        }
+        
+        if (removeBtn) {
+            removeBtn.setAttribute('onclick', `removeAnswer(this, ${questionIndex})`);
+        }
+    });
+}
+
+function removeQuestion(button) {
+    if (document.querySelectorAll('.question-item').length > 1) {
+        const questionItem = button.closest('.question-item');
+        const questionIndex = parseInt(questionItem.getAttribute('data-question-index'));
+        delete answerCounts[questionIndex];
+        questionItem.remove();
+        updateQuestionNumbers();
+    }
+}
+
+function updateQuestionNumbers() {
+    const questions = document.querySelectorAll('.question-item');
+    questions.forEach((question, index) => {
+        const titleElement = question.querySelector('h6');
+        if (titleElement) {
+            titleElement.textContent = `Question ${index + 1}`;
+        }
+        question.setAttribute('data-question-index', index);
+    });
+}
+
+function validateForm() {
+    const form = document.getElementById('quizForm');
+    const titre = document.getElementById('titre');
+    const questions = document.querySelectorAll('.question-item');
+    
+    // Validation du titre
+    if (titre.value.trim().length < 3) {
+        alert('Le titre doit contenir au moins 3 caractères');
+        titre.focus();
+        return false;
+    }
+    
+    // Validation des questions
+    let hasValidQuestion = false;
+    questions.forEach((question, index) => {
+        const questionText = question.querySelector('.question-texte');
+        const correctCheckboxes = question.querySelectorAll('.correct-checkbox:checked');
+        const answerTexts = question.querySelectorAll('.answer-texte');
+        
+        let hasValidAnswer = false;
+        let hasTextAnswer = false;
+        
+        answerTexts.forEach(answer => {
+            if (answer.value.trim().length > 0) {
+                hasTextAnswer = true;
+                hasValidAnswer = true;
+            }
+        });
+        
+        if (questionText.value.trim().length >= 5 && correctCheckboxes.length > 0 && hasTextAnswer) {
+            hasValidQuestion = true;
+        }
+    });
+    
+    if (!hasValidQuestion) {
+        alert('Chaque question doit avoir un texte (min 5 caractères), au moins 2 réponses avec du texte et au moins 1 réponse correcte sélectionnée.');
+        return false;
+    }
+    
+    // Ajouter les classes de validation Bootstrap
+    form.classList.add('was-validated');
+    
+    return true;
+}
+
+// Validation en temps réel
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser les compteurs de réponses
+    answerCounts[0] = 4;
+    
+    // Validation du titre
+    const titre = document.getElementById('titre');
+    titre.addEventListener('input', function() {
+        if (this.value.trim().length >= 3 && this.value.trim().length <= 255) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else {
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+        }
+    });
+    
+    // Validation des questions et réponses
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('question-texte')) {
+            if (e.target.value.trim().length >= 5 && e.target.value.trim().length <= 500) {
+                e.target.classList.remove('is-invalid');
+                e.target.classList.add('is-valid');
+            } else {
+                e.target.classList.remove('is-valid');
+                e.target.classList.add('is-invalid');
+            }
+        }
+        
+        if (e.target.classList.contains('answer-texte')) {
+            if (e.target.value.trim().length >= 1 && e.target.value.trim().length <= 255) {
+                e.target.classList.remove('is-invalid');
+                e.target.classList.add('is-valid');
+            } else {
+                e.target.classList.remove('is-valid');
+                e.target.classList.add('is-invalid');
+            }
+        }
+    }, true);
+});
+</script>
+{% endblock %}

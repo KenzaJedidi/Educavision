@@ -1,0 +1,185 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Ajouter un Chapitre - EducaVision Admin{% endblock %}
+
+{% block breadcrumb_title %}Ajouter un Chapitre{% endblock %}
+
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_chapter_index') }}">Chapitres</a></li>
+    <li>Ajouter</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Nouveau Chapitre</h4>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            {{ form_label(form.titre) }}
+                            {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.titre) }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {{ form_label(form.ordre) }}
+                            {{ form_widget(form.ordre, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.ordre) }}
+                            <small class="form-text text-muted">Laissez vide pour auto-générer</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.course) }}
+                    {{ form_widget(form.course, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.course) }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.teacherName) }}
+                            {{ form_widget(form.teacherName, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.teacherName) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.teacherEmail) }}
+                            {{ form_widget(form.teacherEmail, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.teacherEmail) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.description) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '8'}}) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.imageUrl) }}
+                    {{ form_widget(form.imageUrl, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.imageUrl) }}
+                    <small class="form-text text-muted">Nom du fichier image (ex: mon-chapitre.jpg)</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Enregistrer
+                    </button>
+                    <a href="{{ path('admin_chapter_index') }}" class="btn btn-secondary">
+                        <i class="fa fa-times"></i> Annuler
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Informations</h5>
+            </div>
+            <div class="card-body">
+                <h6>Ordre du chapitre</h6>
+                <p>L'ordre détermine la séquence d'affichage des chapitres dans un cours. Si vous ne spécifiez pas d'ordre, il sera généré automatiquement.</p>
+
+                <h6 class="mt-3">Professeur</h6>
+                <p>Les informations du professeur sont importantes pour que les étudiants sachent à qui s'adresser pour des questions.</p>
+
+                <h6 class="mt-3">Conseils</h6>
+                <ul class="list-unstyled">
+                    <li>• Utilisez un titre clair et descriptif</li>
+                    <li>• Décrivez bien le contenu du chapitre</li>
+                    <li>• Associez le chapitre à un cours</li>
+                    <li>• Ajoutez une image si nécessaire</li>
+                    <li>• Vérifiez l'ordre d'affichage</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Aide rapide</h5>
+            </div>
+            <div class="card-body">
+                <h6>Formatage du contenu</h6>
+                <p>Vous pouvez utiliser du HTML dans la description pour formater le texte :</p>
+                <ul class="list-unstyled">
+                    <li><code>&lt;strong&gt;texte&lt;/strong&gt;</code> - Gras</li>
+                    <li><code>&lt;em&gt;texte&lt;/em&gt;</code> - Italique</li>
+                    <li><code>&lt;ul&gt;&lt;li&gt;item&lt;/li&gt;&lt;/ul&gt;</code> - Liste</li>
+                    <li><code>&lt;br&gt;</code> - Saut de ligne</li>
+                </ul>
+
+                <h6 class="mt-3">Images</h6>
+                <p>Les images doivent être placées dans le dossier <code>front-assets/images/chapters/</code></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-control {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.form-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.form-actions .btn {
+    margin-right: 10px;
+}
+
+.list-unstyled {
+    padding-left: 0;
+    list-style: none;
+}
+
+.list-unstyled li {
+    margin-bottom: 5px;
+}
+
+code {
+    background: #f8f9fa;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion - EducaVision</title>
+    <link rel="icon" href="{{ asset('front-assets/images/favicon.ico') }}" type="image/x-icon" />
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/assets.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/typography.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/shortcodes/shortcodes.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
+    <link class="skin" rel="stylesheet" type="text/css" href="{{ asset('assets/css/color/color-1.css') }}">
+    <style>
+        .account-container .contact-bx .input-group label {
+            position: relative;
+            top: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            display: block;
+            transition: none;
+        }
+        .account-container .contact-bx .focused .input-group label {
+            top: 0;
+            font-size: 14px;
+            color: #333;
+        }
+        .account-container .contact-bx .input-group .form-control {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px 15px;
+            font-size: 15px;
+            background-color: #fff;
+            transition: border-color 0.3s;
+        }
+        .account-container .contact-bx .input-group .form-control:focus {
+            border-color: var(--primary, #ff9f43);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.15);
+        }
+        .account-container .contact-bx .input-group .form-control::placeholder {
+            color: #aaa;
+            font-weight: 400;
+        }
+        .account-container .form-group {
+            margin-bottom: 20px;
+        }
+        .account-container .btn.button-md {
+            background: #ff9f43;
+            border: none;
+            border-radius: 6px;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            transition: background 0.3s;
+        }
+        .account-container .btn.button-md:hover {
+            background: #e68c2e;
+        }
+        .custom-control-label {
+            font-weight: 400;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="account-form">
+        <div class="account-head" style="background-image:url({{ asset('assets/images/background/bg2.jpg') }});">
+            <a href="{{ path('front_home') }}"><img src="{{ asset('assets/images/logo-white-2.png') }}" alt="EducaVision"></a>
+        </div>
+        <div class="account-form-inner">
+            <div class="account-container">
+                <div class="heading-bx left">
+                    <h2 class="title-head">Connexion à votre <span>Compte</span></h2>
+                    <p>Pas encore de compte ? <a href="{{ path('app_register') }}">Créer un compte</a></p>
+                </div>
+
+                {% if error %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }}">{{ message }}</div>
+                    {% endfor %}
+                {% endfor %}
+
+                <form method="post" class="contact-bx">
+                    <div class="row placeani">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Adresse Email</label>
+                                    <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" class="form-control" autocomplete="email" required autofocus placeholder="votre@email.com">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Mot de passe</label>
+                                    <input type="password" name="_password" id="inputPassword" class="form-control" autocomplete="current-password" required placeholder="••••••••">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group form-forget">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="rememberMe" name="_remember_me">
+                                    <label class="custom-control-label" for="rememberMe">Se souvenir de moi</label>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                        <div class="col-lg-12 m-b30">
+                            <button type="submit" class="btn button-md" style="width: 100%;">Se connecter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/bootstrap/js/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/functions.js') }}"></script>
+</body>
+</html>

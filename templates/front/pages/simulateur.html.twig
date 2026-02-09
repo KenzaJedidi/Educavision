@@ -1,0 +1,570 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Simulateur d'Orientation - EducaVision{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    /* Variables de couleurs */
+    :root {
+        --primary-orange: #FF9800;
+        --primary-blue: #1E3A5F;
+        --light-orange: #FFF3E0;
+        --light-blue: #E8F4FD;
+        --border-color: #E0E0E0;
+        --text-primary: #2C3E50;
+        --text-secondary: #546E7A;
+        --success: #4CAF50;
+        --warning: #FF9800;
+        --danger: #F44336;
+    }
+
+    /* Structure principale */
+    .simulator-page {
+        background: #F9FAFC;
+        min-height: 100vh;
+        padding: 40px 0;
+    }
+
+    .simulator-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* En-tête */
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .page-header h1 {
+        color: var(--primary-blue);
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin: 0 0 15px 0;
+    }
+
+    .page-header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    /* Carte principale */
+    .simulator-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 25px 30px;
+        background: linear-gradient(135deg, var(--primary-orange), #FFB74D);
+        border-bottom: none;
+    }
+
+    .card-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    /* Formulaire */
+    .form-group {
+        margin-bottom: 30px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 1rem;
+    }
+
+    .form-label i {
+        margin-right: 8px;
+        color: var(--primary-orange);
+    }
+
+    .form-label .required {
+        color: var(--danger);
+        margin-left: 3px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s;
+        font-family: inherit;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+    }
+
+    .input-group {
+        display: flex;
+    }
+
+    .input-group .form-control {
+        border-radius: 8px 0 0 8px;
+        border-right: 0;
+    }
+
+    .input-group-text {
+        background: var(--light-orange);
+        border: 2px solid var(--border-color);
+        border-left: 0;
+        border-radius: 0 8px 8px 0;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        color: var(--primary-blue);
+        font-size: 1rem;
+    }
+
+    .form-hint {
+        display: block;
+        margin-top: 8px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    /* Compteur spécialités */
+    .spec-counter {
+        background: var(--light-blue);
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--primary-blue);
+    }
+
+    .spec-counter .counter {
+        background: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        color: var(--primary-orange);
+    }
+
+    /* Grille de checkboxes */
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 10px;
+    }
+
+    .checkbox-item {
+        position: relative;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .checkbox-label {
+        display: block;
+        padding: 12px 15px;
+        background: white;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: center;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        color: var(--text-primary);
+    }
+
+    .checkbox-item input[type="checkbox"]:checked + .checkbox-label {
+        background: var(--light-orange);
+        border-color: var(--primary-orange);
+        color: var(--primary-blue);
+        font-weight: 600;
+        transform: scale(1.02);
+    }
+
+    .checkbox-label:hover {
+        border-color: var(--primary-orange);
+        transform: translateY(-2px);
+    }
+
+    .checkbox-item input[type="checkbox"]:disabled + .checkbox-label {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Bouton de soumission */
+    .btn-submit {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, var(--primary-orange), #FFB74D);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 10px rgba(255, 152, 0, 0.2);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(255, 152, 0, 0.3);
+    }
+
+    .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .simulator-page {
+            padding: 20px 0;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .checkbox-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .checkbox-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Animation de chargement */
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .btn-submit.loading i {
+        animation: spin 1s linear infinite;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/banner1.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Simulateur d'Orientation</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li>Simulateur d'Orientation</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Simulateur -->
+<div class="simulator-page">
+    <div class="simulator-container">
+        <!-- En-tête -->
+        <div class="page-header">
+            <h1>Simulateur d'Orientation</h1>
+            <p>Découvrez les filières qui correspondent à votre profil académique</p>
+        </div>
+
+        <!-- Formulaire de simulation -->
+        <div class="simulator-card">
+            <div class="card-header">
+                <h2><i class="fas fa-calculator"></i> Simulez votre orientation</h2>
+            </div>
+            <div class="card-body">
+                <form id="simulation-form" method="post">
+                    <!-- Moyenne générale -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-star"></i> Moyenne Générale
+                            <span class="required">*</span>
+                        </label>
+                        <div class="input-group">
+                            <input type="number" 
+                                   name="moyenne" 
+                                   id="moyenne"
+                                   class="form-control" 
+                                   min="0" 
+                                   max="20" 
+                                   step="0.1" 
+                                   value="15.5"
+                                   required
+                                   placeholder="Ex: 15.5">
+                            <span class="input-group-text">/20</span>
+                        </div>
+                        <span class="form-hint">Votre moyenne scolaire sur 20 points</span>
+                    </div>
+
+                    <!-- Spécialités -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-book-open"></i> Spécialités
+                            <span class="required">*</span>
+                        </label>
+                        
+                        <div class="spec-counter">
+                            <span>Spécialités sélectionnées</span>
+                            <span class="counter">3/3</span>
+                        </div>
+
+                        <div class="checkbox-grid">
+                            {% set specialites = ['Mathématiques', 'Physique-Chimie', 'SVT', 'NSI', 'SES', 'Littérature', 'Philosophie', 'Histoire-Géographie', 'Arts', 'Langues'] %}
+                            {% for spe in specialites %}
+                            <div class="checkbox-item">
+                                <input type="checkbox" 
+                                       id="spe-{{ loop.index }}" 
+                                       name="specialites[]" 
+                                       value="{{ spe }}"
+                                       class="spec-checkbox"
+                                       {% if spe in ['Mathématiques', 'Physique-Chimie', 'SVT'] %}checked{% endif %}>
+                                <label for="spe-{{ loop.index }}" class="checkbox-label">{{ spe }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <span class="form-hint">Sélectionnez exactement 3 spécialités</span>
+                    </div>
+
+                    <!-- Centres d'intérêt -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-heart"></i> Centres d'intérêt
+                            <small style="color: var(--text-secondary); font-weight: 400;">(optionnel)</small>
+                        </label>
+
+                        <div class="checkbox-grid">
+                            {% set preferences = ['Scientifique', 'Littéraire', 'Social', 'Technique', 'Créatif', 'Analytique', 'Relationnel', 'Logique', 'Humain'] %}
+                            {% for pref in preferences %}
+                            <div class="checkbox-item">
+                                <input type="checkbox" 
+                                       id="pref-{{ loop.index }}" 
+                                       name="preferences[]" 
+                                       value="{{ pref }}"
+                                       {% if pref in ['Scientifique', 'Technique'] %}checked{% endif %}>
+                                <label for="pref-{{ loop.index }}" class="checkbox-label">{{ pref }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <span class="form-hint">Sélectionnez vos domaines d'intérêt (optionnel)</span>
+                    </div>
+
+                    <!-- Bouton de soumission -->
+                    <button type="submit" class="btn-submit" id="submit-btn">
+                        <i class="fas fa-rocket"></i> Lancer la Simulation
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des spécialités (max 3)
+    const specCheckboxes = document.querySelectorAll('.spec-checkbox');
+    const counter = document.querySelector('.spec-counter .counter');
+
+    function updateSpecCounter() {
+        const checked = Array.from(specCheckboxes).filter(cb => cb.checked);
+        counter.textContent = checked.length + '/3';
+
+        // Désactiver les autres si 3 sont cochées
+        if (checked.length >= 3) {
+            specCheckboxes.forEach(cb => {
+                if (!cb.checked) {
+                    cb.disabled = true;
+                    cb.parentElement.style.opacity = '0.5';
+                }
+            });
+        } else {
+            specCheckboxes.forEach(cb => {
+                cb.disabled = false;
+                cb.parentElement.style.opacity = '1';
+            });
+        }
+    }
+
+    specCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            const checked = Array.from(specCheckboxes).filter(c => c.checked);
+            if (checked.length > 3) {
+                this.checked = false;
+            }
+            updateSpecCounter();
+        });
+    });
+
+    // Initialiser le compteur
+    updateSpecCounter();
+
+    // Gestion de la soumission du formulaire
+    const form = document.getElementById('simulation-form');
+    const submitBtn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Validation de la moyenne
+        const moyenne = parseFloat(document.getElementById('moyenne').value);
+        if (isNaN(moyenne) || moyenne < 0 || moyenne > 20) {
+            alert('⚠️ La moyenne doit être un nombre entre 0 et 20 !');
+            return;
+        }
+
+        // Validation des spécialités (exactement 3)
+        const checked = Array.from(specCheckboxes).filter(cb => cb.checked);
+        if (checked.length !== 3) {
+            alert('⚠️ Vous devez sélectionner exactement 3 spécialités !');
+            return;
+        }
+
+        // Récupérer les données du formulaire
+        const specialites = [];
+        const preferences = [];
+        
+        // Récupérer les spécialités cochées
+        specCheckboxes.forEach(cb => {
+            if (cb.checked) {
+                specialites.push(cb.value);
+            }
+        });
+        
+        // Récupérer les préférences cochées
+        document.querySelectorAll('input[name="preferences[]"]:checked').forEach(cb => {
+            preferences.push(cb.value);
+        });
+
+        // Préparer les données pour l'envoi
+        const data = {
+            moyenne: moyenne,
+            specialites: specialites,
+            preferences: preferences
+        };
+
+        console.log('Données envoyées:', data);
+
+        // Désactiver le bouton et afficher le chargement
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Calcul en cours...';
+        submitBtn.classList.add('loading');
+
+        // Envoyer la requête AJAX
+        fetch('{{ path('front_simulateur_calcul') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            console.log('Réponse reçue:', response.status, response.statusText);
+            
+            // Si la réponse n'est pas OK, essayer de lire le message d'erreur
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Erreur HTTP: ' + response.status);
+                }).catch(() => {
+                    throw new Error('Erreur HTTP: ' + response.status);
+                });
+            }
+            return response.json();
+        })
+        .then(result => {
+            console.log('Résultat:', result);
+            
+            if (result.success) {
+                // Construire l'URL avec l'ID - CORRECTION IMPORTANTE
+                const resultsUrl = '/simulateur/resultats/' + result.data.simulation_id;
+                console.log('Redirection vers:', resultsUrl);
+                
+                // Rediriger vers la page de résultats
+                window.location.href = resultsUrl;
+            } else {
+                // Afficher le message d'erreur du serveur
+                const errorMsg = result.message || 'Une erreur inconnue est survenue.';
+                if (result.error_details) {
+                    console.error('Détails de l\'erreur:', result.error_details);
+                }
+                alert('❌ ' + errorMsg);
+                
+                // Réactiver le bouton
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Lancer la Simulation';
+                submitBtn.classList.remove('loading');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur détaillée:', error);
+            
+            // Message d'erreur amélioré
+            let errorMessage = 'Une erreur est survenue lors de la simulation. ';
+            errorMessage += 'Veuillez vérifier votre connexion et réessayer.';
+            
+            if (error.message.includes('HTTP')) {
+                errorMessage += '\n\nErreur technique: ' + error.message;
+            }
+            
+            alert('❌ ' + errorMessage);
+            
+            // Réactiver le bouton
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Lancer la Simulation';
+            submitBtn.classList.remove('loading');
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Postuler à l'offre - EducaVision{% endblock %}
+
+{% block body %}
+{# Banner #}
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/stages-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Envoyer ma candidature</h1>
+        </div>
+    </div>
+    <div class="breadcrumb-row">
+        <div class="container">
+            <ul class="list-inline">
+                <li><a href="{{ path('front_home') }}">Accueil</a></li>
+                <li><a href="{{ path('front_stages') }}">Stages & Alternance</a></li>
+                <li>Postuler</li>
+            </ul>
+        </div>
+    </div>
+    <style>
+        .apply-card{border:1px solid #eee;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 10px 25px rgba(0,0,0,.06)}
+        .apply-header{display:flex;gap:18px;align-items:center;padding:22px;background:linear-gradient(90deg,#f7faff, #fff)}
+        .apply-logo{width:64px;height:64px;border-radius:12px;object-fit:contain;background:#fff;padding:8px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+        .apply-title{margin:0;font-weight:700}
+        .apply-meta{color:#6c757d;margin-top:6px}
+        .apply-body{padding:24px}
+        .apply-actions{padding:16px 24px;border-top:1px dashed #eee;display:flex;gap:12px}
+    </style>
+</div>
+
+{# Use Bootstrap 5 form theme for nice styling #}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label == 'error' ? 'danger' : (label == 'success' ? 'success' : 'info') }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            <div class="apply-card">
+                <div class="apply-header">
+                    <img src="{{ asset('front-assets/images/logo.png') }}" alt="Logo entreprise" class="apply-logo">
+                    <div>
+                        <h3 class="apply-title">{{ offre.titre }}</h3>
+                        <div class="apply-meta">
+                            <span><i class="fa fa-building"></i> {{ offre.entreprise }}</span>
+                            &nbsp;•&nbsp;
+                            <span><i class="fa fa-map-marker"></i> {{ offre.lieu ?? '—' }}</span>
+                            &nbsp;•&nbsp;
+                            <span><i class="fa fa-calendar"></i> {{ offre.dureeJours ?? '—' }} jours</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="apply-body">
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                        <div class="row">
+                            <div class="col-md-6">{{ form_row(form.nom, {'attr': {'placeholder':'Votre nom'}}) }}</div>
+                            <div class="col-md-6">{{ form_row(form.prenom, {'attr': {'placeholder':'Votre prénom'}}) }}</div>
+                            <div class="col-md-6">{{ form_row(form.email, {'attr': {'placeholder':'exemple@domaine.com'}}) }}</div>
+                            <div class="col-md-6">{{ form_row(form.telephone, {'attr': {'placeholder':'(+216) 99 999 999'}}) }}</div>
+                            <div class="col-md-6">{{ form_row(form.niveauEtude, {'attr': {'placeholder':'Licence, Master, ...'}}) }}</div>
+                            <div class="col-md-6">{{ form_row(form.cv) }}</div>
+                            <div class="col-12">{{ form_row(form.lettreMotivation, {'attr': {'rows': 6, 'placeholder': 'Expliquez vos motivations et disponibilités...'}}) }}</div>
+                        </div>
+                        <div class="apply-actions">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-paper-plane"></i> Envoyer ma candidature</button>
+                            <a href="{{ path('front_stages') }}" class="btn btn-outline-secondary"><i class="fa fa-arrow-left"></i> Retour aux offres</a>
+                            <a href="{{ path('front_candidature_my') }}" class="btn btn-outline-secondary"><i class="fa fa-list"></i> Retour à mes candidatures</a>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

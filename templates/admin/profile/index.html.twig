@@ -1,0 +1,165 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block breadcrumb_title %}Mon Profil{% endblock %}
+
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_dashboard') }}">Dashboard</a></li>
+    <li>Mon Profil</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    {% for message in app.flashes('success') %}
+        <div class="col-lg-12">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fa fa-check-circle"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="col-lg-4">
+        <div class="card" style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
+                <div style="width: 90px; height: 90px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; border: 3px solid rgba(255,255,255,0.5);">
+                    <i class="fa fa-user" style="font-size: 40px; color: #fff;"></i>
+                </div>
+                <h4 style="color: #fff; margin: 0;">{{ user.prenom }} {{ user.nom }}</h4>
+                <span class="badge mt-2" style="background: rgba(255,255,255,0.2); color: #fff; padding: 5px 15px; border-radius: 20px; font-size: 13px;">
+                    {% if user.role == 'admin' %}
+                        <i class="fa fa-shield"></i> Administrateur
+                    {% elseif user.role == 'professeur' %}
+                        <i class="fa fa-graduation-cap"></i> Professeur
+                    {% else %}
+                        <i class="fa fa-user"></i> Étudiant
+                    {% endif %}
+                </span>
+            </div>
+            <div class="card-body" style="padding: 20px;">
+                <div style="margin-bottom: 15px;">
+                    <small style="color: #999; text-transform: uppercase; font-size: 11px;">Email</small>
+                    <p style="margin: 3px 0 0; font-weight: 500;"><i class="fa fa-envelope text-muted me-2"></i>{{ user.email }}</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <small style="color: #999; text-transform: uppercase; font-size: 11px;">Téléphone</small>
+                    <p style="margin: 3px 0 0; font-weight: 500;"><i class="fa fa-phone text-muted me-2"></i>{{ user.telephone ?? 'Non renseigné' }}</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <small style="color: #999; text-transform: uppercase; font-size: 11px;">Adresse</small>
+                    <p style="margin: 3px 0 0; font-weight: 500;"><i class="fa fa-map-marker text-muted me-2"></i>{{ user.adresse ?? 'Non renseignée' }}</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <small style="color: #999; text-transform: uppercase; font-size: 11px;">Statut du compte</small>
+                    <p style="margin: 3px 0 0;">
+                        {% if user.actif %}
+                            <span class="badge" style="background: #28a745; padding: 4px 12px; border-radius: 12px;">
+                                <i class="fa fa-check-circle"></i> Actif
+                            </span>
+                        {% else %}
+                            <span class="badge" style="background: #dc3545; padding: 4px 12px; border-radius: 12px;">
+                                <i class="fa fa-times-circle"></i> Inactif
+                            </span>
+                        {% endif %}
+                    </p>
+                </div>
+                <hr>
+                <div style="margin-bottom: 10px;">
+                    <small style="color: #999; text-transform: uppercase; font-size: 11px;">Inscrit le</small>
+                    <p style="margin: 3px 0 0; font-size: 13px;"><i class="fa fa-calendar text-muted me-2"></i>{{ user.dateInscription ? user.dateInscription|date('d/m/Y à H\\hi') : 'N/A' }}</p>
+                </div>
+                <div>
+                    <small style="color: #999; text-transform: uppercase; font-size: 11px;">Dernière modification</small>
+                    <p style="margin: 3px 0 0; font-size: 13px;"><i class="fa fa-clock-o text-muted me-2"></i>{{ user.dateModification ? user.dateModification|date('d/m/Y à H\\hi') : 'N/A' }}</p>
+                </div>
+            </div>
+            <div class="card-footer text-center" style="background: #f8f9fa; padding: 15px;">
+                <a href="{{ path('admin_profile_edit') }}" class="btn btn-warning btn-sm" style="border-radius: 20px; padding: 6px 25px;">
+                    <i class="fa fa-edit"></i> Modifier mon profil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div class="card-header" style="background: #fff; border-bottom: 2px solid #f0f0f0; padding: 18px 25px;">
+                <h5 style="margin: 0; font-weight: 600;"><i class="fa fa-info-circle text-primary me-2"></i>Informations détaillées</h5>
+            </div>
+            <div class="card-body" style="padding: 25px;">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td style="width: 200px; color: #888; font-weight: 500;"><i class="fa fa-user me-2"></i>Nom complet</td>
+                            <td style="font-weight: 600;">{{ user.prenom }} {{ user.nom }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #888; font-weight: 500;"><i class="fa fa-envelope me-2"></i>Email</td>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #888; font-weight: 500;"><i class="fa fa-phone me-2"></i>Téléphone</td>
+                            <td>{{ user.telephone ?? 'Non renseigné' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #888; font-weight: 500;"><i class="fa fa-map-marker me-2"></i>Adresse</td>
+                            <td>{{ user.adresse ?? 'Non renseignée' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #888; font-weight: 500;"><i class="fa fa-tag me-2"></i>Rôle</td>
+                            <td>
+                                {% if user.role == 'admin' %}
+                                    <span class="badge bg-danger">Administrateur</span>
+                                {% elseif user.role == 'professeur' %}
+                                    <span class="badge bg-info">Professeur</span>
+                                {% else %}
+                                    <span class="badge bg-primary">Étudiant</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color: #888; font-weight: 500;"><i class="fa fa-check-circle me-2"></i>Statut</td>
+                            <td>
+                                {% if user.actif %}
+                                    <span class="text-success"><i class="fa fa-check"></i> Actif</span>
+                                {% else %}
+                                    <span class="text-danger"><i class="fa fa-times"></i> Inactif</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="color: #888; font-weight: 500;"><i class="fa fa-calendar me-2"></i>Date d'inscription</td>
+                            <td>{{ user.dateInscription ? user.dateInscription|date('d/m/Y à H\\hi') : 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #888; font-weight: 500;"><i class="fa fa-clock-o me-2"></i>Dernière modification</td>
+                            <td>{{ user.dateModification ? user.dateModification|date('d/m/Y à H\\hi') : 'N/A' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card mt-3" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div class="card-header" style="background: #fff; border-bottom: 2px solid #f0f0f0; padding: 18px 25px;">
+                <h5 style="margin: 0; font-weight: 600;"><i class="fa fa-cog text-warning me-2"></i>Actions rapides</h5>
+            </div>
+            <div class="card-body" style="padding: 25px;">
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{{ path('admin_profile_edit') }}" class="btn btn-warning" style="border-radius: 8px;">
+                        <i class="fa fa-edit"></i> Modifier mon profil
+                    </a>
+                    <a href="{{ path('admin_message_index') }}" class="btn btn-info" style="border-radius: 8px;">
+                        <i class="fa fa-envelope"></i> Mes messages
+                    </a>
+                    <a href="{{ path('admin_dashboard') }}" class="btn btn-primary" style="border-radius: 8px;">
+                        <i class="fa fa-dashboard"></i> Dashboard
+                    </a>
+                    <a href="{{ path('app_logout') }}" class="btn btn-danger" style="border-radius: 8px;">
+                        <i class="fa fa-sign-out"></i> Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

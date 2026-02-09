@@ -1,0 +1,203 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Ajouter un Message - EducaVision Admin{% endblock %}
+
+{% block breadcrumb_title %}Ajouter un Message{% endblock %}
+
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_message_index') }}">Messages</a></li>
+    <li>Ajouter</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Nouveau Message</h4>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                
+                <div class="form-group">
+                    {{ form_label(form.title) }}
+                    {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.title) }}
+                    <small class="form-text text-muted">Ex: "Cours : Nom du cours"</small>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.student) }}
+                            {{ form_widget(form.student, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.student) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.teacher) }}
+                            {{ form_widget(form.teacher, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.teacher) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.content) }}
+                    {{ form_widget(form.content, {'attr': {'class': 'form-control', 'rows': '8'}}) }}
+                    {{ form_errors(form.content) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.lastMessage) }}
+                    {{ form_widget(form.lastMessage, {'attr': {'class': 'form-control', 'rows': '4'}}) }}
+                    {{ form_errors(form.lastMessage) }}
+                    <small class="form-text text-muted">Dernier message de la discussion</small>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.isRead) }}
+                            {{ form_widget(form.isRead, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.isRead) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.messageCount) }}
+                            {{ form_widget(form.messageCount, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.messageCount) }}
+                            <small class="form-text text-muted">Nombre de messages dans la discussion</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Enregistrer
+                    </button>
+                    <a href="{{ path('admin_message_index') }}" class="btn btn-secondary">
+                        <i class="fa fa-times"></i> Annuler
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Informations</h5>
+            </div>
+            <div class="card-body">
+                <h6>Titre du message</h6>
+                <p>Le titre permet d'identifier rapidement la discussion. Pour les messages liés à un cours, utilisez le format "Cours : Nom du cours".</p>
+
+                <h6 class="mt-3">Participants</h6>
+                <ul class="list-unstyled">
+                    <li><strong>Étudiant:</strong> La personne qui a initié la discussion</li>
+                    <li><strong>Professeur:</strong> Le responsable du cours ou de la formation</li>
+                </ul>
+
+                <h6 class="mt-3">Statut de lecture</h6>
+                <ul class="list-unstyled">
+                    <li><span class="badge badge-warning">Non lu (0)</span> - Message non encore traité</li>
+                    <li><span class="badge badge-success">Lu (1)</span> - Message traité/répondu</li>
+                </ul>
+
+                <h6 class="mt-3">Conseils</h6>
+                <ul class="list-unstyled">
+                    <li>• Utilisez un titre descriptif</li>
+                    <li>• Associez le message à un cours si applicable</li>
+                    <li>• Indiquez correctement les participants</li>
+                    <li>• Mettez à jour le compteur de messages</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title">Modèles de titres</h5>
+            </div>
+            <div class="card-body">
+                <h6>Pour les cours</h6>
+                <ul class="list-unstyled">
+                    <li><code>Cours : Développement Web</code></li>
+                    <li><code>Cours : Design Graphique</code></li>
+                    <li><code>Cours : Marketing Digital</code></li>
+                </ul>
+
+                <h6 class="mt-3">Autres discussions</h6>
+                <ul class="list-unstyled">
+                    <li><code>Question générale</code></li>
+                    <li><code>Support technique</code></li>
+                    <li><code>Information inscription</code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-control {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.form-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.form-actions .btn {
+    margin-right: 10px;
+}
+
+.list-unstyled {
+    padding-left: 0;
+    list-style: none;
+}
+
+.list-unstyled li {
+    margin-bottom: 5px;
+}
+
+code {
+    background: #f8f9fa;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+.badge-success { background-color: #28a745; color: white; }
+.badge-danger { background-color: #dc3545; color: white; }
+.badge-warning { background-color: #ffc107; color: white; }
+.badge-info { background-color: #17a2b8; color: white; }
+.badge-primary { background-color: #007bff; color: white; }
+.badge-secondary { background-color: #6c757d; color: white; }
+</style>
+{% endblock %}

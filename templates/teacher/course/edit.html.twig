@@ -1,0 +1,130 @@
+{% extends 'teacher/layout.html.twig' %}
+
+{% block title %}Modifier un Cours - EducaVision Professeur{% endblock %}
+
+{% block breadcrumb_title %}Modifier un Cours{% endblock %}
+
+{% block breadcrumb_items %}
+    <li><a href="{{ path('teacher_course_index') }}">Mes Cours</a></li>
+    <li>Modifier</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Modifier le Cours: {{ course.titre }}</h4>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.titre) }}
+                            {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.titre) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.category) }}
+                            {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.category) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.price) }}
+                            {{ form_widget(form.price, {'attr': {'class': 'form-control', 'step': '0.01'}}) }}
+                            {{ form_errors(form.price) }}
+                            <small class="form-text text-muted">Laissez vide pour un cours gratuit</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.status) }}
+                            {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.status) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.description) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '6'}}) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.imageUrl) }}
+                    {{ form_widget(form.imageUrl, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.imageUrl) }}
+                    <small class="form-text text-muted">Nom du fichier image (ex: mon-cours.jpg)</small>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.pdfUpload) }}
+                    {{ form_widget(form.pdfUpload, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.pdfUpload) }}
+                    {% if course.pdfFile %}
+                        <small class="form-text text-success">
+                            <i class="fa fa-file-pdf-o"></i> PDF actuel : 
+                            <a href="{{ asset('uploads/courses/pdf/' ~ course.pdfFile) }}" target="_blank">{{ course.pdfFile }}</a>
+                            — Téléchargez un nouveau fichier pour le remplacer.
+                        </small>
+                    {% else %}
+                        <small class="form-text text-muted">Fichier PDF (max 20 Mo)</small>
+                    {% endif %}
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> Enregistrer les modifications
+                    </button>
+                    <a href="{{ path('teacher_course_show', {'id': course.id}) }}" class="btn btn-info">
+                        <i class="fa fa-eye"></i> Voir
+                    </a>
+                    <a href="{{ path('teacher_course_index') }}" class="btn btn-secondary">
+                        <i class="fa fa-times"></i> Annuler
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Informations du Cours</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>ID:</strong></td>
+                        <td>{{ course.id }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Créé le:</strong></td>
+                        <td>{{ course.createdAt|date('d/m/Y H:i') }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Chapitres:</strong></td>
+                        <td>{{ course.chapters|length }}</td>
+                    </tr>
+                </table>
+                <hr>
+                <a href="{{ path('front_cours_show', {'id': course.id}) }}" class="btn btn-outline-success btn-block btn-sm" target="_blank">
+                    <i class="fa fa-external-link"></i> Voir sur le site public
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

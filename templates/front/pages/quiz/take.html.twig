@@ -1,0 +1,129 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Quiz - {{ quiz.titre }}{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/quiz-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">{{ quiz.titre }}</h1>
+            <p class="text-white m-b0">{{ quiz.questions|length }} questions</p>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li><a href="{{ path('quiz_index') }}">Quiz</a></li>
+            <li>{{ quiz.titre }}</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            {% if quiz.description %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-info">
+                            {{ quiz.description }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <form method="post" action="{{ path('quiz_submit', {'id': quiz.idquiz}) }}">
+                <div class="row">
+                    <div class="col-md-12">
+                        {% for question in quiz.questions %}
+                            <div class="cours-bx mb-4">
+                                <div class="cours-info">
+                                    <h5><strong>Question {{ loop.index }}:</strong> {{ question.texte }}</h5>
+                                    
+                                    <div class="quiz-options">
+                                        {% for answer in question.answers %}
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" 
+                                                       name="answers[{{ question.id }}]" 
+                                                       value="{{ answer.id }}" 
+                                                       id="answer_{{ answer.id }}">
+                                                <label class="form-check-label" for="answer_{{ answer.id }}">
+                                                    <span class="quiz-option">{{ answer.texte }}</span>
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('quiz_index') }}" class="btn btn-secondary radius-xl">
+                                <i class="fas fa-arrow-left"></i> Retour aux quiz
+                            </a>
+                            <button type="submit" class="btn btn-primary radius-xl">
+                                <i class="fas fa-check"></i> Valider mes réponses
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.quiz-options {
+    margin-top: 15px;
+}
+
+.quiz-option {
+    display: block;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-left: 25px;
+    transition: all 0.3s ease;
+}
+
+.form-check-input:checked + .form-check-label .quiz-option {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    color: #1976d2;
+}
+
+.form-check-input:focus + .form-check-label .quiz-option {
+    border-color: #2196f3;
+    box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+}
+</style>
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+// Validation du formulaire avant soumission
+document.querySelector('form').addEventListener('submit', function(e) {
+    const questions = {{ quiz.questions|length }};
+    const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
+    
+    if (answeredQuestions < questions) {
+        e.preventDefault();
+        if (!confirm(`Vous n'avez répondu qu'à ${answeredQuestions} questions sur ${questions}. Voulez-vous quand même valider ?`)) {
+            return false;
+        }
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

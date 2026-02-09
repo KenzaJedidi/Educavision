@@ -1,0 +1,91 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ utilisateur.prenom }} {{ utilisateur.nom }} - Admin{% endblock %}
+
+{% block breadcrumb_title %}Détails de l'Utilisateur{% endblock %}
+{% block breadcrumb_items %}
+    <li><a href="{{ path('admin_user_index') }}">Utilisateurs</a></li>
+    <li>{{ utilisateur.prenom }} {{ utilisateur.nom }}</li>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-8 col-md-10 m-b30">
+            <div class="widget-box">
+                <div class="wc-title">
+                    <h4>{{ utilisateur.prenom }} {{ utilisateur.nom }}</h4>
+                </div>
+                <div class="widget-inner">
+                    <table class="table">
+                        <tr>
+                            <th style="width: 200px;">ID</th>
+                            <td>{{ utilisateur.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Prénom</th>
+                            <td>{{ utilisateur.prenom }}</td>
+                        </tr>
+                        <tr>
+                            <th>Nom</th>
+                            <td>{{ utilisateur.nom }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>{{ utilisateur.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Rôle</th>
+                            <td>
+                                {% if utilisateur.role == 'admin' %}
+                                    <span class="badge badge-primary">Admin</span>
+                                {% elseif utilisateur.role == 'professeur' %}
+                                    <span class="badge badge-info">Professeur</span>
+                                {% else %}
+                                    <span class="badge badge-warning">Étudiant</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Statut</th>
+                            <td>
+                                {% if utilisateur.actif %}
+                                    <span class="badge badge-success">Actif</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inactif</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Téléphone</th>
+                            <td>{{ utilisateur.telephone ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Adresse</th>
+                            <td>{{ utilisateur.adresse ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date d'inscription</th>
+                            <td>{{ utilisateur.dateInscription ? utilisateur.dateInscription|date('d/m/Y H:i') : '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Dernière modification</th>
+                            <td>{{ utilisateur.dateModification ? utilisateur.dateModification|date('d/m/Y H:i') : '-' }}</td>
+                        </tr>
+                    </table>
+
+                    <div class="mt-3">
+                        <a href="{{ path('admin_user_edit', {id: utilisateur.id}) }}" class="btn btn-primary">
+                            <i class="fa fa-pencil"></i> Modifier
+                        </a>
+                        <a href="{{ path('admin_user_toggle', {id: utilisateur.id}) }}" class="btn btn-{{ utilisateur.actif ? 'warning' : 'success' }}">
+                            <i class="fa fa-{{ utilisateur.actif ? 'ban' : 'check' }}"></i> {{ utilisateur.actif ? 'Désactiver' : 'Activer' }}
+                        </a>
+                        <a href="{{ path('admin_user_index') }}" class="btn btn-secondary ml-2">
+                            <i class="fa fa-arrow-left"></i> Retour
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

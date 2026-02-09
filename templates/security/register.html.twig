@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inscription - EducaVision</title>
+    <link rel="icon" href="{{ asset('front-assets/images/favicon.ico') }}" type="image/x-icon" />
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/assets.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/typography.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/shortcodes/shortcodes.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
+    <link class="skin" rel="stylesheet" type="text/css" href="{{ asset('assets/css/color/color-1.css') }}">
+    <style>
+        .account-container .contact-bx .input-group label {
+            position: relative;
+            top: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            display: block;
+            transition: none;
+        }
+        .account-container .contact-bx .focused .input-group label {
+            top: 0;
+            font-size: 14px;
+            color: #333;
+        }
+        .account-container .contact-bx .input-group .form-control {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px 15px;
+            font-size: 15px;
+            background-color: #fff;
+            transition: border-color 0.3s;
+        }
+        .account-container .contact-bx .input-group .form-control:focus {
+            border-color: var(--primary, #ff9f43);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.15);
+        }
+        .account-container .contact-bx .input-group .form-control::placeholder {
+            color: #aaa;
+            font-weight: 400;
+        }
+        .account-container .contact-bx .input-group select.form-control {
+            appearance: auto;
+            -webkit-appearance: auto;
+            cursor: pointer;
+        }
+        .account-container .form-group {
+            margin-bottom: 20px;
+        }
+        .account-container .btn.button-md {
+            background: #ff9f43;
+            border: none;
+            border-radius: 6px;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            transition: background 0.3s;
+        }
+        .account-container .btn.button-md:hover {
+            background: #e68c2e;
+        }
+        .account-container .form-errors {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+        .account-container li {
+            color: #dc3545;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="account-form">
+        <div class="account-head" style="background-image:url({{ asset('assets/images/background/bg2.jpg') }});">
+            <a href="{{ path('front_home') }}"><img src="{{ asset('assets/images/logo-white-2.png') }}" alt="EducaVision"></a>
+        </div>
+        <div class="account-form-inner">
+            <div class="account-container">
+                <div class="heading-bx left">
+                    <h2 class="title-head">Créer un <span>Compte</span></h2>
+                    <p>Déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a></p>
+                </div>
+
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }}">{{ message }}</div>
+                    {% endfor %}
+                {% endfor %}
+
+                {{ form_start(form, {'attr': {'class': 'contact-bx'}}) }}
+                    <div class="row placeani">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Prénom</label>
+                                    {{ form_widget(form.prenom, {'attr': {'class': 'form-control', 'placeholder': 'Prénom'}}) }}
+                                    {{ form_errors(form.prenom) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Nom</label>
+                                    {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Nom'}}) }}
+                                    {{ form_errors(form.nom) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Adresse Email</label>
+                                    {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'votre@email.com'}}) }}
+                                    {{ form_errors(form.email) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Je suis</label>
+                                    {{ form_widget(form.role, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.role) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Mot de passe</label>
+                                    {{ form_widget(form.plainPassword.first, {'attr': {'class': 'form-control', 'placeholder': '••••••••'}}) }}
+                                    {{ form_errors(form.plainPassword.first) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Confirmer le mot de passe</label>
+                                    {{ form_widget(form.plainPassword.second, {'attr': {'class': 'form-control', 'placeholder': '••••••••'}}) }}
+                                    {{ form_errors(form.plainPassword) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <label>Téléphone (Optionnel)</label>
+                                    {{ form_widget(form.telephone, {'attr': {'class': 'form-control', 'placeholder': '+216 XX XXX XXX'}}) }}
+                                    {{ form_errors(form.telephone) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 m-b30">
+                            <button type="submit" class="btn button-md" style="width: 100%;">S'inscrire</button>
+                        </div>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/bootstrap/js/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/functions.js') }}"></script>
+</body>
+</html>

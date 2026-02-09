@@ -1,0 +1,352 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Dashboard - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Dashboard{% endblock %}
+
+{% block breadcrumb_items %}
+<li>Dashboard</li>
+{% endblock %}
+
+{% block body %}
+<div class="mb-3 d-flex justify-content-between align-items-center">
+	<h2 class="h5 mb-0">Tableau de bord</h2>
+	<a href="{{ path('front_home') }}" class="btn btn-outline-primary"><i class="fa fa-home"></i> Aller à l'accueil</a>
+ </div>
+<!-- Cartes métriques - Offres de stage & Candidatures (placées en haut) -->
+<div class="row m-b30">
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card widget-bg2">
+			<div class="wc-item">
+				<h4 class="wc-title">Offres de Stage</h4>
+				<span class="wc-des">Offres publiées</span>
+				<span class="wc-stats counter">{{ stats.offres.total }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.offres.pct }}%;" aria-valuenow="{{ stats.offres.pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Ouvertes</span>
+					<span class="wc-number ml-auto">{{ stats.offres.pct }}%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card widget-bg3">
+			<div class="wc-item">
+				<h4 class="wc-title">Candidatures</h4>
+				<span class="wc-des">Demandes reçues</span>
+				<span class="wc-stats counter">{{ stats.candidatures.total }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.candidatures.pct }}%;" aria-valuenow="{{ stats.candidatures.pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">En attente</span>
+					<span class="wc-number ml-auto">{{ stats.candidatures.pct }}%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Cartes métriques - Réclamations & Réponses (placées en haut) -->
+<div class="row m-b30">
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card widget-bg1">
+			<div class="wc-item">
+				<h4 class="wc-title">Réclamations</h4>
+				<span class="wc-des">Demandes enregistrées</span>
+				<span class="wc-stats counter">{{ stats.reclamations.total }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.reclamations.pct }}%;" aria-valuenow="{{ stats.reclamations.pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">En cours</span>
+					<span class="wc-number ml-auto">{{ stats.reclamations.pct }}%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card widget-bg4">
+			<div class="wc-item">
+				<h4 class="wc-title">Réponses</h4>
+				<span class="wc-des">Messages envoyés</span>
+				<span class="wc-stats counter">{{ stats.reponses.total }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.reponses.pctTraitees }}%;" aria-valuenow="{{ stats.reponses.pctTraitees }}" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Réclamations traitées</span>
+					<span class="wc-number ml-auto">{{ stats.reponses.pctTraitees }}%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Cards statistiques -->
+<div class="row">
+	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg1">
+			<div class="wc-item">
+				<h4 class="wc-title">Total Filières</h4>
+				<span class="wc-des">Filières disponibles</span>
+				<span class="wc-stats counter">{{ stats.filieres.total|default(0) }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.filieres.pct|default(100) }}%;" aria-valuenow="{{ stats.filieres.pct|default(100) }}" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Actives</span>
+					<span class="wc-number ml-auto">{{ stats.filieres.pct|default(100) }}%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg2">
+			<div class="wc-item">
+				<h4 class="wc-title">Formations</h4>
+				<span class="wc-des">Formations proposées</span>
+				<span class="wc-stats counter">{{ stats.formations.total|default(0) }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.formations.pct|default(100) }}%;" aria-valuenow="{{ stats.formations.pct|default(100) }}" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Disponibles</span>
+					<span class="wc-number ml-auto">{{ stats.formations.pct|default(100) }}%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg3">
+			<div class="wc-item">
+				<h4 class="wc-title">Simulations</h4>
+				<span class="wc-des">Tests effectués</span>
+				<span class="wc-stats counter">150</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: 65%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Ce mois</span>
+					<span class="wc-number ml-auto">+15%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg4">
+			<div class="wc-item">
+				<h4 class="wc-title">Étudiants</h4>
+				<span class="wc-des">Utilisateurs inscrits</span>
+				<span class="wc-stats counter">350</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: 90%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Actifs</span>
+					<span class="wc-number ml-auto">90%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Graphiques et notifications -->
+<div class="row">
+	<!-- Graphique -->
+	<div class="col-lg-8 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Statistiques d'utilisation</h4>
+			</div>
+			<div class="widget-inner">
+				<canvas id="chart" width="100" height="45"></canvas>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Notifications -->
+	<div class="col-lg-4 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Activité récente</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="noti-box-list">
+					<ul>
+						<li>
+							<span class="notification-icon dashbg-green">
+								<i class="fa fa-plus"></i>
+							</span>
+							<span class="notification-text">
+								Nouvelle filière <strong>Médecine</strong> ajoutée
+							</span>
+							<span class="notification-time">
+								<span> 2h</span>
+							</span>
+						</li>
+						<li>
+							<span class="notification-icon dashbg-blue">
+								<i class="fa fa-edit"></i>
+							</span>
+							<span class="notification-text">
+								Formation <strong>Développeur Web</strong> modifiée
+							</span>
+							<span class="notification-time">
+								<span> 5h</span>
+							</span>
+						</li>
+						<li>
+							<span class="notification-icon dashbg-yellow">
+								<i class="fa fa-bar-chart"></i>
+							</span>
+							<span class="notification-text">
+								15 nouvelles simulations effectuées
+							</span>
+							<span class="notification-time">
+								<span> 1 jour</span>
+							</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Accès rapide -->
+<div class="row">
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Accès rapide - Module Orientation</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="row">
+					<div class="col-md-4 text-center m-b20">
+						<a href="{{ path('admin_filiere_index') }}" class="btn btn-block btn-lg green">
+							<i class="fa fa-graduation-cap fa-3x m-b10"></i>
+							<h5>Gérer les Filières</h5>
+							<p class="text-white">Ajouter, modifier, supprimer</p>
+						</a>
+					</div>
+					<div class="col-md-4 text-center m-b20">
+						<a href="{{ path('admin_formation_index') }}" class="btn btn-block btn-lg blue">
+							<i class="fa fa-book fa-3x m-b10"></i>
+							<h5>Gérer les Formations</h5>
+							<p class="text-white">Roadmaps et prérequis</p>
+						</a>
+					</div>
+					<div class="col-md-4 text-center m-b20">
+						<a href="{{ path('admin_simulateur_index') }}" class="btn btn-block btn-lg orange">
+							<i class="fa fa-calculator fa-3x m-b10"></i>
+							<h5>Simulateur</h5>
+							<p class="text-white">Historique et paramètres</p>
+						</a>
+					</div>
+					{# Bouton 'Voir le site' déplacé en haut de page; carte supprimée pour alléger la section #}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Accès rapide - Module Stages & Candidatures -->
+<div class="row">
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Accès rapide - Module Stages & Candidatures</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="row">
+					<div class="col-md-6 text-center m-b20">
+						<a href="{{ path('admin_offre_stage_index') }}" class="qa-card qa-stage">
+							<i class="fa fa-briefcase fa-3x m-b10"></i>
+							<h5>Gérer les Offres de Stage</h5>
+							<p class="text-white">Lister, créer, modifier, exporter</p>
+						</a>
+					</div>
+					<div class="col-md-6 text-center m-b20">
+						<a href="{{ path('admin_candidature_index') }}" class="qa-card qa-candidature">
+							<i class="fa fa-users fa-3x m-b10"></i>
+							<h5>Gérer les Candidatures</h5>
+							<p class="text-white">Lister, valider, refuser</p>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+ </div>
+
+<!-- Accès rapide - Module Réclamations & Réponses -->
+<div class="row">
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Accès rapide - Module Réclamations & Réponses</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="row">
+					<div class="col-md-6 text-center m-b20">
+						<a href="{{ path('reclamation_index') }}" class="qa-card qa-reclamation">
+							<i class="fa fa-exclamation-circle fa-3x m-b10"></i>
+							<h5>Gérer les Réclamations</h5>
+							<p class="text-white">Lister, traiter, suivre</p>
+						</a>
+					</div>
+					<div class="col-md-6 text-center m-b20">
+						<a href="{{ path('reponse_index') }}" class="qa-card qa-reponse">
+							<i class="fa fa-comments fa-3x m-b10"></i>
+							<h5>Gérer les Réponses</h5>
+							<p class="text-white">Créer, modifier, supprimer</p>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+ </div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="{{ asset('assets/vendors/chart/chart.min.js') }}"></script>
+<script>
+// Graphique simple (exemple)
+var ctx = document.getElementById('chart').getContext('2d');
+var chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+        datasets: [{
+            label: 'Simulations',
+            data: [12, 19, 15, 25, 22, 30],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true
+    }
+});
+</script>
+<style>
+/* Attractive gradient cards for quick-access modules */
+.qa-card{display:block;border-radius:14px;padding:18px 16px;text-decoration:none;background:#222;color:#fff !important;box-shadow:0 8px 24px rgba(0,0,0,.08);transition:transform .15s ease, box-shadow .15s ease}
+.qa-card:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(0,0,0,.12)}
+.qa-card i{color:#fff}
+.qa-card h5{color:#fff;margin-bottom:6px;font-weight:700}
+.qa-card p{color:#fff;margin:0}
+.qa-stage{background:linear-gradient(135deg,#00b4d8,#0077b6)}
+.qa-candidature{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.qa-reclamation{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.qa-reponse{background:linear-gradient(135deg,#6366f1,#4338ca)}
+</style>
+{% endblock %}

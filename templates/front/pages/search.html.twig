@@ -1,0 +1,299 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Recherche - EducaVision{% endblock %}
+
+{% block body %}
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/search-banner.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Recherche</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li>Recherche</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <!-- Barre de recherche principale -->
+            <div class="row m-b40">
+                <div class="col-md-12">
+                    <div class="search-box">
+                        <form action="{{ path('front_search') }}" method="GET">
+                            <div class="input-group">
+                                <input type="text" 
+                                       class="form-control form-control-lg" 
+                                       name="q" 
+                                       value="{{ query }}" 
+                                       placeholder="Rechercher une formation, un cours, un article..." 
+                                       autocomplete="off">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary btn-lg" type="submit">
+                                        <i class="fa fa-search"></i> Rechercher
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Filtres avancés -->
+                            <div class="search-filters mt-3">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <select class="form-control" name="type">
+                                            <option value="">Tous les types</option>
+                                            <option value="formation" {% if filters.type == 'formation' %}selected{% endif %}>Formations</option>
+                                            <option value="cours" {% if filters.type == 'cours' %}selected{% endif %}>Cours</option>
+                                            <option value="article" {% if filters.type == 'article' %}selected{% endif %}>Articles</option>
+                                            <option value="stage" {% if filters.type == 'stage' %}selected{% endif %}>Stages</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-control" name="category">
+                                            <option value="">Toutes catégories</option>
+                                            <option value="informatique" {% if filters.category == 'informatique' %}selected{% endif %}>Informatique</option>
+                                            <option value="commerce" {% if filters.category == 'commerce' %}selected{% endif %}>Commerce</option>
+                                            <option value="sante" {% if filters.category == 'sante' %}selected{% endif %}>Santé</option>
+                                            <option value="droit" {% if filters.category == 'droit' %}selected{% endif %}>Droit</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-control" name="level">
+                                            <option value="">Tous niveaux</option>
+                                            <option value="debutant" {% if filters.level == 'debutant' %}selected{% endif %}>Débutant</option>
+                                            <option value="intermediaire" {% if filters.level == 'intermediaire' %}selected{% endif %}>Intermédiaire</option>
+                                            <option value="avance" {% if filters.level == 'avance' %}selected{% endif %}>Avancé</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-control" name="sort">
+                                            <option value="relevance" {% if filters.sort == 'relevance' %}selected{% endif %}>Pertinence</option>
+                                            <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Plus récent</option>
+                                            <option value="popular" {% if filters.sort == 'popular' %}selected{% endif %}>Plus populaire</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Résultats -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="search-results-header">
+                        <h2>Résultats de recherche</h2>
+                        {% if query %}
+                            <p class="text-muted">{{ totalResults }} résultat(s) pour "{{ query }}"</p>
+                        {% else %}
+                            <p class="text-muted">Effectuez une recherche pour voir les résultats</p>
+                        {% endif %}
+                    </div>
+
+                    {% if query and results|length > 0 %}
+                        <!-- Liste des résultats -->
+                        <div class="search-results-list">
+                            {% for result in results %}
+                                <div class="search-result-item">
+                                    <div class="result-type">
+                                        <span class="badge badge-{{ result.type == 'formation' ? 'primary' : result.type == 'cours' ? 'success' : 'info' }}">
+                                            {{ result.type|capitalize }}
+                                        </span>
+                                    </div>
+                                    <div class="result-content">
+                                        <h4><a href="{{ result.url }}">{{ result.title }}</a></h4>
+                                        <p class="result-excerpt">{{ result.excerpt }}</p>
+                                        <div class="result-meta">
+                                            {% if result.category %}
+                                                <span><i class="fa fa-folder"></i> {{ result.category }}</span>
+                                            {% endif %}
+                                            {% if result.date %}
+                                                <span><i class="fa fa-calendar"></i> {{ result.date|date('d/m/Y') }}</span>
+                                            {% endif %}
+                                            {% if result.duration %}
+                                                <span><i class="fa fa-clock-o"></i> {{ result.duration }}</span>
+                                            {% endif %}
+                                            {% if result.level %}
+                                                <span><i class="fa fa-chart-line"></i> {{ result.level }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="result-actions">
+                                        <a href="{{ result.url }}" class="btn btn-outline-primary">Voir</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Pagination -->
+                        {% if totalPages > 1 %}
+                            <nav aria-label="Pagination" class="m-t40">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item {% if currentPage == 1 %}disabled{% endif %}">
+                                        <a class="page-link" href="{{ path('front_search', {q: query, page: currentPage-1}) }}">Précédent</a>
+                                    </li>
+                                    
+                                    {% for page in 1..totalPages %}
+                                        {% if page == currentPage %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ page }}</span>
+                                            </li>
+                                        {% elseif page >= currentPage-2 and page <= currentPage+2 %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ path('front_search', {q: query, page: page}) }}">{{ page }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    <li class="page-item {% if currentPage == totalPages %}disabled{% endif %}">
+                                        <a class="page-link" href="{{ path('front_search', {q: query, page: currentPage+1}) }}">Suivant</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        {% endif %}
+
+                    {% elseif query %}
+                        <!-- Aucun résultat -->
+                        <div class="no-results text-center p-5">
+                            <i class="fa fa-search fa-4x text-muted mb-3"></i>
+                            <h4>Aucun résultat trouvé</h4>
+                            <p class="text-muted">Essayez avec d'autres mots-clés ou consultez nos suggestions :</p>
+                            
+                            <div class="suggestions mt-4">
+                                <a href="{{ path('front_formations') }}" class="btn btn-outline-primary m-1">Voir toutes les formations</a>
+                                <a href="{{ path('front_cours_list') }}" class="btn btn-outline-primary m-1">Explorer les cours</a>
+                                <a href="{{ path('front_stages') }}" class="btn btn-outline-primary m-1">Consulter les stages</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <!-- Suggestions populaires -->
+                        <div class="popular-searches">
+                            <h3 class="m-b30">Recherches populaires</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="list-group">
+                                        <a href="{{ path('front_search') }}?q=bts+sio" class="list-group-item list-group-item-action">
+                                            <i class="fa fa-search text-muted mr-2"></i>BTS SIO
+                                        </a>
+                                        <a href="{{ path('front_search') }}?q=alternance+informatique" class="list-group-item list-group-item-action">
+                                            <i class="fa fa-search text-muted mr-2"></i>Alternance Informatique
+                                        </a>
+                                        <a href="{{ path('front_search') }}?q=formation+marketing+digital" class="list-group-item list-group-item-action">
+                                            <i class="fa fa-search text-muted mr-2"></i>Formation Marketing Digital
+                                        </a>
+                                        <a href="{{ path('front_search') }}?q=cours+programmation+gratuit" class="list-group-item list-group-item-action">
+                                            <i class="fa fa-search text-muted mr-2"></i>Cours Programmation Gratuit
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="list-group">
+                                        <a href="{{ path('front_search') }}?q=stage+commerce" class="list-group-item list-group-item-action">
+                                            <i class="fa fa-search text-muted mr-2"></i>Stage Commerce
+                                        </a>
+                                        <a href="{{ path('front_search') }}?q=licence+droit+en+ligne" class="list-group-item list-group-item-action">
+                                            <i class="fa fa-search text-muted mr-2"></i>Licence Droit en Ligne
+                                        </a>
+                                        <a href="{{ path('front_search') }}?q=financement+formation" class="list-group-item list-group-item-action">
+                                            <i class="fa fa-search text-muted mr-2"></i>Financement Formation
+                                        </a>
+                                        <a href="{{ path('front_search') }}?q=preparation+concours" class="list-group-item list-group-item-action">
+                                            <i class="fa fa-search text-muted mr-2"></i>Préparation Concours
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            {% if query and results|length > 0 %}
+                <div class="row m-t40">
+                    <div class="col-md-12">
+                        <div class="search-stats">
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <div class="stat-number">{{ stats.formations }}</div>
+                                    <div class="stat-label">Formations</div>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="stat-number">{{ stats.cours }}</div>
+                                    <div class="stat-label">Cours</div>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="stat-number">{{ stats.articles }}</div>
+                                    <div class="stat-label">Articles</div>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="stat-number">{{ stats.stages }}</div>
+                                    <div class="stat-label">Stages</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    $(document).ready(function() {
+        // Auto-complétion
+        $('#searchInput').typeahead({
+            source: function(query, process) {
+                $.ajax({
+                    url: '{{ path("front_search") }}',
+                    type: 'GET',
+                    data: { q: query },
+                    success: function(data) {
+                        process(data.suggestions);
+                    }
+                });
+            },
+            afterSelect: function(item) {
+                $('#searchInput').val(item);
+                $('#searchForm').submit();
+            }
+        });
+
+        // Filtres avancés toggle
+        $('#advancedFiltersToggle').click(function() {
+            $('#advancedFilters').slideToggle();
+            $(this).find('i').toggleClass('fa-chevron-down fa-chevron-up');
+        });
+
+        // Mise en évidence des termes recherchés
+        {% if query %}
+            var searchTerms = '{{ query }}'.toLowerCase().split(' ');
+            $('.result-excerpt').each(function() {
+                var text = $(this).text();
+                var highlighted = text;
+                
+                searchTerms.forEach(function(term) {
+                    if (term.length > 2) {
+                        var regex = new RegExp('(' + term + ')', 'gi');
+                        highlighted = highlighted.replace(regex, '<mark>$1</mark>');
+                    }
+                });
+                
+                $(this).html(highlighted);
+            });
+        {% endif %}
+    });
+</script>
+{% endblock %}

@@ -123,6 +123,21 @@ class FormationType extends AbstractType
                     'maxlength' => 5000,
                 ]
             ])
+            ->add('debouches', TextareaType::class, [
+                'required' => false,
+                'constraints' => [
+                    new Length([
+                        'max' => 5000,
+                        'maxMessage' => 'Les débouchés ne doivent pas dépasser {{ limit }} caractères.',
+                    ]),
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'rows' => 4,
+                    'placeholder' => 'Débouchés et opportunités professionnelles après la formation',
+                    'maxlength' => 5000,
+                ]
+            ])
             ->add('image', TextType::class, [
                 'required' => false,
                 'constraints' => [

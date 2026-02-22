@@ -44,6 +44,17 @@ class MessageRepository extends ServiceEntityRepository
     }
 
     /**
+     * Sauvegarde un message en base de données
+     */
+    public function save(Message $message, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($message);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    /**
      * Recherche avancée de messages
      */
     public function searchMessages(

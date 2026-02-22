@@ -162,7 +162,6 @@
 
         <!-- Messages liés -->
         {% if chapter.course %}
-            {% set courseMessages = messageRepository.findByCourseTitle(chapter.course.titre) %}
             {% if courseMessages|length > 0 %}
                 <div class="card mt-3">
                     <div class="card-header">

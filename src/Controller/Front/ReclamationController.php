@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ReclamationController extends AbstractController
 {
     #[Route('/reclamation', name: 'front_reclamation', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function new(Request $request, EntityManagerInterface $em, \App\Service\ResumeAutoService $resumeService, \App\Service\SentimentAutoService $sentimentService, \App\Service\ResolutionTimePredictionService $predictionService, \App\Service\CategoryAutoService $categoryService): Response
     {
         $reclamation = new Reclamation();
         $reclamation->setDateReclamation(new \DateTime());
@@ -28,6 +28,13 @@ class ReclamationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Analyse automatique
+            $desc = $reclamation->getDescription();
+            $reclamation->setResumeAuto($resumeService->summarize($desc));
+            $reclamation->setSentimentAuto($sentimentService->analyze($desc));
+            $reclamation->setTempsResolutionAuto($predictionService->predict($desc));
+            $reclamation->setCategory($categoryService->categorize($desc));
+
             $em->persist($reclamation);
             $em->flush();
             // Memorize email to prefill 'Mes réclamations'

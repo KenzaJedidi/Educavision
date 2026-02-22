@@ -11,9 +11,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/course')]
+#[IsGranted('ROLE_ADMIN')]
 class CourseController extends AbstractController
 {
     #[Route('/', name: 'admin_course_index', methods: ['GET'])]
@@ -25,27 +26,13 @@ class CourseController extends AbstractController
         $category = $request->query->get('category');
         $status = $request->query->get('status');
 
-        $qb = $courseRepository->createQueryBuilder('c');
-
-        if ($search) {
-            $qb->andWhere('c.titre LIKE :search OR c.description LIKE :search')
-               ->setParameter('search', '%' . $search . '%');
-        }
-
-        if ($category) {
-            $qb->andWhere('c.category = :category')
-               ->setParameter('category', $category);
-        }
-
+        // Convertir le statut seulement s'il est défini
+        $statusValue = null;
         if ($status !== null && $status !== '') {
-            $qb->andWhere('c.status = :status')
-               ->setParameter('status', (int)$status);
+            $statusValue = $status === '1' ? 'published' : 'draft';
         }
 
-        $courses = $qb->orderBy('c.created_at', 'DESC')
-                      ->getQuery()
-                      ->getResult();
-
+        $courses = $courseRepository->searchCourses($search, $category, $statusValue);
         $categories = $courseRepository->getAvailableCategories();
 
         return $this->render('admin/course/index.html.twig', [
@@ -58,27 +45,14 @@ class CourseController extends AbstractController
     }
 
     #[Route('/new', name: 'admin_course_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $course = new Course();
-        $course->setCreatedAt(new \DateTime());
         
         $form = $this->createForm(CourseType::class, $course);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $pdfFile = $form->get('pdfUpload')->getData();
-            if ($pdfFile) {
-                $originalFilename = pathinfo($pdfFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.pdf';
-                $pdfFile->move(
-                    $this->getParameter('kernel.project_dir') . '/public/uploads/courses/pdf',
-                    $newFilename
-                );
-                $course->setPdfFile($newFilename);
-            }
-
             $entityManager->persist($course);
             $entityManager->flush();
 
@@ -94,11 +68,10 @@ class CourseController extends AbstractController
     }
 
     #[Route('/{id}', name: 'admin_course_show', methods: ['GET'])]
-    public function show(
-        Course $course,
-        MessageRepository $messageRepository
-    ): Response {
-        $courseMessages = $messageRepository->findByCourseTitle($course->getTitre());
+    public function show(Course $course, MessageRepository $messageRepository): Response
+    {
+        // Récupérer les messages associés à ce cours
+        $courseMessages = $messageRepository->findBy(['course' => $course], ['created_at' => 'DESC']);
         
         return $this->render('admin/course/show.html.twig', [
             'course' => $course,
@@ -107,31 +80,12 @@ class CourseController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'admin_course_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Course $course, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    public function edit(Request $request, Course $course, EntityManagerInterface $entityManager, MessageRepository $messageRepository): Response
     {
         $form = $this->createForm(CourseType::class, $course);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $pdfFile = $form->get('pdfUpload')->getData();
-            if ($pdfFile) {
-                // Delete old PDF if exists
-                if ($course->getPdfFile()) {
-                    $oldPath = $this->getParameter('kernel.project_dir') . '/public/uploads/courses/pdf/' . $course->getPdfFile();
-                    if (file_exists($oldPath)) {
-                        unlink($oldPath);
-                    }
-                }
-                $originalFilename = pathinfo($pdfFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.pdf';
-                $pdfFile->move(
-                    $this->getParameter('kernel.project_dir') . '/public/uploads/courses/pdf',
-                    $newFilename
-                );
-                $course->setPdfFile($newFilename);
-            }
-
             $entityManager->flush();
 
             $this->addFlash('success', 'Le cours a été modifié avec succès !');
@@ -139,15 +93,27 @@ class CourseController extends AbstractController
             return $this->redirectToRoute('admin_course_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        // Récupérer les messages associés à ce cours
+        $courseMessages = $messageRepository->findBy(['course' => $course], ['created_at' => 'DESC']);
+
         return $this->render('admin/course/edit.html.twig', [
             'course' => $course,
             'form' => $form,
+            'courseMessages' => $courseMessages,
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'admin_course_delete', methods: ['GET', 'POST'])]
+    #[Route('/{id}/delete', name: 'admin_course_delete', methods: ['POST', 'GET'])]
     public function delete(Request $request, Course $course, EntityManagerInterface $entityManager): Response
     {
+        // Pour les requêtes GET (compatibilité), sauter la validation CSRF
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('delete'.$course->getId(), $request->request->get('_token'))) {
+                $this->addFlash('error', 'Token CSRF invalide.');
+                return $this->redirectToRoute('admin_course_index', [], Response::HTTP_SEE_OTHER);
+            }
+        }
+
         $entityManager->remove($course);
         $entityManager->flush();
 
@@ -156,15 +122,24 @@ class CourseController extends AbstractController
         return $this->redirectToRoute('admin_course_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/toggle-status', name: 'admin_course_toggle_status', methods: ['GET'])]
-    public function toggleStatus(Course $course, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/toggle-status', name: 'admin_course_toggle_status', methods: ['POST', 'GET'])]
+    public function toggleStatus(Request $request, Course $course, EntityManagerInterface $entityManager): Response
     {
-        $course->setStatus($course->getStatus() === 1 ? 0 : 1);
+        // For GET requests (backward compatibility), skip CSRF validation
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('toggle'.$course->getId(), $request->request->get('_token'))) {
+                $this->addFlash('error', 'Token CSRF invalide.');
+                return $this->redirectToRoute('admin_course_index', [], Response::HTTP_SEE_OTHER);
+            }
+        }
+
+        $newStatus = $course->getStatus() === 'published' ? 'draft' : 'published';
+        $course->setStatus($newStatus);
         $entityManager->flush();
 
-        $status = $course->getStatus() === 1 ? 'activé' : 'désactivé';
-        $this->addFlash('success', "Le cours a été {$status} avec succès !");
+        $this->addFlash('success', sprintf('Le cours a été %s avec succès !', 
+            $newStatus === 'published' ? 'publié' : 'mis en brouillon'));
 
-        return $this->redirectToRoute('admin_course_index');
+        return $this->redirectToRoute('admin_course_index', [], Response::HTTP_SEE_OTHER);
     }
 }

@@ -43,6 +43,10 @@ class Message
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $last_message = null;
 
+    #[ORM\ManyToOne(targetEntity: Course::class, inversedBy: 'messages')]
+    #[ORM\JoinColumn(name: 'course_id', referencedColumnName: 'id', nullable: true)]
+    private ?Course $course = null;
+
     #[ORM\OneToMany(mappedBy: 'message', targetEntity: ConversationMessage::class, cascade: ['persist', 'remove'])]
     private Collection $conversationMessages;
 
@@ -233,6 +237,18 @@ class Message
                 $conversationMessage->setMessage(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCourse(): ?Course
+    {
+        return $this->course;
+    }
+
+    public function setCourse(?Course $course): static
+    {
+        $this->course = $course;
 
         return $this;
     }

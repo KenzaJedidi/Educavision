@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CourseRepository::class)]
 class Course
@@ -17,9 +18,12 @@ class Course
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $titre = null;
+    #[Assert\NotBlank(message: 'Le titre est obligatoire')]
+    #[Assert\Length(min: 3, minMessage: 'Le titre doit faire au moins {{ limit }} caractères')]
+    private ?string $title = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'La description est obligatoire')]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -34,11 +38,12 @@ class Course
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $category = null;
 
-    #[ORM\Column]
-    private ?int $status = null;
+    #[ORM\Column(length: 20, options: ['default' => 'draft'])]
+    #[Assert\Choice(choices: ['draft', 'published'], message: 'Le statut doit être draft ou published')]
+    private ?string $status = 'draft';
 
-    #[ORM\Column]
-    private ?\DateTime $created_at = null;
+    #[ORM\Column(name: 'created_at')]
+    private ?\DateTime $createdAt = null;
 
     #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
     #[ORM\JoinColumn(name: 'teacher_id', referencedColumnName: 'id', nullable: true)]
@@ -47,7 +52,8 @@ class Course
     /**
      * @var Collection<int, Chapter>
      */
-    #[ORM\OneToMany(targetEntity: Chapter::class, mappedBy: 'course', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Chapter::class, mappedBy: 'course', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $chapters;
 
     /**
@@ -60,7 +66,7 @@ class Course
     {
         $this->chapters = new ArrayCollection();
         $this->messages = new ArrayCollection();
-        $this->created_at = new \DateTime();
+        $this->createdAt = new \DateTime();
     }
 
     public function getTeacher(): ?Utilisateur
@@ -79,14 +85,32 @@ class Course
         return $this->id;
     }
 
-    public function getTitre(): ?string
+    public function getTitle(): ?string
     {
-        return $this->titre;
+        return $this->title;
     }
 
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @deprecated Use getTitle() instead
+     */
+    public function getTitre(): ?string
+    {
+        return $this->title;
+    }
+
+    /**
+     * @deprecated Use setTitle() instead
+     */
     public function setTitre(string $titre): static
     {
-        $this->titre = $titre;
+        $this->title = $titre;
 
         return $this;
     }
@@ -151,26 +175,62 @@ class Course
         return $this;
     }
 
-    public function getStatus(): ?int
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(?int $status): static
+    public function setStatus(string $status): static
     {
         $this->status = $status;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    /**
+     * @deprecated Use getStatus() instead
+     */
+    public function getStatusInt(): ?int
     {
-        return $this->created_at;
+        return $this->status === 'published' ? 1 : 0;
     }
 
-    public function setCreatedAt(\DateTime $created_at): static
+    /**
+     * @deprecated Use setStatus() instead
+     */
+    public function setStatusInt(?int $status): static
     {
-        $this->created_at = $created_at;
+        $this->status = $status === 1 ? 'published' : 'draft';
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTime $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @deprecated Use getCreatedAt() instead
+     */
+    public function getCreated_at(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @deprecated Use setCreatedAt() instead
+     */
+    public function setCreated_at(\DateTime $created_at): static
+    {
+        $this->createdAt = $created_at;
 
         return $this;
     }

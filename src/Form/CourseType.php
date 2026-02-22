@@ -13,35 +13,31 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 class CourseType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('title', TextType::class, [
+                'label' => 'Titre',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Titre du cours'
+                ]
+            ])
             ->add('titre', TextType::class, [
-                'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le titre du cours est obligatoire']),
-                    new Assert\Length([
-                        'min' => 2,
-                        'max' => 255,
-                        'minMessage' => 'Le titre doit contenir au moins {{ limit }} caractères',
-                        'maxMessage' => 'Le titre ne peut pas dépasser {{ limit }} caractères'
-                    ])
-                ],
+                'label' => 'Titre',
+                'mapped' => false,
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Titre du cours'
                 ]
             ])
             ->add('description', TextareaType::class, [
-                'required' => false,
-                'constraints' => [
-                    new Assert\Length([
-                        'max' => 5000,
-                        'maxMessage' => 'La description ne peut pas dépasser {{ limit }} caractères'
-                    ])
-                ],
+                'label' => 'Description',
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 6,
@@ -113,17 +109,24 @@ class CourseType extends AbstractType
                 ]
             ])
             ->add('status', ChoiceType::class, [
-                'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le statut est obligatoire'])
-                ],
+                'label' => 'Statut',
                 'choices' => [
-                    'Actif' => 1,
-                    'Inactif' => 0
+                    'Brouillon' => 'draft',
+                    'Publié' => 'published'
                 ],
                 'attr' => [
                     'class' => 'form-control'
                 ]
             ]);
+
+        // Add event listener to handle backward compatibility
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+            $data = $event->getData();
+            if (isset($data['titre']) && !empty($data['titre'])) {
+                $data['title'] = $data['titre'];
+                $event->setData($data);
+            }
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,0 +1,567 @@
+/* ===================================
+   ROADMAP VISUAL DESIGN - EducaVision
+   =================================== */
+
+.roadmap-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    padding: 60px 50px;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border: 4px solid #007bff;
+    box-shadow: 0 15px 50px rgba(0, 123, 255, 0.15);
+}
+
+.roadmap-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 123, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+}
+
+.roadmap-section h3 {
+    color: #1E3A5F;
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin: 0 0 15px 0;
+    position: relative;
+    z-index: 2;
+}
+
+.roadmap-section h3 i {
+    color: #ffb822;
+    margin-right: 18px;
+    font-size: 2.8rem;
+}
+
+.roadmap-subtitle {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 2;
+}
+
+.roadmap-container {
+    position: relative;
+    padding: 30px 0;
+    z-index: 2;
+}
+
+/* Main Timeline Vertical Line */
+.roadmap-container::before {
+    content: '';
+    position: absolute;
+    left: 56px;
+    top: 80px;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, #007bff 0%, #0056b3 50%, #ddd 100%);
+    border-radius: 3px;
+    z-index: 1;
+}
+
+/* ===== STAGE STYLES ===== */
+.roadmap-stage {
+    position: relative;
+    margin-bottom: 80px;
+    padding-left: 160px;
+}
+
+.roadmap-stage.last-stage {
+    margin-bottom: 0;
+}
+
+/* Stage Circle Badge */
+.stage-badge {
+    position: absolute;
+    left: -5px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    border: 7px solid white;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+    z-index: 3;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.stage-badge:hover {
+    transform: scale(1.15);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+}
+
+.stage-badge-before {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.stage-badge-during {
+    background: linear-gradient(135deg, #ffb822 0%, #ffd54f 100%);
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.stage-badge-after {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+}
+
+/* Stage Header */
+.stage-header {
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 2;
+}
+
+.stage-header h4 {
+    color: #1E3A5F;
+    font-weight: 700;
+    font-size: 1.85rem;
+    margin: 0 0 15px 0;
+}
+
+.stage-count {
+    display: inline-block;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 5px;
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+    border: 2px solid white;
+}
+
+/* Stage Content Box */
+.stage-content {
+    background: white;
+    border-radius: 15px;
+    padding: 35px;
+    border: 3px solid #e8e8e8;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.stage-content::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    border-radius: 15px 0 0 15px;
+    background: linear-gradient(180deg, #007bff, #0056b3);
+}
+
+.stage-content:hover {
+    box-shadow: 0 15px 45px rgba(0, 123, 255, 0.2);
+    border-color: #007bff;
+    transform: translateY(-5px);
+}
+
+/* ===== PREREQUIS LIST ===== */
+.prerequis-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.prerequis-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #f0f7ff 0%, #f8f9ff 100%);
+    border: 3px solid #0080ff;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    min-height: 150px;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.15);
+    cursor: pointer;
+}
+
+.prerequis-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+}
+
+.prerequis-item:hover {
+    background: linear-gradient(135deg, #e0efff 0%, #eef5ff 100%);
+    border-color: #0056b3;
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 123, 255, 0.25);
+}
+
+.prerequis-item:last-child {
+    margin-bottom: 0;
+}
+
+.item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 65px;
+    height: 65px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border-radius: 12px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    flex-shrink: 0;
+    font-size: 1.8rem;
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    border: 3px solid white;
+}
+
+.item-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.item-content h5 {
+    margin: 0 0 8px 0;
+    color: #1E3A5F;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.item-content small {
+    display: block;
+    color: #555;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* ===== COMPETENCES & DEBOUCHES ===== */
+.competences-display,
+.debouches-display {
+    color: #333;
+    line-height: 1.8;
+    font-size: 0.95rem;
+}
+
+.competences-display ul,
+.debouches-display ul {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.competences-display li,
+.debouches-display li {
+    list-style: none;
+    padding: 20px 18px;
+    background: linear-gradient(135deg, #fff8f0 0%, #fff9f1 100%);
+    border: 3px solid #ffb822;
+    border-radius: 12px;
+    color: #333;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    box-shadow: 0 4px 15px rgba(255, 184, 34, 0.15);
+}
+
+.competences-display li::before,
+.debouches-display li::before {
+    content: '●';
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    color: #ffb822;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.competences-display li,
+.debouches-display li {
+    padding-top: 35px;
+}
+
+.competences-display li:hover,
+.debouches-display li:hover {
+    background: linear-gradient(135deg, #fff3e0 0%, #fffbf7 100%);
+    border-color: #ff9500;
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(255, 184, 34, 0.25);
+}
+
+.competences-display p,
+.debouches-display p {
+    margin: 0;
+    color: #555;
+}
+
+/* ===== DIFFICULTY BADGE ===== */
+.roadmap-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 40px;
+    animation: slideInUp 0.6s ease;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.roadmap-badge.difficulty-easy {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    border: 2px solid #28a745;
+}
+
+.roadmap-badge.difficulty-medium {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffecb3 100%);
+    color: #856404;
+    border: 2px solid #ffb822;
+}
+
+.roadmap-badge.difficulty-hard {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+    border: 2px solid #dc3545;
+}
+
+.badge-icon {
+    font-size: 1.5rem;
+    display: inline-block;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.badge-text {
+    display: inline-block;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .roadmap-section {
+        padding: 35px 25px;
+    }
+
+    .roadmap-section h3 {
+        font-size: 1.8rem;
+    }
+
+    .roadmap-section h3 i {
+        font-size: 2rem;
+    }
+
+    .roadmap-container::before {
+        left: 40px;
+    }
+
+    .roadmap-stage {
+        padding-left: 140px;
+        margin-bottom: 70px;
+    }
+
+    .stage-badge {
+        width: 100px;
+        height: 100px;
+        font-size: 50px;
+    }
+
+    .stage-header h4 {
+        font-size: 1.5rem;
+    }
+
+    .stage-content {
+        padding: 25px;
+    }
+
+    .prerequis-list {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 15px;
+    }
+
+    .prerequis-item {
+        min-height: 130px;
+        padding: 20px 15px;
+    }
+
+    .item-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+    }
+
+    .item-content h5 {
+        font-size: 1rem;
+    }
+
+    .roadmap-badge {
+        font-size: 1rem;
+        padding: 15px 25px;
+    }
+
+    .badge-icon {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .roadmap-section {
+        padding: 25px 18px;
+        border-width: 3px;
+    }
+
+    .roadmap-section h3 {
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+    }
+
+    .roadmap-section h3 i {
+        font-size: 1.6rem;
+    }
+
+    .roadmap-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 30px;
+    }
+
+    .roadmap-container::before {
+        left: 33px;
+    }
+
+    .roadmap-stage {
+        padding-left: 120px;
+        margin-bottom: 60px;
+    }
+
+    .stage-badge {
+        width: 85px;
+        height: 85px;
+        font-size: 42px;
+        border-width: 5px;
+    }
+
+    .stage-header h4 {
+        font-size: 1.3rem;
+    }
+
+    .stage-header {
+        margin-bottom: 15px;
+    }
+
+    .stage-content {
+        padding: 20px;
+    }
+
+    .stage-content::before {
+        width: 4px;
+    }
+
+    .prerequis-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .prerequis-item {
+        min-height: auto;
+        padding: 15px 12px;
+        flex-direction: column;
+    }
+
+    .item-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .item-content h5 {
+        font-size: 0.95rem;
+    }
+
+    .item-content small {
+        font-size: 0.8rem;
+    }
+
+    .competences-display ul,
+    .debouches-display ul {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .competences-display li,
+    .debouches-display li {
+        padding: 15px 12px 15px 30px;
+        font-size: 0.9rem;
+        min-height: auto;
+    }
+
+    .roadmap-badge {
+        font-size: 0.9rem;
+        padding: 12px 20px;
+        gap: 8px;
+    }
+
+    .badge-icon {
+        font-size: 1.3rem;
+    }
+}

@@ -34,6 +34,9 @@ class Formation
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $competencesAcquises = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $debouches = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
@@ -163,6 +166,18 @@ class Formation
                 $prerequi->setFormation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDebouches(): ?string
+    {
+        return $this->debouches;
+    }
+
+    public function setDebouches(?string $debouches): static
+    {
+        $this->debouches = $debouches;
 
         return $this;
     }

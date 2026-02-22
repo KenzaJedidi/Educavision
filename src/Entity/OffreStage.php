@@ -55,7 +55,13 @@ class OffreStage
     private ?string $statut = 'Ouvert';
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
-    private ?float $salaire = null;
+    private ?string $salaire = null;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $competencesRequises = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $descriptionIa = null;
 
     public function getId(): ?int
     {
@@ -170,14 +176,38 @@ class OffreStage
         return $this;
     }
 
-    public function getSalaire(): ?float
+    public function getSalaire(): ?string
     {
         return $this->salaire;
     }
 
-    public function setSalaire(?float $salaire): static
+    public function setSalaire(?string $salaire): static
     {
         $this->salaire = $salaire;
+
+        return $this;
+    }
+
+    public function getCompetencesRequises(): ?array
+    {
+        return $this->competencesRequises;
+    }
+
+    public function setCompetencesRequises(?array $competencesRequises): static
+    {
+        $this->competencesRequises = $competencesRequises;
+
+        return $this;
+    }
+
+    public function getDescriptionIa(): ?string
+    {
+        return $this->descriptionIa;
+    }
+
+    public function setDescriptionIa(?string $descriptionIa): static
+    {
+        $this->descriptionIa = $descriptionIa;
 
         return $this;
     }

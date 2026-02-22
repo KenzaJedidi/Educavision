@@ -84,6 +84,42 @@
 		</div>
 	</div>
 </div>
+<!-- Agrégats des notes pour les Réponses (en dehors du tableau) -->
+<div class="row m-b30">
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card" style="background:linear-gradient(135deg,#6366f1,#4338ca);color:#fff;">
+			<div class="wc-item p-3">
+				<h4 class="wc-title">Satisfaction des réponses</h4>
+				<span class="wc-des">Note moyenne</span>
+				<div class="d-flex align-items-center my-2">
+					<h3 class="mb-0 mr-3">{{ stats.reponses.avgRating }}</h3>
+					<div>
+						{% for i in 1..5 %}
+							{% if i <= stats.reponses.avgRating|round(0, 'floor') %}
+								<i class="fa fa-star text-warning"></i>
+							{% else %}
+								<i class="fa fa-star-o text-warning"></i>
+							{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+				<p class="mb-1">Réponses notées : <strong>{{ stats.reponses.ratedCount }}</strong> / {{ stats.reponses.total }} ({{ stats.reponses.percentRated }}%)</p>
+				<p class="small">Vous pouvez cliquer sur <a href="{{ path('reponse_index') }}" class="text-white">Gérer les réponses</a> pour voir les détails et les notes individuelles.</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card">
+			<div class="wc-item p-3">
+				<h4 class="wc-title">Répartition des notes</h4>
+				<span class="wc-des">Distribution des évaluations</span>
+				<div class="widget-inner mt-3">
+					<canvas id="ratingChart" width="400" height="160"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 <!-- Cards statistiques -->
 <div class="row">
 	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
@@ -336,6 +372,34 @@ var chart = new Chart(ctx, {
         maintainAspectRatio: true
     }
 });
+</script>
+<script>
+// Chart for rating distribution
+var ratingCtx = document.getElementById('ratingChart');
+if (ratingCtx) {
+	var labels = ['1', '2', '3', '4', '5'];
+	var data = {{ stats.reponses.ratingBuckets|default({1:0,2:0,3:0,4:0,5:0})|json_encode|raw }};
+	// Ensure ordering 1..5
+	var dataset = [data[1] ?? 0, data[2] ?? 0, data[3] ?? 0, data[4] ?? 0, data[5] ?? 0];
+	new Chart(ratingCtx.getContext('2d'), {
+		type: 'bar',
+		data: {
+			labels: labels,
+			datasets: [{
+				label: 'Nombre de notes',
+				data: dataset,
+				backgroundColor: 'rgba(99,102,241,0.6)',
+				borderColor: 'rgba(99,102,241,1)',
+				borderWidth: 1
+			}]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: true,
+			scales: { y: { beginAtZero: true, ticks: {stepSize:1} } }
+		}
+	});
+}
 </script>
 <style>
 /* Attractive gradient cards for quick-access modules */

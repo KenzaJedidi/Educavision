@@ -13,55 +13,60 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 class ChapterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('titre', TextType::class, [
-                'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le titre du chapitre est obligatoire']),
-                    new Assert\Length([
-                        'min' => 2,
-                        'max' => 255,
-                        'minMessage' => 'Le titre doit contenir au moins {{ limit }} caractères',
-                        'maxMessage' => 'Le titre ne peut pas dépasser {{ limit }} caractères'
-                    ])
-                ],
+            ->add('title', TextType::class, [
+                'label' => 'Titre',
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Titre du chapitre'
                 ]
             ])
-            ->add('description', TextareaType::class, [
-                'required' => false,
-                'constraints' => [
-                    new Assert\Length([
-                        'max' => 5000,
-                        'maxMessage' => 'La description ne peut pas dépasser {{ limit }} caractères'
-                    ])
-                ],
+            ->add('titre', TextType::class, [
+                'label' => 'Titre',
+                'mapped' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Titre du chapitre'
+                ]
+            ])
+            ->add('content', TextareaType::class, [
+                'label' => 'Contenu',
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 8,
-                    'placeholder' => 'Description détaillée du chapitre'
+                    'placeholder' => 'Contenu détaillé du chapitre',
+                    'id' => 'chapter_content'
+                ]
+            ])
+            ->add('description', TextareaType::class, [
+                'label' => 'Contenu',
+                'mapped' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'rows' => 8,
+                    'placeholder' => 'Contenu détaillé du chapitre'
+                ]
+            ])
+            ->add('position', IntegerType::class, [
+                'label' => 'Position',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Position d\'affichage'
                 ]
             ])
             ->add('ordre', IntegerType::class, [
-                'required' => false,
-                'constraints' => [
-                    new Assert\Positive([
-                        'message' => 'L\'ordre doit être un nombre positif'
-                    ]),
-                    new Assert\LessThanOrEqual([
-                        'value' => 999,
-                        'message' => 'L\'ordre ne peut pas dépasser 999'
-                    ])
-                ],
+                'label' => 'Position',
+                'mapped' => false,
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Ordre d\'affichage (optionnel)'
+                    'placeholder' => 'Position d\'affichage'
                 ]
             ])
             ->add('imageUrl', TextType::class, [
@@ -109,7 +114,7 @@ class ChapterType extends AbstractType
             ->add('course', EntityType::class, [
                 'required' => false,
                 'class' => Course::class,
-                'choice_label' => 'titre',
+                'choice_label' => 'title',
                 'placeholder' => 'Sélectionnez un cours',
                 'choices' => $options['teacher_courses'] ?? null,
                 'attr' => [
@@ -122,13 +127,35 @@ class ChapterType extends AbstractType
             $builder->add('course', EntityType::class, [
                 'required' => false,
                 'class' => Course::class,
-                'choice_label' => 'titre',
+                'choice_label' => 'title',
                 'placeholder' => 'Sélectionnez un cours',
                 'attr' => [
                     'class' => 'form-control'
                 ]
             ]);
         }
+
+        // Add event listener to handle backward compatibility
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+            $data = $event->getData();
+            
+            // Map titre to title
+            if (isset($data['titre']) && !empty($data['titre'])) {
+                $data['title'] = $data['titre'];
+            }
+            
+            // Map description to content
+            if (isset($data['description']) && !empty($data['description'])) {
+                $data['content'] = $data['description'];
+            }
+            
+            // Map ordre to position
+            if (isset($data['ordre']) && !empty($data['ordre'])) {
+                $data['position'] = $data['ordre'];
+            }
+            
+            $event->setData($data);
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void

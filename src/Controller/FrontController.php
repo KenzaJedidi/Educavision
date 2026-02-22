@@ -4,16 +4,19 @@
 namespace App\Controller;
 
 use App\Entity\Simulation;
+use App\Entity\Course;
+use App\Entity\Message;
 use App\Repository\FiliereRepository;
+use App\Repository\OffreStagERepository;
+use App\Repository\CourseRepository;
+use App\Repository\MessageRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\OffreStagERepository;
-use App\Entity\OffreStage;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/')]
 class FrontController extends AbstractController
@@ -473,5 +476,46 @@ class FrontController extends AbstractController
     public function search(): Response
     {
         return $this->render('front/pages/search.html.twig');
+    }
+
+    #[Route('/cours/{id}/message', name: 'front_cours_message', requirements: ['id' => '\d+'])]
+    public function coursMessage(int $id, Request $request, CourseRepository $courseRepository, MessageRepository $messageRepository, EntityManagerInterface $entityManager): Response
+    {
+        $course = $courseRepository->find($id);
+        
+        if (!$course || !in_array($course->getStatus(), ['published', 'publishe'])) {
+            throw $this->createNotFoundException('Cours introuvable');
+        }
+
+        if ($request->isMethod('POST')) {
+            $data = json_decode($request->getContent(), true);
+            
+            // Pour les formulaires HTML classiques
+            if (!$data) {
+                $data = $request->request->all();
+            }
+            
+            // Validation des données
+            if (!isset($data['student_name']) || !isset($data['content'])) {
+                $this->addFlash('error', 'Veuillez remplir les champs obligatoires.');
+                return $this->redirectToRoute('front_cours_message', ['id' => $id]);
+            }
+
+            $message = new Message();
+            $message->setTitle($data['title'] ?? 'Message du cours');
+            $message->setContent($data['content']);
+            $message->setStudent($data['student_name']);
+            $message->setCourse($course);
+            
+            $entityManager->persist($message);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Message envoyé avec succès !');
+            return $this->redirectToRoute('front_cours_show', ['id' => $id]);
+        }
+
+        return $this->render('front/pages/cours_message.html.twig', [
+            'course' => $course,
+        ]);
     }
 }

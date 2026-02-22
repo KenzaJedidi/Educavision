@@ -15,6 +15,7 @@
                 <th>#</th>
                 <th><i class="fa fa-comments"></i> Réclamation</th>
                 <th><i class="fa fa-align-left"></i> Contenu</th>
+                <th><i class="fa fa-star"></i> Note</th>
                 <th><i class="fa fa-calendar"></i> Date</th>
                 <th class="text-center">Actions</th>
             </tr>
@@ -25,6 +26,19 @@
                 <td><span class="badge bg-secondary">{{ reponse.id }}</span></td>
                 <td><span class="badge bg-info text-dark">{{ reponse.reclamation.id }}</span></td>
                 <td>{{ reponse.contenu|e }}</td>
+                <td>
+                    {% if reponse.rating %}
+                        <span class="text-warning">
+                            {% for i in 1..reponse.rating %}
+                                <i class="fa fa-star"></i>
+                            {% endfor %}
+                        </span>
+                        <small class="text-muted">({{ reponse.rating }}/5)</small>
+                        <div class="small text-muted">{% if reponse.rating >= 4 %}Très satisfait{% elseif reponse.rating == 3 %}Satisfait{% elseif reponse.rating == 2 %}Insatisfait{% else %}Très insatisfait{% endif %}</div>
+                    {% else %}
+                        <span class="text-muted">—</span>
+                    {% endif %}
+                </td>
                 <td><span class="badge bg-light text-dark">{{ reponse.dateReponse|date('d/m/Y H:i') }}</span></td>
                 <td class="text-center">
                     <a href="{{ path('reponse_show', {'id': reponse.id}) }}" class="btn btn-outline-primary btn-sm mx-1" title="Voir"><i class="fa fa-eye"></i></a>

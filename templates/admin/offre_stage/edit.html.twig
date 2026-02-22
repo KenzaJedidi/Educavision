@@ -39,7 +39,7 @@
 				<div class="form-group m-b20">
 					<label class="col-lg-3 col-md-4 control-label"><i class="fa fa-align-left"></i> Description</label>
 					<div class="col-lg-9 col-md-8">
-						{{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '6', 'placeholder': 'Décrivez les missions, responsabilités et compétences requises...'}}) }}
+						{{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '6', 'placeholder': 'Décrivez les missions, responsabilités et compétences requises...', 'id': 'offre_description_field'}}) }}
 					{% if form.description.vars.errors|length > 0 %}
 						<div class="text-danger small mt-1">
 							{% for error in form.description.vars.errors %}
@@ -47,6 +47,14 @@
 							{% endfor %}
 						</div>
 					{% endif %}
+						{# ======== BOUTON GÉNÉRATION IA ======== #}
+						<div class="mt-2 d-flex gap-2 align-items-center flex-wrap">
+							<button type="button" id="btn-generer-ia" class="btn btn-sm text-white" style="border-radius:20px;background:linear-gradient(135deg,#667eea,#764ba2);" onclick="genererDescriptionIA()">
+								<i class="fa fa-robot"></i> Générer avec IA
+							</button>
+							<input type="text" id="ia-mots-cles" class="form-control form-control-sm" placeholder="Mots-clés (ex: PHP, React, remote)" style="border-radius:20px;max-width:300px;">
+							<span id="ia-status" class="small text-muted" style="display:none;"><i class="fa fa-spinner fa-spin"></i> Génération en cours...</span>
+						</div>
 					</div>
 				</div>
 
@@ -188,4 +196,55 @@
 		</div>
 	</div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+function genererDescriptionIA() {
+	const titreField = document.querySelector('[name*="[titre]"]');
+	const entrepriseField = document.querySelector('[name*="[entreprise]"]');
+	const lieuField = document.querySelector('[name*="[lieu]"]');
+	const descField = document.getElementById('offre_description_field') || document.querySelector('[name*="[description]"]');
+	const motsClesField = document.getElementById('ia-mots-cles');
+	const statusEl = document.getElementById('ia-status');
+	const btn = document.getElementById('btn-generer-ia');
+
+	const titre = titreField ? titreField.value.trim() : '';
+	const entreprise = entrepriseField ? entrepriseField.value.trim() : '';
+	const lieu = lieuField ? lieuField.value.trim() : '';
+	const motsCles = motsClesField ? motsClesField.value.trim() : '';
+
+	if (!titre) {
+		alert('Veuillez d\'abord remplir le titre du stage.');
+		return;
+	}
+
+	btn.disabled = true;
+	statusEl.style.display = 'inline';
+
+	fetch('{{ path("admin_offre_stage_generer_description") }}', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+		body: JSON.stringify({ titre, entreprise, mots_cles: motsCles, lieu })
+	})
+	.then(r => r.json())
+	.then(data => {
+		if (data.description) {
+			descField.value = data.description;
+			descField.style.borderColor = '#667eea';
+			setTimeout(() => descField.style.borderColor = '', 2000);
+		} else {
+			alert(data.error || 'Erreur lors de la génération.');
+		}
+	})
+	.catch(err => {
+		alert('Erreur réseau : ' + err.message);
+	})
+	.finally(() => {
+		btn.disabled = false;
+		statusEl.style.display = 'none';
+	});
+}
+</script>
 {% endblock %}

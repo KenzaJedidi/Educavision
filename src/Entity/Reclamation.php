@@ -102,8 +102,60 @@ class Reclamation
     #[Assert\Length(min: 5, minMessage: 'La description doit contenir au moins {{ limit }} caractères.', max: 2000, maxMessage: 'La description ne doit pas dépasser {{ limit }} caractères.')]
     private $description;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $resumeAuto;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private $category;
+
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
+    private $sentimentAuto;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $tempsResolutionAuto;
+
     #[ORM\Column(type: 'datetime')]
     private $dateReclamation;
+    public function getResumeAuto(): ?string
+    {
+        return $this->resumeAuto;
+    }
+    public function setResumeAuto(?string $resumeAuto): self
+    {
+        $this->resumeAuto = $resumeAuto;
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?string $category): self
+    {
+        $this->category = $category;
+        return $this;
+    }
+
+    public function getSentimentAuto(): ?string
+    {
+        return $this->sentimentAuto;
+    }
+    public function setSentimentAuto(?string $sentimentAuto): self
+    {
+        $this->sentimentAuto = $sentimentAuto;
+        return $this;
+    }
+
+    public function getTempsResolutionAuto(): ?int
+    {
+        return $this->tempsResolutionAuto;
+    }
+    public function setTempsResolutionAuto(?int $tempsResolutionAuto): self
+    {
+        $this->tempsResolutionAuto = $tempsResolutionAuto;
+        return $this;
+    }
 
     #[ORM\OneToMany(mappedBy: 'reclamation', targetEntity: Reponse::class, orphanRemoval: true)]
     private $reponses;

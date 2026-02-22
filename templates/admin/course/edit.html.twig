@@ -14,7 +14,7 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Modifier le Cours: {{ course.titre }}</h4>
+                <h4 class="card-title">Modifier le Cours: {{ course.title }}</h4>
             </div>
             <div class="card-body">
                 {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
@@ -117,7 +117,7 @@
                     <tr>
                         <td><strong>Statut actuel:</strong></td>
                         <td>
-                            {% if course.status == 1 %}
+                            {% if course.status == 'published' %}
                                 <span class="badge badge-success">Actif</span>
                             {% else %}
                                 <span class="badge badge-danger">Inactif</span>
@@ -141,15 +141,15 @@
                 <h6>Actions rapides</h6>
                 <div class="btn-group-vertical w-100">
                     <a href="{{ path('admin_course_toggle_status', {'id': course.id}) }}" 
-                       class="btn {{ course.status == 1 ? 'btn-warning' : 'btn-success' }}">
-                        <i class="fa {{ course.status == 1 ? 'fa-pause' : 'fa-play' }}"></i>
-                        {{ course.status == 1 ? 'Désactiver' : 'Activer' }} le cours
+                       class="btn {{ course.status == 'published' ? 'btn-warning' : 'btn-success' }}">
+                        <i class="fa {{ course.status == 'published' ? 'fa-pause' : 'fa-play' }}"></i>
+                        {{ course.status == 'published' ? 'Désactiver' : 'Activer' }} le cours
                     </a>
                     <a href="{{ path('admin_chapter_by_course', {'courseId': course.id}) }}" 
                        class="btn btn-info">
                         <i class="fa fa-list"></i> Voir les chapitres
                     </a>
-                    <a href="{{ path('admin_message_by_course', {'courseTitle': course.titre}) }}" 
+                    <a href="{{ path('admin_message_by_course', {'courseTitle': course.title}) }}" 
                        class="btn btn-outline-info">
                         <i class="fa fa-comments"></i> Voir les messages
                     </a>
@@ -164,7 +164,7 @@
             <div class="card-body">
                 {% if course.imageUrl %}
                     <img src="{{ asset('front-assets/images/courses/' ~ course.imageUrl) }}" 
-                         alt="{{ course.titre }}" 
+                         alt="{{ course.title }}" 
                          class="img-fluid rounded mb-3"
                          style="width: 100%; height: 150px; object-fit: cover;"
                          onerror="this.src='{{ asset('assets/images/default-course.jpg') }}'">
@@ -174,7 +174,7 @@
                     </div>
                 {% endif %}
                 
-                <h6>{{ course.titre }}</h6>
+                <h6>{{ course.title }}</h6>
                 {% if course.description %}
                     <p class="small text-muted">{{ course.description|striptags|slice(0, 100) }}...</p>
                 {% endif %}

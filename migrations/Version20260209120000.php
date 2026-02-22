@@ -16,9 +16,14 @@ final class Version20260209120000 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE course ADD teacher_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE course ADD CONSTRAINT FK_169E6FB941807E1D FOREIGN KEY (teacher_id) REFERENCES utilisateurs (id) ON DELETE SET NULL');
-        $this->addSql('CREATE INDEX IDX_169E6FB941807E1D ON course (teacher_id)');
+        // Only add the column if it does not already exist (Doctrine DBAL 3+)
+        $sm = $this->connection->createSchemaManager();
+        $columns = $sm->listTableColumns('course');
+        if (!array_key_exists('teacher_id', $columns)) {
+            $this->addSql('ALTER TABLE course ADD teacher_id INT DEFAULT NULL');
+            $this->addSql('ALTER TABLE course ADD CONSTRAINT FK_169E6FB941807E1D FOREIGN KEY (teacher_id) REFERENCES utilisateurs (id) ON DELETE SET NULL');
+            $this->addSql('CREATE INDEX IDX_169E6FB941807E1D ON course (teacher_id)');
+        }
     }
 
     public function down(Schema $schema): void

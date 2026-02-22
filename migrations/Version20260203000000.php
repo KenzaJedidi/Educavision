@@ -16,19 +16,23 @@ final class Version20260203000000 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('CREATE TABLE offre_stage (
-            id INT AUTO_INCREMENT NOT NULL,
-            titre VARCHAR(255) NOT NULL,
-            description LONGTEXT NOT NULL,
-            entreprise VARCHAR(255) NOT NULL,
-            lieu VARCHAR(255) DEFAULT NULL,
-            date_debut DATETIME NOT NULL,
-            date_fin DATETIME NOT NULL,
-            duree_jours INT NOT NULL,
-            date_creation DATETIME NOT NULL,
-            statut VARCHAR(50) NOT NULL DEFAULT "Ouvert",
-            PRIMARY KEY (id)
-        ) DEFAULT CHARACTER SET utf8mb4 ENGINE = InnoDB');
+        // Only create the table if it does not already exist (Doctrine DBAL 3+)
+        $sm = $this->connection->createSchemaManager();
+        if (!$sm->tablesExist(['offre_stage'])) {
+            $this->addSql('CREATE TABLE offre_stage (
+                id INT AUTO_INCREMENT NOT NULL,
+                titre VARCHAR(255) NOT NULL,
+                description LONGTEXT NOT NULL,
+                entreprise VARCHAR(255) NOT NULL,
+                lieu VARCHAR(255) DEFAULT NULL,
+                date_debut DATETIME NOT NULL,
+                date_fin DATETIME NOT NULL,
+                duree_jours INT NOT NULL,
+                date_creation DATETIME NOT NULL,
+                statut VARCHAR(50) NOT NULL DEFAULT "Ouvert",
+                PRIMARY KEY (id)
+            ) DEFAULT CHARACTER SET utf8mb4 ENGINE = InnoDB');
+        }
     }
 
     public function down(Schema $schema): void

@@ -17,6 +17,87 @@
         <li>Description : {{ reclamation.description|e }}</li>
         <li>Date : {{ reclamation.dateReclamation|date('d/m/Y H:i') }}</li>
     </ul>
-    <a href="{{ path('reclamation_edit', {'id': reclamation.id}) }}">Modifier</a>
-    <a href="{{ path('reclamation_index') }}">Retour à la liste</a>
+    <hr>
+    <div class="ia-analyse-card" style="max-width:600px;margin:auto;background:#f9f9fc;border-radius:16px;box-shadow:0 4px 16px rgba(0,0,0,0.08);padding:32px 24px 24px 24px;">
+        <h2 style="text-align:center;color:#4b6cb7;font-weight:700;margin-bottom:24px;">
+            <span style="font-size:2rem;vertical-align:middle;">🤖</span> Analyse IA
+        </h2>
+        <div style="margin-top:32px;">
+            <div style="background:#fff;border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(75,108,183,0.07);display:flex;align-items:center;">
+                <span style="font-size:1.5rem;margin-right:12px;color:#4b6cb7;">📝</span>
+                <div>
+                    <strong style="color:#4b6cb7;">Résumé :</strong>
+                    <span style="color:#222;font-weight:500;">{{ reclamation.resumeAuto ?: 'Non disponible' }}</span>
+                </div>
+            </div>
+            <div style="background:#fff;border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(75,108,183,0.07);display:flex;align-items:center;">
+                <span style="font-size:1.5rem;margin-right:12px;color:#ffb347;">💬</span>
+                <div>
+                    <strong style="color:#ffb347;">Sentiment :</strong>
+                    <span style="color:#222;font-weight:500;">{{ reclamation.sentimentAuto ?: 'Non disponible' }}</span>
+                </div>
+            </div>
+            <div style="background:#fff;border-radius:8px;padding:16px;box-shadow:0 2px 8px rgba(75,108,183,0.07);display:flex;align-items:center;">
+                <span style="font-size:1.5rem;margin-right:12px;color:#43e97b;">⏱️</span>
+                <div>
+                    <strong style="color:#43e97b;">Temps de résolution prédit :</strong>
+                    <span style="color:#222;font-weight:500;">{{ reclamation.tempsResolutionAuto ?: 'Non disponible' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top:32px;text-align:center;">
+        <a href="{{ path('reclamation_edit', {'id': reclamation.id}) }}" style="margin-right:16px;color:#4b6cb7;font-weight:600;text-decoration:none;">Modifier</a>
+        <a href="{{ path('reclamation_index') }}" style="color:#4b6cb7;font-weight:600;text-decoration:none;">Retour à la liste</a>
+    </div>
+    <script src="/assets/js/functions.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('btn-analyse-ia');
+        if (btn) {
+            btn.addEventListener('click', function() {
+                const description = `{{ reclamation.description|e }}`;
+                // Résumé
+                fetch('/api/summarize', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text: description})
+                })
+                .then(r => r.json())
+                .then(data => {
+                    document.querySelector('#ia-summary span').textContent = data.summary || 'Erreur';
+                })
+                .catch(() => {
+                    document.querySelector('#ia-summary span').textContent = 'Erreur';
+                });
+                // Sentiment
+                fetch('/api/sentiment', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text: description})
+                })
+                .then(r => r.json())
+                .then(data => {
+                    document.querySelector('#ia-sentiment span').textContent = data.sentiment || 'Erreur';
+                })
+                .catch(() => {
+                    document.querySelector('#ia-sentiment span').textContent = 'Erreur';
+                });
+                // Prédiction temps
+                fetch('/api/predict-resolution-time', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text: description})
+                })
+                .then(r => r.json())
+                .then(data => {
+                    document.querySelector('#ia-resolution span').textContent = data.resolution_time || 'Erreur';
+                })
+                .catch(() => {
+                    document.querySelector('#ia-resolution span').textContent = 'Erreur';
+                });
+            });
+        }
+    });
+    </script>
 {% endblock %}

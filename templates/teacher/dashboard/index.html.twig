@@ -1,51 +1,44 @@
 {% extends 'teacher/layout.html.twig' %}
 
-{% block title %}Mon Dashboard - EducaVision Professeur{% endblock %}
+{% block title %}Dashboard - EducaVision{% endblock %}
 
-{% block breadcrumb_title %}Mon Dashboard{% endblock %}
+{% block breadcrumb_title %}Dashboard{% endblock %}
 
 {% block breadcrumb_items %}
 <li>Dashboard</li>
 {% endblock %}
 
 {% block body %}
-<!-- Welcome & Switch -->
-<div class="mb-3 d-flex justify-content-between align-items-center flex-wrap" style="gap: 10px;">
-	<h2 class="h5 mb-0">
-		Bienvenue, <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong> !
-	</h2>
-	<a href="{{ path('front_home') }}" class="btn btn-outline-primary">
-		<i class="fa fa-external-link"></i> Voir le site public
-	</a>
-</div>
-
-<!-- Stat Cards -->
+<div class="mb-3 d-flex justify-content-between align-items-center">
+	<h2 class="h5 mb-0">Tableau de bord</h2>
+	<a href="{{ path('front_home') }}" class="btn btn-outline-primary"><i class="fa fa-home"></i> Aller à l'accueil</a>
+ </div>
+<!-- Cartes métriques - Cours & Chapitres (placées en haut) -->
 <div class="row m-b30">
-	<div class="col-md-6 col-lg-3 col-sm-6 col-12">
-		<div class="widget-card widget-bg1">
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card widget-bg2">
 			<div class="wc-item">
 				<h4 class="wc-title">Mes Cours</h4>
 				<span class="wc-des">Total de mes cours</span>
-				<span class="wc-stats counter">{{ stats.totalCourses }}</span>
+				<span class="wc-stats counter">{{ stats.totalCourses|default(0) }}</span>
 				<div class="progress wc-progress">
 					<div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
 				</div>
 				<span class="wc-progress-bx">
 					<span class="wc-change">Créés</span>
-					<span class="wc-number ml-auto">{{ stats.totalCourses }}</span>
+					<span class="wc-number ml-auto">{{ stats.totalCourses|default(0) }}</span>
 				</span>
 			</div>
 		</div>
 	</div>
-
-	<div class="col-md-6 col-lg-3 col-sm-6 col-12">
-		<div class="widget-card widget-bg2">
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card widget-bg3">
 			<div class="wc-item">
 				<h4 class="wc-title">Cours Actifs</h4>
 				<span class="wc-des">Visibles sur le site</span>
-				<span class="wc-stats counter">{{ stats.activeCourses }}</span>
+				<span class="wc-stats counter">{{ stats.activeCourses|default(0) }}</span>
 				<div class="progress wc-progress">
-					<div class="progress-bar" role="progressbar" style="width: {{ stats.totalCourses > 0 ? ((stats.activeCourses / stats.totalCourses) * 100)|round : 0 }}%;" aria-valuenow="{{ stats.activeCourses }}" aria-valuemin="0" aria-valuemax="{{ stats.totalCourses }}"></div>
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.totalCourses > 0 ? ((stats.activeCourses / stats.totalCourses) * 100)|round : 0 }}%;" aria-valuenow="{{ stats.activeCourses|default(0) }}" aria-valuemin="0" aria-valuemax="{{ stats.totalCourses|default(0) }}"></div>
 				</div>
 				<span class="wc-progress-bx">
 					<span class="wc-change">Publiés</span>
@@ -54,142 +47,206 @@
 			</div>
 		</div>
 	</div>
+</div>
 
-	<div class="col-md-6 col-lg-3 col-sm-6 col-12">
-		<div class="widget-card widget-bg3">
+<!-- Cartes métriques - Cours Inactifs & Chapitres (placées en haut) -->
+<div class="row m-b30">
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card widget-bg1">
 			<div class="wc-item">
 				<h4 class="wc-title">Cours Inactifs</h4>
 				<span class="wc-des">Brouillons / masqués</span>
-				<span class="wc-stats counter">{{ stats.inactiveCourses }}</span>
+				<span class="wc-stats counter">{{ stats.inactiveCourses|default(0) }}</span>
 				<div class="progress wc-progress">
-					<div class="progress-bar" role="progressbar" style="width: {{ stats.totalCourses > 0 ? ((stats.inactiveCourses / stats.totalCourses) * 100)|round : 0 }}%;" aria-valuenow="{{ stats.inactiveCourses }}" aria-valuemin="0" aria-valuemax="{{ stats.totalCourses }}"></div>
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.totalCourses > 0 ? ((stats.inactiveCourses / stats.totalCourses) * 100)|round : 0 }}%;" aria-valuenow="{{ stats.inactiveCourses|default(0) }}" aria-valuemin="0" aria-valuemax="{{ stats.totalCourses|default(0) }}"></div>
 				</div>
 				<span class="wc-progress-bx">
 					<span class="wc-change">Masqués</span>
-					<span class="wc-number ml-auto">{{ stats.inactiveCourses }}</span>
+					<span class="wc-number ml-auto">{{ stats.inactiveCourses|default(0) }}</span>
 				</span>
 			</div>
 		</div>
 	</div>
-
-	<div class="col-md-6 col-lg-3 col-sm-6 col-12">
+	<div class="col-md-6 col-lg-6 col-sm-12">
 		<div class="widget-card widget-bg4">
 			<div class="wc-item">
 				<h4 class="wc-title">Mes Chapitres</h4>
 				<span class="wc-des">Total des chapitres</span>
-				<span class="wc-stats counter">{{ stats.totalChapters }}</span>
+				<span class="wc-stats counter">{{ stats.totalChapters|default(0) }}</span>
 				<div class="progress wc-progress">
-					<div class="progress-bar" role="progressbar" style="width: {{ stats.totalCourses > 0 ? 100 : 0 }}%;" aria-valuenow="{{ stats.totalChapters }}" aria-valuemin="0" aria-valuemax="100"></div>
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.totalCourses > 0 ? 100 : 0 }}%;" aria-valuenow="{{ stats.totalChapters|default(0) }}" aria-valuemin="0" aria-valuemax="100"></div>
 				</div>
 				<span class="wc-progress-bx">
 					<span class="wc-change">Contenus</span>
-					<span class="wc-number ml-auto">{{ stats.totalChapters }}</span>
+					<span class="wc-number ml-auto">{{ stats.totalChapters|default(0) }}</span>
 				</span>
 			</div>
 		</div>
 	</div>
 </div>
 
-<!-- Quick Actions + Recent Courses -->
+<!-- Graphiques et notifications -->
 <div class="row">
-	<!-- Quick Actions -->
-	<div class="col-lg-4 m-b30">
+	<!-- Graphique -->
+	<div class="col-lg-8 m-b30">
 		<div class="widget-box">
 			<div class="wc-title">
-				<h4>Actions rapides</h4>
+				<h4>Statistiques d'utilisation</h4>
 			</div>
 			<div class="widget-inner">
-				<div class="d-flex flex-column" style="gap: 10px;">
-					<a href="{{ path('teacher_course_new') }}" class="btn btn-primary btn-block">
-						<i class="fa fa-plus"></i> Ajouter un cours
-					</a>
-					<a href="{{ path('teacher_chapter_new') }}" class="btn btn-info btn-block">
-						<i class="fa fa-plus"></i> Ajouter un chapitre
-					</a>
-					<a href="{{ path('teacher_course_index') }}" class="btn btn-outline-primary btn-block">
-						<i class="fa fa-list"></i> Voir tous mes cours
-					</a>
-					<a href="{{ path('teacher_chapter_index') }}" class="btn btn-outline-info btn-block">
-						<i class="fa fa-list"></i> Voir tous mes chapitres
-					</a>
-					<hr>
-					<a href="{{ path('front_cours_list') }}" class="btn btn-outline-success btn-block" target="_blank">
-						<i class="fa fa-external-link"></i> Voir les cours sur le site
-					</a>
-				</div>
+				<canvas id="chart" width="100" height="45"></canvas>
 			</div>
 		</div>
 	</div>
-
-	<!-- Recent Courses -->
-	<div class="col-lg-8 m-b30">
+	
+	<!-- Notifications -->
+	<div class="col-lg-4 m-b30">
 		<div class="widget-box">
-			<div class="wc-title d-flex justify-content-between align-items-center">
-				<h4>Mes cours récents</h4>
-				<a href="{{ path('teacher_course_index') }}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+			<div class="wc-title">
+				<h4>Activité récente</h4>
 			</div>
 			<div class="widget-inner">
-				{% if recentCourses|length > 0 %}
-				<div class="table-responsive">
-					<table class="table table-hover">
-						<thead>
-							<tr>
-								<th>Titre</th>
-								<th>Catégorie</th>
-								<th>Statut</th>
-								<th>Chapitres</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for course in recentCourses %}
-							<tr>
-								<td>
-									<strong>{{ course.titre }}</strong>
-									{% if course.description %}
-										<br><small class="text-muted">{{ course.description|striptags|slice(0, 40) }}...</small>
-									{% endif %}
-								</td>
-								<td>
-									{% if course.category %}
-										<span class="badge badge-info">{{ course.category }}</span>
-									{% else %}
-										<span class="text-muted">-</span>
-									{% endif %}
-								</td>
-								<td>
-									{% if course.status == 1 %}
-										<span class="badge badge-success">Actif</span>
-									{% else %}
-										<span class="badge badge-danger">Inactif</span>
-									{% endif %}
-								</td>
-								<td>{{ course.chapters|length }}</td>
-								<td>
-									<a href="{{ path('teacher_course_edit', {'id': course.id}) }}" class="btn btn-sm btn-warning" title="Modifier">
-										<i class="fa fa-edit"></i>
-									</a>
-									<a href="{{ path('teacher_course_show', {'id': course.id}) }}" class="btn btn-sm btn-info" title="Voir">
-										<i class="fa fa-eye"></i>
-									</a>
-								</td>
-							</tr>
-							{% endfor %}
-						</tbody>
-					</table>
+				<div class="noti-box-list">
+					<ul>
+						<li>
+							<span class="notification-icon dashbg-green">
+								<i class="fa fa-plus"></i>
+							</span>
+							<span class="notification-text">
+								Nouveau cours <strong>créé</strong>
+							</span>
+							<span class="notification-time">
+								<span> 2h</span>
+							</span>
+						</li>
+						<li>
+							<span class="notification-icon dashbg-blue">
+								<i class="fa fa-edit"></i>
+							</span>
+							<span class="notification-text">
+								Cours <strong>modifié</strong>
+							</span>
+							<span class="notification-time">
+								<span> 5h</span>
+							</span>
+						</li>
+						<li>
+							<span class="notification-icon dashbg-yellow">
+								<i class="fa fa-bar-chart"></i>
+							</span>
+							<span class="notification-text">
+								Chapitre <strong>publié</strong>
+							</span>
+							<span class="notification-time">
+								<span> 1 jour</span>
+							</span>
+						</li>
+					</ul>
 				</div>
-				{% else %}
-				<div class="text-center py-5">
-					<i class="fa fa-book fa-3x text-muted mb-3" style="display:block"></i>
-					<h5>Vous n'avez pas encore de cours</h5>
-					<p class="text-muted">Commencez par créer votre premier cours !</p>
-					<a href="{{ path('teacher_course_new') }}" class="btn btn-primary">
-						<i class="fa fa-plus"></i> Créer mon premier cours
-					</a>
-				</div>
-				{% endif %}
 			</div>
 		</div>
 	</div>
 </div>
+
+<!-- Accès rapide -->
+<div class="row">
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Accès rapide - Gestion des Cours</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="row">
+					<div class="col-md-4 text-center m-b20">
+						<a href="{{ path('teacher_course_new') }}" class="btn btn-block btn-lg green">
+							<i class="fa fa-plus fa-3x m-b10"></i>
+							<h5>Ajouter un Cours</h5>
+							<p class="text-white">Créer un nouveau cours</p>
+						</a>
+					</div>
+					<div class="col-md-4 text-center m-b20">
+						<a href="{{ path('teacher_course_index') }}" class="btn btn-block btn-lg blue">
+							<i class="fa fa-list fa-3x m-b10"></i>
+							<h5>Mes Cours</h5>
+							<p class="text-white">Gérer tous mes cours</p>
+						</a>
+					</div>
+					<div class="col-md-4 text-center m-b20">
+						<a href="{{ path('front_cours_list') }}" class="btn btn-block btn-lg orange" target="_blank">
+							<i class="fa fa-eye fa-3x m-b10"></i>
+							<h5>Voir le Site</h5>
+							<p class="text-white">Aperçu public</p>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Accès rapide - Chapitres -->
+<div class="row">
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Accès rapide - Gestion des Chapitres</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="row">
+					<div class="col-md-6 text-center m-b20">
+						<a href="{{ path('teacher_chapter_new') }}" class="qa-card qa-stage">
+							<i class="fa fa-plus fa-3x m-b10"></i>
+							<h5>Ajouter un Chapitre</h5>
+							<p class="text-white">Créer un nouveau chapitre</p>
+						</a>
+					</div>
+					<div class="col-md-6 text-center m-b20">
+						<a href="{{ path('teacher_chapter_index') }}" class="qa-card qa-candidature">
+							<i class="fa fa-list fa-3x m-b10"></i>
+							<h5>Mes Chapitres</h5>
+							<p class="text-white">Gérer tous mes chapitres</p>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+ </div>
+{% endblock %}
+
+{% block javascripts %}
+<script src="{{ asset('assets/vendors/chart/chart.min.js') }}"></script>
+<script>
+// Graphique simple (exemple)
+var ctx = document.getElementById('chart').getContext('2d');
+var chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+        datasets: [{
+            label: 'Cours',
+            data: [12, 19, 15, 25, 22, 30],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true
+    }
+});
+</script>
+<style>
+/* Attractive gradient cards for quick-access modules */
+.qa-card{display:block;border-radius:14px;padding:18px 16px;text-decoration:none;background:#222;color:#fff !important;box-shadow:0 8px 24px rgba(0,0,0,.08);transition:transform .15s ease, box-shadow .15s ease}
+.qa-card:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(0,0,0,.12)}
+.qa-card i{color:#fff}
+.qa-card h5{color:#fff;margin-bottom:6px;font-weight:700}
+.qa-card p{color:#fff;margin:0}
+.qa-stage{background:linear-gradient(135deg,#00b4d8,#0077b6)}
+.qa-candidature{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.qa-reclamation{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.qa-reponse{background:linear-gradient(135deg,#6366f1,#4338ca)}
+</style>
 {% endblock %}

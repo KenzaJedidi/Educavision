@@ -17,14 +17,14 @@ class CourseRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retourne les cours actifs (status = 1)
+     * Retourne les cours publiés (status = published)
      */
-    public function findActiveCourses(): array
+    public function findPublishedCourses(): array
     {
         return $this->createQueryBuilder('c')
             ->where('c.status = :status')
-            ->setParameter('status', 1)
-            ->orderBy('c.created_at', 'DESC')
+            ->setParameter('status', 'published')
+            ->orderBy('c.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
     }
@@ -32,14 +32,18 @@ class CourseRepository extends ServiceEntityRepository
     /**
      * Recherche avancée de cours
      */
-    public function searchCourses(string $term = null, string $category = null): array
+    public function searchCourses(string $term = null, string $category = null, ?string $status = null): array
     {
-        $qb = $this->createQueryBuilder('c')
-            ->where('c.status = :status')
-            ->setParameter('status', 1);
+        $qb = $this->createQueryBuilder('c');
+
+        if ($status) {
+            $qb->andWhere('c.status = :status')
+               ->setParameter('status', $status);
+        }
+        // Ne pas filtrer par statut par défaut pour l'admin (montrer tous les cours)
 
         if ($term) {
-            $qb->andWhere('c.titre LIKE :term OR c.description LIKE :term')
+            $qb->andWhere('c.title LIKE :term OR c.description LIKE :term')
                ->setParameter('term', '%' . $term . '%');
         }
 
@@ -48,7 +52,7 @@ class CourseRepository extends ServiceEntityRepository
                ->setParameter('category', $category);
         }
 
-        return $qb->orderBy('c.created_at', 'DESC')
+        return $qb->orderBy('c.createdAt', 'DESC')
                  ->getQuery()
                  ->getResult();
     }
@@ -62,22 +66,38 @@ class CourseRepository extends ServiceEntityRepository
             ->select('DISTINCT c.category')
             ->where('c.category IS NOT NULL')
             ->andWhere('c.status = :status')
-            ->setParameter('status', 1)
+            ->setParameter('status', 'published')
             ->getQuery()
             ->getSingleColumnResult();
     }
 
     /**
-     * Compte le nombre de cours actifs
+     * Compte le nombre de cours publiés
      */
-    public function countActiveCourses(): int
+    public function countPublishedCourses(): int
     {
         return $this->createQueryBuilder('c')
             ->select('COUNT(c.id)')
             ->where('c.status = :status')
-            ->setParameter('status', 1)
+            ->setParameter('status', 'published')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * @deprecated Use findPublishedCourses() instead
+     */
+    public function findActiveCourses(): array
+    {
+        return $this->findPublishedCourses();
+    }
+
+    /**
+     * @deprecated Use countPublishedCourses() instead
+     */
+    public function countActiveCourses(): int
+    {
+        return $this->countPublishedCourses();
     }
 
     //    /**

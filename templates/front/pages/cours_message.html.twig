@@ -1,6 +1,6 @@
 {% extends 'front/base.html.twig' %}
 
-{% block title %}Contacter le professeur - {{ course.titre }} - EducaVision{% endblock %}
+{% block title %}Contacter le professeur - {{ course.title }} - EducaVision{% endblock %}
 
 {% block body %}
 <!-- Page Title -->
@@ -12,7 +12,7 @@
                 <ul class="list-inline">
                     <li><a href="{{ path('front_home') }}">Accueil</a></li>
                     <li><a href="{{ path('front_cours_list') }}">Cours</a></li>
-                    <li><a href="{{ path('front_cours_show', {'id': course.id}) }}">{{ course.titre }}</a></li>
+                    <li><a href="{{ path('front_cours_show', {'id': course.id}) }}">{{ course.title }}</a></li>
                     <li>Contacter le professeur</li>
                 </ul>
             </div>
@@ -30,7 +30,7 @@
                     <div class="contact-form-card">
                         <h3>Envoyer un message au professeur</h3>
                         <p class="text-muted mb-4">
-                            Vous avez des questions sur le cours "<strong>{{ course.titre }}</strong>" ? 
+                            Vous avez des questions sur le cours "<strong>{{ course.title }}</strong>" ? 
                             Envoyez un message directement au professeur.
                         </p>
                         
@@ -88,7 +88,7 @@
                     <div class="course-info-card mb-4">
                         <h4>Informations du cours</h4>
                         <div class="course-summary">
-                            <h5>{{ course.titre }}</h5>
+                            <h5>{{ course.title }}</h5>
                             {% if course.category %}
                                 <p class="text-muted">
                                     <i class="fa fa-tag"></i> {{ course.category }}

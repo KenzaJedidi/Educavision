@@ -70,23 +70,8 @@
                                 </div>
                             </div>
 
-                            {% if formation.competencesAcquises %}
-                            <div class="course-competences mb-5">
-                                <h4 class="mb-3">Compétences acquises</h4>
-                                <div class="competences-content">
-                                    {{ formation.competencesAcquises|raw }}
-                                </div>
-                            </div>
-                            {% endif %}
-
-                            {% if formation.prerequisTexte %}
-                            <div class="course-prerequis mb-5">
-                                <h4 class="mb-3">Prérequis</h4>
-                                <div class="prerequis-content">
-                                    {{ formation.prerequisTexte|raw }}
-                                </div>
-                            </div>
-                            {% endif %}
+                            <!-- Roadmap Section -->
+                            {% include 'front/includes/roadmap.html.twig' %}
                         </div>
                     </div>
                 </div>

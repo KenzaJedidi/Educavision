@@ -1,7 +1,7 @@
 {
     "weights": {
-        "moyenne": 64,
-        "specialites": 36,
-        "preferences": 0
+        "moyenne": 60,
+        "specialites": 30,
+        "preferences": 10
     }
 }

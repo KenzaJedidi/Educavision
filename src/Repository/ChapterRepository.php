@@ -17,32 +17,32 @@ class ChapterRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retourne les chapitres d'un cours ordonnés par ordre
+     * Retourne les chapitres d'un cours ordonnés par position
      */
     public function findByCourseOrdered(int $courseId): array
     {
         return $this->createQueryBuilder('c')
             ->where('c.course = :courseId')
             ->setParameter('courseId', $courseId)
-            ->orderBy('c.ordre', 'ASC')
-            ->addOrderBy('c.created_at', 'ASC')
+            ->orderBy('c.position', 'ASC')
+            ->addOrderBy('c.createdAt', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
     /**
-     * Retourne le prochain ordre pour un cours
+     * Retourne la prochaine position pour un cours
      */
-    public function getNextOrder(int $courseId): int
+    public function getNextPosition(int $courseId): int
     {
-        $maxOrder = $this->createQueryBuilder('c')
-            ->select('MAX(c.ordre)')
+        $maxPosition = $this->createQueryBuilder('c')
+            ->select('MAX(c.position)')
             ->where('c.course = :courseId')
             ->setParameter('courseId', $courseId)
             ->getQuery()
             ->getSingleScalarResult();
 
-        return ($maxOrder ?? 0) + 1;
+        return ($maxPosition ?? 0) + 1;
     }
 
     /**
@@ -51,7 +51,7 @@ class ChapterRepository extends ServiceEntityRepository
     public function searchByTitle(string $term, int $courseId = null): array
     {
         $qb = $this->createQueryBuilder('c')
-            ->where('c.titre LIKE :term')
+            ->where('c.title LIKE :term')
             ->setParameter('term', '%' . $term . '%');
 
         if ($courseId) {
@@ -59,22 +59,92 @@ class ChapterRepository extends ServiceEntityRepository
                ->setParameter('courseId', $courseId);
         }
 
-        return $qb->orderBy('c.ordre', 'ASC')
+        return $qb->orderBy('c.position', 'ASC')
                  ->getQuery()
                  ->getResult();
     }
 
     /**
-     * Compte le nombre de chapitres par cours
+     * Déplace un chapitre vers le haut
      */
-    public function countByCourse(int $courseId): int
+    public function moveUp(int $chapterId): bool
     {
-        return $this->createQueryBuilder('c')
-            ->select('COUNT(c.id)')
+        $chapter = $this->find($chapterId);
+        if (!$chapter || $chapter->getPosition() <= 1) {
+            return false;
+        }
+
+        $previousChapter = $this->createQueryBuilder('c')
             ->where('c.course = :courseId')
-            ->setParameter('courseId', $courseId)
+            ->andWhere('c.position = :position')
+            ->setParameter('courseId', $chapter->getCourse()->getId())
+            ->setParameter('position', $chapter->getPosition() - 1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if ($previousChapter) {
+            $previousChapter->setPosition($chapter->getPosition());
+            $chapter->setPosition($chapter->getPosition() - 1);
+            
+            $this->getEntityManager()->persist($previousChapter);
+            $this->getEntityManager()->persist($chapter);
+            $this->getEntityManager()->flush();
+            
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Déplace un chapitre vers le bas
+     */
+    public function moveDown(int $chapterId): bool
+    {
+        $chapter = $this->find($chapterId);
+        if (!$chapter) {
+            return false;
+        }
+
+        $maxPosition = $this->createQueryBuilder('c')
+            ->select('MAX(c.position)')
+            ->where('c.course = :courseId')
+            ->setParameter('courseId', $chapter->getCourse()->getId())
             ->getQuery()
             ->getSingleScalarResult();
+
+        if ($chapter->getPosition() >= $maxPosition) {
+            return false;
+        }
+
+        $nextChapter = $this->createQueryBuilder('c')
+            ->where('c.course = :courseId')
+            ->andWhere('c.position = :position')
+            ->setParameter('courseId', $chapter->getCourse()->getId())
+            ->setParameter('position', $chapter->getPosition() + 1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if ($nextChapter) {
+            $nextChapter->setPosition($chapter->getPosition());
+            $chapter->setPosition($chapter->getPosition() + 1);
+            
+            $this->getEntityManager()->persist($nextChapter);
+            $this->getEntityManager()->persist($chapter);
+            $this->getEntityManager()->flush();
+            
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @deprecated Use getNextPosition() instead
+     */
+    public function getNextOrder(int $courseId): int
+    {
+        return $this->getNextPosition($courseId);
     }
 
     //    /**

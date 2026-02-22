@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Démonstration - Roadmap Visuelle EducaVision</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #1E3A5F;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .guide {
+            background: #f0f7ff;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+
+        .guide p {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        /* ===== ROADMAP STYLES ===== */
+        .roadmap-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 50px 40px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .roadmap-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 123, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        .roadmap-section h3 {
+            color: #1E3A5F;
+            font-weight: 700;
+            font-size: 2rem;
+            margin: 0 0 10px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .roadmap-section h3 i {
+            color: #007bff;
+            margin-right: 12px;
+            font-size: 2.2rem;
+        }
+
+        .roadmap-subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .roadmap-container {
+            position: relative;
+            padding: 30px 0;
+            z-index: 2;
+        }
+
+        .roadmap-container::before {
+            content: '';
+            position: absolute;
+            left: 35px;
+            top: 80px;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #007bff 0%, #0056b3 50%, #ddd 100%);
+            border-radius: 2px;
+            z-index: 1;
+        }
+
+        /* Stage Badge */
+        .stage-badge {
+            position: absolute;
+            left: 0;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border: 5px solid white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            z-index: 3;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .stage-badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .stage-badge-before {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .stage-badge-during {
+            background: linear-gradient(135deg, #ffb822 0%, #ffd54f 100%);
+            color: #333;
+        }
+
+        .stage-badge-after {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+        }
+
+        /* Stage Structure */
+        .roadmap-stage {
+            position: relative;
+            margin-bottom: 60px;
+            padding-left: 120px;
+        }
+
+        .roadmap-stage.last-stage {
+            margin-bottom: 0;
+        }
+
+        .stage-header h4 {
+            color: #1E3A5F;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin: 0 0 10px 0;
+        }
+
+        .stage-count {
+            display: inline-block;
+            background: #e7f3ff;
+            color: #007bff;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        /* Content Box */
+        .stage-content {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid #e8e8e8;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            margin-top: 15px;
+        }
+
+        .stage-content::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 10px 0 0 10px;
+            background: linear-gradient(180deg, #007bff, #0056b3);
+        }
+
+        .stage-content:hover {
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
+            border-color: #007bff;
+            transform: translateY(-2px);
+        }
+
+        /* List Items */
+        .prerequis-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .prerequis-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #28a745;
+            transition: all 0.2s ease;
+        }
+
+        .prerequis-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .prerequis-item:hover {
+            background: #f0f7ff;
+            border-left-color: #007bff;
+            transform: translateX(5px);
+        }
+
+        .item-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .item-content h5 {
+            margin: 0 0 5px 0;
+            color: #1E3A5F;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .item-content small {
+            display: block;
+            color: #666;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* Badge */
+        .roadmap-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 40px;
+            animation: slideInUp 0.6s ease;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .roadmap-badge.difficulty-easy {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .roadmap-badge.difficulty-medium {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffecb3 100%);
+            color: #856404;
+            border: 2px solid #ffb822;
+        }
+
+        .roadmap-badge.difficulty-hard {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        .badge-icon {
+            font-size: 1.5rem;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .note {
+            background: #fff9e6;
+            border-left: 4px solid #ffb822;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+
+        .note strong {
+            color: #856404;
+        }
+
+        .note p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>🎯 Démonstration - Roadmap Visuelle EducaVision</h1>
+
+        <div class="guide">
+            <p><strong>✨ Nouvelle Interface de Roadmap</strong></p>
+            <p>Voici un aperçu de la nouvelle roadmap visuelle qui s'affichera sur chaque page de détail formation.
+                Le design est adaptatif, moderne et suit votre charte graphique EducaVision.</p>
+        </div>
+
+        <!-- DEMO START -->
+        <div class="roadmap-section">
+            <h3>
+                <i class="fas fa-road"></i> Votre Parcours d'Apprentissage
+            </h3>
+            <p class="roadmap-subtitle">Découvrez les étapes clés de cette formation, des prérequis aux débouchés
+                professionnels</p>
+
+            <div class="roadmap-container">
+                <!-- Stage 1 -->
+                <div class="roadmap-stage">
+                    <div class="stage-badge stage-badge-before">●</div>
+
+                    <div class="stage-header">
+                        <h4>Avant la Formation</h4>
+                    </div>
+
+                    <div class="stage-count">3 Prérequis</div>
+
+                    <div class="stage-content">
+                        <ul class="prerequis-list">
+                            <li class="prerequis-item">
+                                <span class="item-icon">✓</span>
+                                <div class="item-content">
+                                    <h5>Maîtrise du HTML & CSS</h5>
+                                    <small>Connaissances solides en développement web front-end</small>
+                                </div>
+                            </li>
+                            <li class="prerequis-item">
+                                <span class="item-icon">✓</span>
+                                <div class="item-content">
+                                    <h5>JavaScript Intermédiaire</h5>
+                                    <small>Compréhension des concepts ES6 et manipulation du DOM</small>
+                                </div>
+                            </li>
+                            <li class="prerequis-item">
+                                <span class="item-icon">✓</span>
+                                <div class="item-content">
+                                    <h5>Ligne de Commande Basique</h5>
+                                    <small>Familiarité avec le terminal et les commandes Git</small>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stage 2 -->
+                <div class="roadmap-stage">
+                    <div class="stage-badge stage-badge-during">●</div>
+
+                    <div class="stage-header">
+                        <h4>Pendant la Formation</h4>
+                    </div>
+
+                    <div class="stage-count">Compétences à Acquérir</div>
+
+                    <div class="stage-content">
+                        <div class="competences-display">
+                            <ul style="padding-left: 20px; margin: 0;">
+                                <li style="margin-bottom: 10px;">React.js & Hooks avancés</li>
+                                <li style="margin-bottom: 10px;">State Management avec Redux</li>
+                                <li style="margin-bottom: 10px;">API REST & GraphQL</li>
+                                <li style="margin-bottom: 10px;">Testing & Debugging</li>
+                                <li>Performance Optimization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stage 3 -->
+                <div class="roadmap-stage last-stage">
+                    <div class="stage-badge stage-badge-after">●</div>
+
+                    <div class="stage-header">
+                        <h4>Après la Formation</h4>
+                    </div>
+
+                    <div class="stage-count">Débouchés Professionnels</div>
+
+                    <div class="stage-content">
+                        <div class="debouches-display">
+                            <ul style="padding-left: 20px; margin: 0;">
+                                <li style="margin-bottom: 10px;">Développeur Front-End Senior</li>
+                                <li style="margin-bottom: 10px;">Développeur Full-Stack</li>
+                                <li style="margin-bottom: 10px;">Lead Front-End</li>
+                                <li style="margin-bottom: 10px;">Freelance / Consultant</li>
+                                <li>CTO de startup</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Badge de Difficulté -->
+            <div class="roadmap-badge difficulty-medium">
+                <span class="badge-icon">🟡</span>
+                <span class="badge-text">Accessible avec effort</span>
+            </div>
+        </div>
+
+        <!-- NOTES -->
+        <div class="note">
+            <p><strong>💡 Points clés de la nouvelle roadmap :</strong></p>
+            <ul style="margin-top: 10px; margin-left: 20px; color: #666; font-size: 0.9rem;">
+                <li style="margin-bottom: 8px;">✅ Timeline verticale progressive avec ligne continue</li>
+                <li style="margin-bottom: 8px;">✅ Badges colorés par étape (vert → jaune → bleu)</li>
+                <li style="margin-bottom: 8px;">✅ Boîtes de contenu avec border gauche nuancé</li>
+                <li style="margin-bottom: 8px;">✅ Icônes d'items avec checkmarks verts</li>
+                <li style="margin-bottom: 8px;">✅ Badge de difficulté dynamique (facile/moyen/difficile)</li>
+                <li style="margin-bottom: 8px;">✅ Animations fluides au survol</li>
+                <li style="margin-bottom: 8px;">✅ Design 100% responsif (mobile, tablet, desktop)</li>
+                <li>✅ Charte graphique EducaVision respectée</li>
+            </ul>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

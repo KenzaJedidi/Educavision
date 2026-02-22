@@ -11,18 +11,19 @@
 {% endblock %}
 
 {% block stylesheets %}
+{{ parent() }}
 <style>
 	.stats-card {
 		background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-		border-radius: 15px;
-		padding: 20px;
+		border-radius: 10px;
+		padding: 10px 14px;
 		color: white;
-		margin-bottom: 20px;
-		box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+		margin-bottom: 10px;
+		box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 		transition: transform 0.3s ease;
 	}
 	.stats-card:hover {
-		transform: translateY(-5px);
+		transform: translateY(-3px);
 	}
 	.stats-card.green {
 		background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
@@ -33,15 +34,19 @@
 	.stats-card.blue {
 		background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 	}
+	.stats-card.ai {
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	}
 	.stats-card h3 {
-		font-size: 32px;
+		font-size: 20px;
 		margin: 0;
 		font-weight: bold;
+		line-height: 1.2;
 	}
 	.stats-card p {
-		margin: 5px 0 0;
+		margin: 2px 0 0;
 		opacity: 0.9;
-		font-size: 14px;
+		font-size: 11px;
 	}
 	.widget-box {
 		border-radius: 15px;
@@ -82,34 +87,95 @@
 		background: transparent !important;
 		color: white !important;
 	}
+	.ai-badge { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
 </style>
 {% endblock %}
 
 {% block body %}
 <!-- Statistiques en cartes -->
-<div class="row mb-4">
-	<div class="col-md-3">
+<div class="row mb-2">
+	<div class="col-6 col-md-3 col-lg">
 		<div class="stats-card blue">
-			<h3>{{ offres_stage|length }}</h3>
+			<h3>{{ total_offres }}</h3>
 			<p><i class="fa fa-briefcase"></i> Total Offres</p>
 		</div>
 	</div>
-	<div class="col-md-3">
+	<div class="col-6 col-md-3 col-lg">
 		<div class="stats-card green">
-			<h3>{{ offres_stage|filter(o => o.statut == 'Ouvert')|length }}</h3>
-			<p><i class="fa fa-check-circle"></i> Offres Ouvertes</p>
+			<h3>{{ statuts['Ouvert'] ?? 0 }}</h3>
+			<p><i class="fa fa-check-circle"></i> Ouvertes</p>
 		</div>
 	</div>
-	<div class="col-md-3">
+	<div class="col-6 col-md-3 col-lg">
 		<div class="stats-card orange">
-			<h3>{{ offres_stage|filter(o => o.statut == 'Fermé')|length }}</h3>
-			<p><i class="fa fa-times-circle"></i> Offres Fermées</p>
+			<h3>{{ statuts['Fermé'] ?? 0 }}</h3>
+			<p><i class="fa fa-times-circle"></i> Fermées</p>
 		</div>
 	</div>
-	<div class="col-md-3">
+	<div class="col-6 col-md-3 col-lg">
 		<div class="stats-card">
-			<h3>{{ offres_stage|filter(o => o.statut == 'Pourvu')|length }}</h3>
-			<p><i class="fa fa-user-check"></i> Offres Pourvues</p>
+			<h3>{{ statuts['Pourvu'] ?? 0 }}</h3>
+			<p><i class="fa fa-user-check"></i> Pourvues</p>
+		</div>
+	</div>
+	<div class="col-6 col-md-3 col-lg">
+		<div class="stats-card ai">
+			<h3>{{ salaire_moyen }} <small style="font-size:14px">DT</small></h3>
+			<p><i class="fa fa-money"></i> Salaire Moyen</p>
+		</div>
+	</div>
+</div>
+
+{# ======== GRAPHIQUES ANALYTICS ======== #}
+<div class="row mb-2 g-2">
+	<div class="col-md-4">
+		<div class="card border-0 shadow-sm h-100">
+			<div class="card-body p-2">
+				<div class="d-flex align-items-center gap-2 mb-1">
+					<i class="fa fa-chart-pie" style="font-size:12px"></i>
+					<strong style="font-size:11px">Répartition par statut</strong>
+				</div>
+				<div class="mx-auto" style="max-width:130px;height:130px;">
+					<canvas id="statutPieChart" width="130" height="130"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="card border-0 shadow-sm h-100">
+			<div class="card-body p-2">
+				<div class="d-flex align-items-center gap-2 mb-1">
+					<i class="fa fa-chart-bar" style="font-size:12px"></i>
+					<strong style="font-size:11px">Offres créées par mois</strong>
+				</div>
+				<div style="position:relative;height:130px;">
+					<canvas id="offresParMoisChart"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="card border-0 shadow-sm h-100">
+			<div class="card-body p-2">
+				<div class="d-flex align-items-center gap-2 mb-1">
+					<i class="fa fa-building" style="font-size:12px"></i>
+					<strong style="font-size:11px">Top Entreprises</strong>
+				</div>
+				{% for entreprise, count in top_entreprises %}
+					{% set pct = total_offres > 0 ? ((count / total_offres) * 100) : 0 %}
+					<div class="mb-2">
+						<div class="d-flex justify-content-between align-items-center small">
+							<span class="text-truncate" title="{{ entreprise }}">{{ entreprise|length > 20 ? entreprise[:20] ~ '…' : entreprise }}</span>
+							<span class="badge bg-light text-dark ms-1">{{ count }}</span>
+						</div>
+						<div style="height:7px;border-radius:4px;background:#e9ecef;overflow:hidden;">
+							<div style="height:7px;width:{{ pct|round }}%;background:linear-gradient(90deg,#ff6b35,#f7931e);border-radius:4px;"></div>
+						</div>
+					</div>
+				{% else %}
+					<div class="text-muted small">Aucune donnée</div>
+				{% endfor %}
+			</div>
 		</div>
 	</div>
 </div>
@@ -142,7 +208,7 @@
 	<div class="col-lg-12 m-b30">
 		<div class="widget-box">
 			<div class="wc-title">
-				<h4>Gestion des Offres de Stage</h4>
+				<h4>Gestion des Offres de Stage <span class="ai-badge"><i class="fa fa-robot"></i> IA</span></h4>
 				<a href="{{ path('admin_offre_stage_new') }}" class="btn button-sm btn-action-create">
 					<i class="fa fa-plus"></i> Ajouter une Offre
 				</a>
@@ -174,7 +240,7 @@
 			</div>
 
 			<div class="widget-inner">
-				{% if offres_stage|length > 0 %}
+				{% if pagination.getTotalItemCount > 0 %}
 				<div class="table-responsive">
 					<table class="table table-hover table-striped">
 						<thead>
@@ -191,9 +257,14 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for offre in offres_stage %}
+							{% for offre in pagination %}
 							<tr>
-								<td><strong style="color: #ff6b35;">{{ offre.titre }}</strong></td>
+								<td>
+									<strong style="color: #ff6b35;">{{ offre.titre }}</strong>
+									{% if offre.descriptionIa is not null %}
+										<br><small class="ai-badge" style="font-size:9px;padding:2px 6px;"><i class="fa fa-robot"></i> IA</small>
+									{% endif %}
+								</td>
 								<td><i class="fa fa-building text-muted"></i> {{ offre.entreprise }}</td>
 								<td><i class="fa fa-map-marker-alt text-muted"></i> {{ offre.lieu ?? '-' }}</td>
 								<td><i class="fa fa-calendar text-success"></i> {{ offre.dateDebut|date('d/m/Y') }}</td>
@@ -230,6 +301,17 @@
 						</tbody>
 					</table>
 				</div>
+
+				{# ======== PAGINATION ======== #}
+				<div class="d-flex justify-content-between align-items-center px-3 pb-3 flex-wrap gap-2">
+					<small class="text-muted">
+						Page {{ pagination.getCurrentPageNumber }} / {{ (pagination.getTotalItemCount / pagination.getItemNumberPerPage)|round(0, 'ceil') }}
+						— {{ pagination.getTotalItemCount }} offre(s)
+					</small>
+					<nav>
+						{{ knp_pagination_render(pagination) }}
+					</nav>
+				</div>
 				{% else %}
 				<div class="text-center" style="padding: 60px 20px;">
 					<div style="font-size: 80px; color: #e0e0e0; margin-bottom: 20px;">
@@ -246,4 +328,62 @@
 		</div>
 	</div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+	<script>
+		(function() {
+			// Pie Chart - Répartition par statut
+			const pieCtx = document.getElementById('statutPieChart');
+			if (pieCtx) {
+				new Chart(pieCtx, {
+					type: 'doughnut',
+					data: {
+						labels: ['Ouvert', 'Fermé', 'Pourvu'],
+						datasets: [{
+							data: [{{ statuts['Ouvert'] ?? 0 }}, {{ statuts['Fermé'] ?? 0 }}, {{ statuts['Pourvu'] ?? 0 }}],
+							backgroundColor: ['#2ecc71', '#e74c3c', '#f1c40f'],
+							borderColor: '#fff',
+							borderWidth: 2,
+						}]
+					},
+					options: {
+						plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
+						cutout: '60%',
+						maintainAspectRatio: false,
+					}
+				});
+			}
+
+			// Bar Chart - Offres par mois
+			const barCtx = document.getElementById('offresParMoisChart');
+			if (barCtx) {
+				new Chart(barCtx, {
+					type: 'bar',
+					data: {
+						labels: [{% for mois, count in stats_par_mois %}'{{ mois }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+						datasets: [{
+							label: 'Offres',
+							data: [{% for mois, count in stats_par_mois %}{{ count }}{% if not loop.last %}, {% endif %}{% endfor %}],
+							backgroundColor: 'rgba(255, 107, 53, 0.7)',
+							borderColor: '#ff6b35',
+							borderWidth: 1,
+							borderRadius: 5,
+						}]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						plugins: { legend: { display: false } },
+						scales: {
+							y: { beginAtZero: true, ticks: { stepSize: 1 } },
+							x: { ticks: { font: { size: 10 } } }
+						}
+					}
+				});
+			}
+		})();
+	</script>
 {% endblock %}

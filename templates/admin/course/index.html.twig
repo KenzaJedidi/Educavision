@@ -95,10 +95,10 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if course.status == 1 %}
-                                        <span class="badge badge-success">Actif</span>
+                                    {% if course.status == 'published' %}
+                                        <span class="badge badge-success">Publié</span>
                                     {% else %}
-                                        <span class="badge badge-danger">Inactif</span>
+                                        <span class="badge badge-warning">Brouillon</span>
                                     {% endif %}
                                 </td>
                                 <td>{{ course.createdAt|date('d/m/Y H:i') }}</td>
@@ -113,9 +113,9 @@
                                             <i class="fa fa-edit"></i>
                                         </a>
                                         <a href="{{ path('admin_course_toggle_status', {'id': course.id}) }}" 
-                                           class="btn btn-sm {{ course.status == 1 ? 'btn-secondary' : 'btn-success' }}" 
-                                           title="{{ course.status == 1 ? 'Désactiver' : 'Activer' }}">
-                                            <i class="fa {{ course.status == 1 ? 'fa-pause' : 'fa-play' }}"></i>
+                                           class="btn btn-sm {{ course.status == 'published' ? 'btn-secondary' : 'btn-success' }}" 
+                                           title="{{ course.status == 'published' ? 'Désactiver' : 'Activer' }}">
+                                            <i class="fa {{ course.status == 'published' ? 'fa-pause' : 'fa-play' }}"></i>
                                         </a>
                                         <a href="{{ path('admin_course_delete', {'id': course.id}) }}" 
                                            class="btn btn-sm btn-danger" 
@@ -163,8 +163,8 @@
                                 <i class="fa fa-check"></i>
                             </div>
                             <div class="stat-info">
-                                <h3>{{ courses|filter(c => c.status == 1)|length }}</h3>
-                                <p>Cours actifs</p>
+                                <h3>{{ courses|filter(c => c.status == 'published')|length }}</h3>
+                                <p>Cours publiés</p>
                             </div>
                         </div>
                     </div>

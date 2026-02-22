@@ -1,0 +1,562 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}🧠 Conseiller d'Orientation Intelligent - EducaVision{% endblock %}
+
+{% block meta_description %}Analysez votre profil étudiant avec l'IA et découvrez les filières qui correspondent à vos passions et compétences.{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+/* ===== CONSEILLER IA - Styles dédiés ===== */
+.ai-orientation-hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+    padding: 60px 0 40px;
+    position: relative;
+    overflow: hidden;
+}
+.ai-orientation-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(102,126,234,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+}
+.ai-orientation-hero .hero-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 12px;
+    line-height: 1.2;
+}
+.ai-orientation-hero .hero-subtitle {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.05rem;
+    max-width: 600px;
+}
+.ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border-radius: 50px;
+    padding: 6px 18px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+/* ===== Carte de saisie ===== */
+.ai-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    padding: 36px 40px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(102,126,234,0.1);
+}
+.ai-card .card-heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 6px;
+}
+.ai-card .card-hint {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+#profil-textarea {
+    width: 100%;
+    min-height: 160px;
+    border: 2px solid #e8eaf6;
+    border-radius: 14px;
+    padding: 18px;
+    font-size: 0.97rem;
+    color: #333;
+    resize: vertical;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.6;
+}
+#profil-textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102,126,234,0.12);
+}
+#profil-textarea::placeholder {
+    color: #bbb;
+}
+#char-counter {
+    font-size: 0.8rem;
+    color: #aaa;
+    text-align: right;
+    margin-top: 6px;
+}
+.example-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+.example-chip {
+    background: #f0f2ff;
+    color: #667eea;
+    border: 1px solid rgba(102,126,234,0.3);
+    border-radius: 50px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+.example-chip:hover {
+    background: #667eea;
+    color: #fff;
+}
+
+/* ===== Bouton analyser ===== */
+.btn-analyser {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    box-shadow: 0 6px 20px rgba(102,126,234,0.35);
+    letter-spacing: 0.3px;
+}
+.btn-analyser:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(102,126,234,0.45);
+}
+.btn-analyser:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+.btn-analyser .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== Zone de résultats ===== */
+#resultats-section {
+    display: none;
+}
+.result-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.07);
+    border-left: 4px solid #667eea;
+    animation: fadeInUp 0.4s ease forwards;
+}
+.result-card.green  { border-left-color: #28a745; }
+.result-card.orange { border-left-color: #fd7e14; }
+.result-card.purple { border-left-color: #6f42c1; }
+.result-card.blue   { border-left-color: #007bff; }
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.result-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.tag-pill {
+    display: inline-block;
+    background: #f0f2ff;
+    color: #667eea;
+    border-radius: 50px;
+    padding: 5px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin: 3px 4px 3px 0;
+    border: 1px solid rgba(102,126,234,0.25);
+}
+.tag-pill.green  { background: #e8f5e9; color: #2e7d32; border-color: rgba(46,125,50,0.25); }
+.tag-pill.orange { background: #fff3e0; color: #e65100; border-color: rgba(230,81,0,0.25); }
+.niveau-badge {
+    display: inline-block;
+    padding: 8px 22px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+.niveau-debutant     { background: #e8f5e9; color: #2e7d32; }
+.niveau-intermediaire { background: #fff3e0; color: #e65100; }
+.niveau-avance       { background: #ede7f6; color: #512da8; }
+
+.filiere-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0f2ff;
+}
+.filiere-item:last-child { border-bottom: none; }
+.filiere-icon {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.filiere-name { font-weight: 700; color: #1a1a2e; font-size: 0.95rem; }
+.filiere-desc { color: #777; font-size: 0.82rem; margin-top: 3px; }
+
+/* ===== Alerte erreur ===== */
+#error-box {
+    display: none;
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    border-radius: 12px;
+    padding: 18px 22px;
+    color: #c53030;
+    font-size: 0.92rem;
+    margin-top: 16px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 767px) {
+    .ai-card { padding: 22px 18px; }
+    .ai-orientation-hero .hero-title { font-size: 1.7rem; }
+    .btn-analyser { width: 100%; justify-content: center; }
+}
+</style>
+{% endblock %}
+
+{% block body %}
+
+<!-- ===== HERO ===== -->
+<div class="ai-orientation-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="ai-badge">
+                    <i class="fa fa-robot"></i> Intelligence Artificielle
+                </div>
+                <h1 class="hero-title">🧠 Conseiller d'Orientation Intelligent</h1>
+                <p class="hero-subtitle">
+                    Décrivez vos passions, vos intérêts et vos objectifs. Notre IA analysera votre profil
+                    et vous proposera les filières les plus adaptées à votre potentiel.
+                </p>
+            </div>
+            <div class="col-lg-4 text-center d-none d-lg-block" style="font-size:7rem;opacity:0.15;color:#fff;">
+                🎓
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== CONTENU PRINCIPAL ===== -->
+<div class="section-full bg-white" style="padding: 50px 0 70px;">
+    <div class="container">
+        <div class="row">
+
+            <!-- ===== COLONNE GAUCHE : Saisie ===== -->
+            <div class="col-lg-5 col-md-12">
+                <div class="ai-card">
+                    <h3 class="card-heading">✍️ Décrivez votre profil</h3>
+                    <p class="card-hint">
+                        Parlez de vos passions, intérêts, points forts et objectifs. Plus vous êtes précis, meilleure sera l'analyse.
+                    </p>
+
+                    <textarea
+                        id="profil-textarea"
+                        placeholder="Exemples : Je suis passionné par la technologie et j'aime résoudre des problèmes complexes. J'adore les mathématiques et la programmation. Mon objectif est de travailler dans le domaine de l'intelligence artificielle ou du développement logiciel..."
+                    ></textarea>
+
+                    <div id="char-counter">0 / 2000 caractères</div>
+
+                    <!-- Exemples cliquables -->
+                    <div class="mt-3">
+                        <small style="color:#aaa;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;">Exemples :</small>
+                        <div class="example-chips">
+                            <span class="example-chip" onclick="setExample(this)">Passionné par la tech 💻</span>
+                            <span class="example-chip" onclick="setExample(this)">Créatif et artistique 🎨</span>
+                            <span class="example-chip" onclick="setExample(this)">Aime les sciences 🔬</span>
+                            <span class="example-chip" onclick="setExample(this)">Intérêt pour le business 📊</span>
+                        </div>
+                    </div>
+
+                    <button id="btn-analyser" class="btn-analyser" onclick="analyserProfil()">
+                        <span class="spinner" id="spinner"></span>
+                        <i class="fa fa-brain" id="btn-icon"></i>
+                        <span id="btn-text">Analyser mon profil</span>
+                    </button>
+
+                    <div id="error-box">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        <span id="error-message"></span>
+                    </div>
+                </div>
+
+                <!-- Info bloc -->
+                <div style="background:#f8f9ff;border-radius:14px;padding:20px 24px;border:1px solid rgba(102,126,234,0.15);">
+                    <h5 style="font-weight:700;color:#1a1a2e;margin-bottom:12px;font-size:0.95rem;">
+                        <i class="fa fa-info-circle" style="color:#667eea;"></i> Comment ça marche ?
+                    </h5>
+                    <ol style="color:#666;font-size:0.85rem;padding-left:18px;line-height:1.9;margin:0;">
+                        <li>Rédigez quelques lignes sur vous-même</li>
+                        <li>Notre IA analyse vos compétences implicites</li>
+                        <li>Les filières compatibles sont identifiées</li>
+                        <li>Vous recevez des recommandations personnalisées</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- ===== COLONNE DROITE : Résultats ===== -->
+            <div class="col-lg-7 col-md-12 mt-4 mt-lg-0">
+
+                <!-- État initial (avant analyse) -->
+                <div id="initial-state" style="height:100%;display:flex;align-items:center;justify-content:center;min-height:300px;">
+                    <div class="text-center" style="color:#ccc;">
+                        <div style="font-size:5rem;margin-bottom:16px;opacity:0.4;">🔍</div>
+                        <p style="font-size:1rem;color:#bbb;">Les résultats de votre analyse apparaîtront ici</p>
+                    </div>
+                </div>
+
+                <!-- Loading state -->
+                <div id="loading-state" style="display:none;height:100%;align-items:center;justify-content:center;min-height:300px;">
+                    <div class="text-center">
+                        <div style="font-size:3.5rem;margin-bottom:16px;animation:pulse 1.5s infinite;">🧠</div>
+                        <p style="color:#667eea;font-weight:600;font-size:1rem;">Analyse de votre profil en cours...</p>
+                        <p style="color:#aaa;font-size:0.85rem;">L'IA identifie vos compétences et les filières compatibles</p>
+                    </div>
+                </div>
+
+                <!-- Résultats -->
+                <div id="resultats-section">
+                    <!-- Niveau technique -->
+                    <div class="result-card purple" id="card-niveau" style="animation-delay:0s;">
+                        <h4><i class="fa fa-tachometer" style="color:#6f42c1;"></i> Niveau technique estimé</h4>
+                        <div id="niveau-value"></div>
+                    </div>
+
+                    <!-- Compétences -->
+                    <div class="result-card green" id="card-competences" style="animation-delay:0.1s;">
+                        <h4><i class="fa fa-check-circle" style="color:#28a745;"></i> Compétences détectées</h4>
+                        <div id="competences-list"></div>
+                    </div>
+
+                    <!-- Domaines -->
+                    <div class="result-card orange" id="card-domaines" style="animation-delay:0.2s;">
+                        <h4><i class="fa fa-compass" style="color:#fd7e14;"></i> Domaines recommandés</h4>
+                        <div id="domaines-list"></div>
+                    </div>
+
+                    <!-- Filières -->
+                    <div class="result-card blue" id="card-filieres" style="animation-delay:0.3s;">
+                        <h4><i class="fa fa-graduation-cap" style="color:#007bff;"></i> Filières suggérées</h4>
+                        <div id="filieres-list"></div>
+                    </div>
+
+                    <!-- Bouton réinitialiser -->
+                    <div class="text-center mt-3">
+                        <button onclick="reinitialiser()" style="background:transparent;border:2px solid #667eea;color:#667eea;border-radius:50px;padding:10px 28px;font-weight:600;cursor:pointer;font-size:0.88rem;transition:all 0.2s;" onmouseover="this.style.background='#667eea';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#667eea'">
+                            <i class="fa fa-refresh"></i> Nouvelle analyse
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<style>
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%       { transform: scale(1.08); opacity: 0.8; }
+}
+</style>
+<script>
+// ===== Compteur de caractères =====
+const textarea = document.getElementById('profil-textarea');
+const counter  = document.getElementById('char-counter');
+
+textarea.addEventListener('input', function () {
+    const len = this.value.length;
+    counter.textContent = len + ' / 2000 caractères';
+    counter.style.color = len > 1800 ? '#e65100' : '#aaa';
+    if (len > 2000) {
+        this.value = this.value.substring(0, 2000);
+    }
+});
+
+// ===== Exemples pré-remplis =====
+const exemples = {
+    'Passionné par la tech 💻': "Je suis passionné par la technologie et j'aime résoudre des problèmes complexes. J'adore la programmation, en particulier le développement web et les systèmes intelligents. Mon objectif est de travailler dans le domaine de l'intelligence artificielle ou du développement logiciel.",
+    'Créatif et artistique 🎨': "Je suis une personne créative qui adore dessiner, photographier et concevoir des visuels. J'ai un fort intérêt pour le design graphique, l'UI/UX et la communication visuelle. J'aime raconter des histoires à travers les images et créer des expériences esthétiques mémorables.",
+    'Aime les sciences 🔬': "Je suis passionné par les sciences naturelles, particulièrement la biologie et la chimie. J'aime faire des expériences, analyser des données et comprendre les mécanismes du vivant. Mon ambition est de contribuer à la recherche médicale ou environnementale.",
+    'Intérêt pour le business 📊': "J'ai toujours été attiré par l'entrepreneuriat et le monde des affaires. J'aime analyser les marchés, comprendre les stratégies d'entreprise et développer des idées innovantes. Je suis à l'aise avec les chiffres et la gestion de projets."
+};
+
+function setExample(chip) {
+    const label = chip.textContent;
+    textarea.value = exemples[label] || '';
+    textarea.dispatchEvent(new Event('input'));
+    textarea.focus();
+}
+
+// ===== Analyse IA =====
+function analyserProfil() {
+    const texte = textarea.value.trim();
+
+    // Reset erreur
+    document.getElementById('error-box').style.display = 'none';
+
+    if (!texte || texte.length < 20) {
+        showError('Veuillez écrire au moins quelques phrases décrivant votre profil.');
+        return;
+    }
+
+    // UI : loading
+    setLoading(true);
+    document.getElementById('initial-state').style.display  = 'none';
+    document.getElementById('loading-state').style.display  = 'flex';
+    document.getElementById('resultats-section').style.display = 'none';
+
+    fetch('{{ path("ai_orientation_analyser") }}', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body:    JSON.stringify({ texte })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data.success) {
+            throw new Error(data.error || 'Erreur inconnue lors de l\'analyse.');
+        }
+        afficherResultats(data);
+    })
+    .catch(err => {
+        showError(err.message);
+        document.getElementById('loading-state').style.display = 'none';
+        document.getElementById('initial-state').style.display = 'flex';
+    })
+    .finally(() => {
+        setLoading(false);
+    });
+}
+
+function afficherResultats(data) {
+    document.getElementById('loading-state').style.display = 'none';
+
+    // Niveau technique
+    const niveauMap = {
+        'débutant':      { css: 'niveau-debutant',      icon: '🌱' },
+        'intermédiaire': { css: 'niveau-intermediaire',  icon: '⚡' },
+        'avancé':        { css: 'niveau-avance',         icon: '🚀' },
+    };
+    const niveauRaw = (data.niveau_technique_estime || '').toLowerCase();
+    const niveauStyle = niveauMap[niveauRaw] || { css: 'niveau-debutant', icon: '📚' };
+    document.getElementById('niveau-value').innerHTML =
+        `<span class="niveau-badge ${niveauStyle.css}">${niveauStyle.icon} ${data.niveau_technique_estime}</span>`;
+
+    // Compétences
+    const competences = data.competences_detectees || [];
+    document.getElementById('competences-list').innerHTML = competences.length
+        ? competences.map(c => `<span class="tag-pill green">${escapeHtml(c)}</span>`).join('')
+        : '<span style="color:#aaa;font-size:0.85rem;">Aucune compétence détectée</span>';
+
+    // Domaines
+    const domaines = data.domaines_recommandes || [];
+    document.getElementById('domaines-list').innerHTML = domaines.length
+        ? domaines.map(d => `<span class="tag-pill orange">${escapeHtml(d)}</span>`).join('')
+        : '<span style="color:#aaa;font-size:0.85rem;">Aucun domaine identifié</span>';
+
+    // Filières
+    const filieres = data.filiere_suggerees || [];
+    if (filieres.length > 0) {
+        document.getElementById('filieres-list').innerHTML = filieres.map(f => `
+            <div class="filiere-item">
+                <div class="filiere-icon"><i class="fa fa-graduation-cap"></i></div>
+                <div>
+                    <div class="filiere-name">${escapeHtml(f.nom)}</div>
+                    <div class="filiere-desc">${escapeHtml(f.description)}</div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        document.getElementById('filieres-list').innerHTML =
+            '<p style="color:#aaa;font-size:0.85rem;margin:0;">Aucune filière correspondante trouvée en base de données.<br>Les domaines recommandés par l\'IA sont affichés ci-dessus.</p>';
+    }
+
+    // Afficher la section
+    document.getElementById('resultats-section').style.display = 'block';
+
+    // Scroll vers les résultats sur mobile
+    if (window.innerWidth < 992) {
+        document.getElementById('resultats-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function reinitialiser() {
+    document.getElementById('resultats-section').style.display = 'none';
+    document.getElementById('initial-state').style.display = 'flex';
+    document.getElementById('error-box').style.display = 'none';
+    textarea.value = '';
+    counter.textContent = '0 / 2000 caractères';
+    textarea.focus();
+}
+
+function setLoading(state) {
+    const btn     = document.getElementById('btn-analyser');
+    const spinner = document.getElementById('spinner');
+    const icon    = document.getElementById('btn-icon');
+    const text    = document.getElementById('btn-text');
+
+    btn.disabled = state;
+    spinner.style.display = state ? 'block' : 'none';
+    icon.style.display    = state ? 'none'  : 'inline';
+    text.textContent      = state ? 'Analyse en cours...' : 'Analyser mon profil';
+}
+
+function showError(msg) {
+    const box = document.getElementById('error-box');
+    document.getElementById('error-message').textContent = msg;
+    box.style.display = 'block';
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+</script>
+{% endblock %}

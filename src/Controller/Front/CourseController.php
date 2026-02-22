@@ -27,9 +27,9 @@ class CourseController extends AbstractController
         $category = $request->query->get('category');
 
         if ($search || $category) {
-            $courses = $courseRepository->searchCourses($search, $category);
+            $courses = $courseRepository->searchCourses($search, $category, 'published');
         } else {
-            $courses = $courseRepository->findActiveCourses();
+            $courses = $courseRepository->findPublishedCourses();
         }
 
         $categories = $courseRepository->getAvailableCategories();
@@ -50,7 +50,7 @@ class CourseController extends AbstractController
     ): Response {
         $course = $courseRepository->find($id);
         
-        if (!$course || $course->getStatus() !== 1) {
+        if (!$course || $course->getStatus() !== 'published') {
             throw $this->createNotFoundException('Cours introuvable');
         }
 
@@ -72,7 +72,7 @@ class CourseController extends AbstractController
         $course = $courseRepository->find($id);
         $chapter = $chapterRepository->find($chapterId);
 
-        if (!$course || $course->getStatus() !== 1) {
+        if (!$course || !in_array($course->getStatus(), ['published', 'publishe'])) {
             throw $this->createNotFoundException('Cours introuvable');
         }
 
@@ -99,7 +99,7 @@ class CourseController extends AbstractController
     ): Response {
         $course = $courseRepository->find($id);
         
-        if (!$course || $course->getStatus() !== 1) {
+        if (!$course || !in_array($course->getStatus(), ['published', 'publishe'])) {
             throw $this->createNotFoundException('Cours introuvable');
         }
 
@@ -114,12 +114,12 @@ class CourseController extends AbstractController
             }
 
             // Créer ou trouver la discussion
-            $message = $messageRepository->findOrCreateDiscussion($course->getTitre(), $studentName);
+            $message = $messageRepository->findOrCreateDiscussion($course->getTitle(), $studentName);
             
             // Mettre à jour le message
             $message->setContent($content);
             $message->setStudent($studentName);
-            $message->setTeacher($course->getTitre() . ' - Professeur');
+            $message->setTeacher($course->getTitle() . ' - Professeur');
             $message->updateLastMessage($content);
             $message->markAsUnread();
 
@@ -146,7 +146,7 @@ class CourseController extends AbstractController
     ): Response {
         $course = $courseRepository->find($id);
         
-        if (!$course || $course->getStatus() !== 1) {
+        if (!$course || !in_array($course->getStatus(), ['published', 'publishe'])) {
             throw $this->createNotFoundException('Cours introuvable');
         }
 
@@ -189,7 +189,7 @@ class CourseController extends AbstractController
     ): Response {
         $course = $courseRepository->find($id);
         
-        if (!$course || $course->getStatus() !== 1) {
+        if (!$course || !in_array($course->getStatus(), ['published', 'publishe'])) {
             throw $this->createNotFoundException('Cours introuvable');
         }
 
@@ -197,7 +197,7 @@ class CourseController extends AbstractController
         $messages = [];
 
         // Récupérer tous les messages du cours
-        $messages = $messageRepository->findByCourseTitle($course->getTitre());
+        $messages = $messageRepository->findByCourseTitle($course->getTitle());
         
         // Initialiser les conversations pour chaque message
         foreach ($messages as $message) {

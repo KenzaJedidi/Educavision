@@ -86,9 +86,9 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating">
-                                        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'style': 'min-height:150px', 'placeholder':'Décrivez votre réclamation en détail'}}) }}
-                                        {{ form_label(form.description, 'Description détaillée') }}
-                                        {{ form_errors(form.description) }}
+                                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'style': 'min-height:150px', 'placeholder':'Décrivez votre réclamation en détail', 'id':'rec_description'}}) }}
+                                            {{ form_label(form.description, 'Description détaillée') }}
+                                            {{ form_errors(form.description) }}
                                     </div>
                                 </div>
                             </div>
@@ -97,6 +97,24 @@
                                 <button type="submit" class="btn btn-primary px-4"><i class="fa fa-paper-plane"></i> Envoyer</button>
                             </div>
                             {{ form_end(form) }}
+                            <div id="analysis_preview" class="mt-4 p-3" style="display:none; border-radius:8px; background:linear-gradient(90deg,#f6f9ff,#eef6ff); box-shadow:0 6px 18px rgba(13,202,240,0.08);">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h5 id="ap_summary_title">Résumé automatique</h5>
+                                        <p id="ap_summary" class="mb-2 text-muted"></p>
+                                        <div id="ap_sentiment" class="mb-2"></div>
+                                        <div id="ap_prediction" class="small text-muted"></div>
+                                    </div>
+                                    <div style="min-width:120px; text-align:right;">
+                                        <div id="ap_clock" style="font-size:18px; font-weight:600; color:#0b7ea1"></div>
+                                        <div class="mt-2">
+                                            <div class="progress" style="height:8px; background:rgba(11,126,161,0.12)">
+                                                <div id="ap_progress" class="progress-bar" role="progressbar" style="width:0%; background:#0dcaf0"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -104,4 +122,58 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function(){
+            const textarea = document.getElementById('rec_description');
+            if (!textarea) return;
+            let timeout = null;
+            const preview = document.getElementById('analysis_preview');
+            const sumEl = document.getElementById('ap_summary');
+            const sentEl = document.getElementById('ap_sentiment');
+            const predEl = document.getElementById('ap_prediction');
+            const clockEl = document.getElementById('ap_clock');
+            const progEl = document.getElementById('ap_progress');
+
+            function render(data){
+                if(!data) { preview.style.display='none'; return; }
+                preview.style.display='block';
+                sumEl.textContent = data.summary || '(aucun)';
+                const s = data.sentiment || 'neutre';
+                const score = data.sentimentScore ?? 0;
+                const conf = data.sentimentConfidence ?? 0;
+                let color = '#6c757d'; let emoji='😐';
+                if (s === 'positif'){ color = '#2ecc71'; emoji='😊'; }
+                if (s === 'négatif'){ color = '#e74c3c'; emoji='😟'; }
+                sentEl.innerHTML = '<strong>Sentiment</strong>: <span style="color:'+color+'">'+emoji+' '+(s.charAt(0).toUpperCase()+s.slice(1))+'</span> <small class="text-muted">(score:'+score+', conf:'+conf+')</small>';
+                predEl.textContent = 'Temps de résolution estimé : ' + (data.predictedHours ?? '?') + 'h';
+                clockEl.textContent = (data.predictedHours ?? '?') + 'h';
+                // progress based on hours within 0-168
+                const pct = Math.min(100, Math.round((data.predictedHours/168)*100));
+                progEl.style.width = pct + '%';
+            }
+
+            async function analyze(text){
+                try{
+                    const res = await fetch('{{ path('api_reclamation_analyze') }}', {
+                        method:'POST', headers:{'Content-Type':'application/json'},
+                        body: JSON.stringify({text})
+                    });
+                    if (!res.ok) { render(null); return; }
+                    const data = await res.json();
+                    render(data);
+                }catch(e){ console.error(e); render(null); }
+            }
+
+            textarea.addEventListener('input', function(){
+                clearTimeout(timeout);
+                const v = this.value || '';
+                if (v.trim().length < 20) { preview.style.display='none'; return; }
+                timeout = setTimeout(()=> analyze(v), 600);
+            });
+        })();
+    </script>
 {% endblock %}

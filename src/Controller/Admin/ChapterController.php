@@ -12,8 +12,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/chapter')]
+#[IsGranted('ROLE_ADMIN')]
 class ChapterController extends AbstractController
 {
     #[Route('/', name: 'admin_chapter_index', methods: ['GET'])]
@@ -25,25 +27,7 @@ class ChapterController extends AbstractController
         $search = $request->query->get('search');
         $courseId = $request->query->get('course');
 
-        $qb = $chapterRepository->createQueryBuilder('c')
-            ->leftJoin('c.course', 'course')
-            ->addSelect('course');
-
-        if ($search) {
-            $qb->andWhere('c.titre LIKE :search OR c.description LIKE :search')
-               ->setParameter('search', '%' . $search . '%');
-        }
-
-        if ($courseId) {
-            $qb->andWhere('c.course = :courseId')
-               ->setParameter('courseId', (int)$courseId);
-        }
-
-        $chapters = $qb->orderBy('c.ordre', 'ASC')
-                      ->addOrderBy('c.created_at', 'DESC')
-                      ->getQuery()
-                      ->getResult();
-
+        $chapters = $chapterRepository->searchByTitle($search ?? '', $courseId ? (int)$courseId : null);
         $courses = $courseRepository->findAll();
 
         return $this->render('admin/chapter/index.html.twig', [
@@ -55,22 +39,21 @@ class ChapterController extends AbstractController
     }
 
     #[Route('/new', name: 'admin_chapter_new', methods: ['GET', 'POST'])]
-    public function new(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        ChapterRepository $chapterRepository
-    ): Response {
+    public function new(Request $request, EntityManagerInterface $entityManager, ChapterRepository $chapterRepository): Response
+    {
         $chapter = new Chapter();
-        $chapter->setCreatedAt(new \DateTime());
         
         $form = $this->createForm(ChapterType::class, $chapter);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Définir l'ordre automatiquement si non spécifié
-            if (!$chapter->getOrdre() && $chapter->getCourse()) {
-                $nextOrder = $chapterRepository->getNextOrder($chapter->getCourse()->getId());
-                $chapter->setOrdre($nextOrder);
+            // Auto-generate position if not provided
+            if (!$chapter->getPosition()) {
+                $course = $chapter->getCourse();
+                if ($course) {
+                    $nextPosition = $chapterRepository->getNextPosition($course->getId());
+                    $chapter->setPosition($nextPosition);
+                }
             }
 
             $entityManager->persist($chapter);
@@ -88,13 +71,17 @@ class ChapterController extends AbstractController
     }
 
     #[Route('/{id}', name: 'admin_chapter_show', methods: ['GET'])]
-    public function show(
-        Chapter $chapter,
-        MessageRepository $messageRepository
-    ): Response {
+    public function show(Chapter $chapter, MessageRepository $messageRepository): Response
+    {
+        // Récupérer les messages du cours associé au chapitre
+        $courseMessages = [];
+        if ($chapter->getCourse()) {
+            $courseMessages = $messageRepository->findBy(['course' => $chapter->getCourse()], ['created_at' => 'DESC']);
+        }
+
         return $this->render('admin/chapter/show.html.twig', [
             'chapter' => $chapter,
-            'messageRepository' => $messageRepository,
+            'courseMessages' => $courseMessages,
         ]);
     }
 
@@ -118,13 +105,53 @@ class ChapterController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'admin_chapter_delete', methods: ['GET', 'POST'])]
+    #[Route('/{id}/delete', name: 'admin_chapter_delete', methods: ['POST', 'GET'])]
     public function delete(Request $request, Chapter $chapter, EntityManagerInterface $entityManager): Response
     {
+        // Pour les requêtes GET (compatibilité), sauter la validation CSRF
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('delete'.$chapter->getId(), $request->request->get('_token'))) {
+                $this->addFlash('error', 'Token CSRF invalide.');
+                return $this->redirectToRoute('admin_chapter_index', [], Response::HTTP_SEE_OTHER);
+            }
+        }
+
         $entityManager->remove($chapter);
         $entityManager->flush();
 
         $this->addFlash('success', 'Le chapitre a été supprimé avec succès !');
+
+        return $this->redirectToRoute('admin_chapter_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/move-up', name: 'admin_chapter_move_up', methods: ['POST'])]
+    public function moveUp(Request $request, Chapter $chapter, ChapterRepository $chapterRepository): Response
+    {
+        if ($this->isCsrfTokenValid('move_up'.$chapter->getId(), $request->request->get('_token'))) {
+            if ($chapterRepository->moveUp($chapter->getId())) {
+                $this->addFlash('success', 'Le chapitre a été déplacé vers le haut avec succès !');
+            } else {
+                $this->addFlash('error', 'Impossible de déplacer ce chapitre vers le haut.');
+            }
+        } else {
+            $this->addFlash('error', 'Token CSRF invalide.');
+        }
+
+        return $this->redirectToRoute('admin_chapter_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/move-down', name: 'admin_chapter_move_down', methods: ['POST'])]
+    public function moveDown(Request $request, Chapter $chapter, ChapterRepository $chapterRepository): Response
+    {
+        if ($this->isCsrfTokenValid('move_down'.$chapter->getId(), $request->request->get('_token'))) {
+            if ($chapterRepository->moveDown($chapter->getId())) {
+                $this->addFlash('success', 'Le chapitre a été déplacé vers le bas avec succès !');
+            } else {
+                $this->addFlash('error', 'Impossible de déplacer ce chapitre vers le bas.');
+            }
+        } else {
+            $this->addFlash('error', 'Token CSRF invalide.');
+        }
 
         return $this->redirectToRoute('admin_chapter_index', [], Response::HTTP_SEE_OTHER);
     }

@@ -17,6 +17,21 @@ class ChapterRepository extends ServiceEntityRepository
     }
 
     /**
+     * Récupère les chapitres actifs avec pagination optimisée
+     * @param int $limit Nombre maximum de résultats
+     * @return array
+     */
+    public function findActiveChapters(int $limit = 10): array
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.position IS NOT NULL')
+            ->orderBy('c.position', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Retourne les chapitres d'un cours ordonnés par position
      */
     public function findByCourseOrdered(int $courseId): array

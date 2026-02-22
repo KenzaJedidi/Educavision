@@ -2,6 +2,14 @@
 
 namespace App\Entity;
 
+/**
+ * Course Entity - Représente un cours dans le système
+ * 
+ * @author chemseddine gabsi
+ * @version 1.0.0
+ * @since Sprint Java 2026
+ */
+
 use App\Repository\CourseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

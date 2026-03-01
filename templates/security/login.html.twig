@@ -11,7 +11,12 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/shortcodes/shortcodes.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
     <link class="skin" rel="stylesheet" type="text/css" href="{{ asset('assets/css/color/color-1.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         .account-container .contact-bx .input-group label {
             position: relative;
             top: 0;
@@ -64,9 +69,717 @@
             font-weight: 400;
             color: #555;
         }
+
+        /* ========== MODERN FACE ID STYLES ========== */
+        .face-id-section {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(48, 43, 99, 0.4);
+        }
+
+        .face-id-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translate(-10%, -10%); }
+            50% { transform: translate(10%, 10%); }
+        }
+
+        .face-id-header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .face-id-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #00f2fe 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.5);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 10px 30px rgba(79, 172, 254, 0.5); }
+            50% { box-shadow: 0 10px 50px rgba(79, 172, 254, 0.8), 0 0 20px rgba(0, 242, 254, 0.4); }
+        }
+
+        .face-id-logo i {
+            font-size: 36px;
+            color: #fff;
+        }
+
+        .face-id-title {
+            color: #fff;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .face-id-subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .face-id-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .face-id-email-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 15px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .face-id-email-input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .face-id-email-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .camera-zone {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            max-height: 280px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%);
+            border: 2px dashed rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .camera-zone:hover {
+            border-color: #4facfe;
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+        }
+
+        .camera-zone.active {
+            border-style: solid;
+            border-color: #00f2fe;
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.3);
+        }
+
+        .camera-zone.captured {
+            border-color: #00d084;
+            box-shadow: 0 0 30px rgba(0, 208, 132, 0.3);
+        }
+
+        .camera-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.8);
+            transition: opacity 0.3s;
+        }
+
+        .camera-placeholder-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            transition: transform 0.3s;
+        }
+
+        .camera-zone:hover .camera-placeholder-icon {
+            transform: scale(1.1);
+        }
+
+        .camera-placeholder-icon i {
+            font-size: 28px;
+            color: #fff;
+        }
+
+        .camera-placeholder-text {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .camera-placeholder-hint {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .camera-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            border-radius: 14px;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 220px;
+            border: 3px solid rgba(79, 172, 254, 0.8);
+            border-radius: 50% 50% 45% 45%;
+            display: none;
+            animation: scan 2s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0%, 100% { border-color: rgba(79, 172, 254, 0.8); box-shadow: 0 0 20px rgba(79, 172, 254, 0.3); }
+            50% { border-color: rgba(0, 242, 254, 0.8); box-shadow: 0 0 40px rgba(0, 242, 254, 0.5); }
+        }
+
+        .btn-face-id {
+            width: 100%;
+            padding: 16px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-capture {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #fff;
+            display: none;
+        }
+
+        .btn-capture:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.5);
+        }
+
+        .btn-authenticate {
+            background: linear-gradient(135deg, #00d084 0%, #00f260 100%);
+            color: #fff;
+            display: none;
+            margin-top: 10px;
+        }
+
+        .btn-authenticate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 208, 132, 0.5);
+        }
+
+        .btn-authenticate:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-retake {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.3);
+            display: none;
+            margin-top: 10px;
+        }
+
+        .btn-retake:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .face-id-message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-top: 15px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .face-id-message.error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            color: #ff6b7a;
+        }
+
+        .face-id-message.success {
+            background: rgba(0, 208, 132, 0.2);
+            border: 1px solid rgba(0, 208, 132, 0.5);
+            color: #00f260;
+        }
+
+        .face-id-message i {
+            font-size: 18px;
+        }
+
+        /* Divider */
+        .login-divider {
+            display: flex;
+            align-items: center;
+            margin: 30px 0;
+            gap: 15px;
+        }
+
+        .login-divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ddd, transparent);
+        }
+
+        .login-divider-text {
+            color: #888;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Face scan animation */
+        .scanning-line {
+            position: absolute;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00f2fe, transparent);
+            border-radius: 2px;
+            display: none;
+            animation: scanning 2s ease-in-out infinite;
+        }
+
+        @keyframes scanning {
+            0% { top: 10%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 90%; opacity: 0; }
+        }
+        /* ============================================
+           RESPONSIVE REDESIGN — Clean card layout
+           ============================================ */
+
+        html, body { box-sizing: border-box; }
+        *, *::before, *::after { box-sizing: inherit; }
+
+        /* ── Full-screen (≥ 992px): original split layout ── */
+        @media (min-width: 992px) {
+            .account-form       { min-height: 100vh; }
+            .account-form-inner { overflow-y: auto; max-height: 100vh; }
+            /* Hide the compact card — show regular content */
+            .login-compact-card { display: none !important; }
+            /* Show original account-form markup */
+            .account-head,
+            .account-form-inner { display: flex; }
+        }
+
+        /* ── Windowed (< 992px): centered card, tab-based ── */
+        @media (max-width: 991px) {
+            /* Hide the original side-by-side layout */
+            .account-form { display: none !important; }
+
+            /* Full page gradient bg */
+            body {
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: flex-start;
+                justify-content: center;
+                padding: 0;
+            }
+
+            /* Centered card */
+            .login-compact-card {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                max-width: 440px;
+                min-height: 100vh;
+                margin: 0 auto;
+                background: #fff;
+                border-radius: 0;
+                overflow: hidden;
+                box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+            }
+        }
+
+        /* ── Wider windowed but still < 992px ── */
+        @media (min-width: 640px) and (max-width: 991px) {
+            body {
+                padding: 30px 20px;
+                align-items: center;
+            }
+            .login-compact-card {
+                min-height: auto;
+                border-radius: 24px;
+                max-width: 480px;
+            }
+        }
+
+        /* Compact card header */
+        .login-compact-card .lc-header {
+            background: linear-gradient(135deg, #ff5e14, #ff8e14);
+            padding: 28px 32px 24px;
+            text-align: center;
+        }
+        .login-compact-card .lc-header img {
+            height: 52px;
+            width: auto;
+        }
+        .login-compact-card .lc-header p {
+            color: rgba(255,255,255,0.85);
+            font-size: 13px;
+            margin: 8px 0 0;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tab switcher */
+        .login-compact-card .lc-tabs {
+            display: flex;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .login-compact-card .lc-tab {
+            flex: 1;
+            padding: 14px 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #999;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.25s;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+        }
+        .login-compact-card .lc-tab.active {
+            color: #ff5e14;
+            border-bottom-color: #ff5e14;
+        }
+        .login-compact-card .lc-tab i {
+            margin-right: 6px;
+        }
+
+        /* Tab panels */
+        .login-compact-card .lc-panel {
+            display: none;
+            padding: 24px 28px 32px;
+            flex: 1;
+        }
+        .login-compact-card .lc-panel.active { display: block; }
+
+        /* Compact form inside card */
+        .lc-panel .lc-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0 0 4px;
+        }
+        .lc-panel .lc-subtitle {
+            font-size: 13px;
+            color: #888;
+            margin: 0 0 20px;
+        }
+        .lc-panel .lc-subtitle a {
+            color: #ff5e14;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Flash / error inside card */
+        .lc-panel .alert {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            border: none;
+        }
+        .lc-panel .alert-danger { background: #fff0f0; color: #c0392b; border-left: 3px solid #e74c3c; }
+        .lc-panel .alert-success { background: #f0fff4; color: #27ae60; border-left: 3px solid #2ecc71; }
+
+        /* Inputs inside card */
+        .lc-panel .lc-input-group {
+            margin-bottom: 14px;
+        }
+        .lc-panel .lc-input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 5px;
+        }
+        .lc-panel .lc-input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #333;
+            background: #fafafa;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        .lc-panel .lc-input-group input:focus {
+            border-color: #ff5e14;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(255,94,20,0.12);
+        }
+
+        /* Remember / forgot row */
+        .lc-panel .lc-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            font-size: 13px;
+        }
+        .lc-panel .lc-meta label { color: #666; cursor: pointer; }
+        .lc-panel .lc-meta a { color: #ff5e14; text-decoration: none; font-weight: 500; }
+
+        /* Submit button */
+        .lc-panel .lc-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ff5e14, #ff8e14);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 6px 20px rgba(255,94,20,0.35);
+        }
+        .lc-panel .lc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,94,20,0.45);
+        }
+
+        /* ---- Face ID tab (compact) ---- */
+        .lc-panel .lc-faceid-header {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .lc-panel .lc-faceid-header .lc-fid-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px;
+            box-shadow: 0 8px 24px rgba(79,172,254,0.45);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        .lc-panel .lc-faceid-header .lc-fid-icon i { font-size: 28px; color: #fff; }
+        .lc-panel .lc-faceid-header h4 { font-size: 17px; font-weight: 700; color: #1a1a2e; margin:0 0 4px; }
+        .lc-panel .lc-faceid-header p { font-size: 12px; color: #888; margin: 0; }
+
+        /* Compact camera zone */
+        .lc-fid-camera {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            max-height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0f0c29, #24243e);
+            border: 2px dashed rgba(79,172,254,0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 14px;
+        }
+        .lc-fid-camera:hover { border-color: #4facfe; }
+        .lc-fid-camera.active { border-style: solid; border-color: #00f2fe; }
+        .lc-fid-camera.captured { border-color: #00d084; }
+
+        .lc-fid-placeholder {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.85);
+        }
+        .lc-fid-placeholder i { font-size: 32px; color: #4facfe; margin-bottom: 8px; }
+        .lc-fid-placeholder span { font-size: 13px; }
+
+        .lc-fid-btn {
+            width: 100%; padding: 12px;
+            border: none; border-radius: 10px;
+            font-size: 14px; font-weight: 700;
+            cursor: pointer; display: none;
+            align-items: center; justify-content: center; gap: 8px;
+            transition: all 0.25s;
+            margin-bottom: 10px;
+        }
+        .lc-fid-btn.capture-btn {
+            background: linear-gradient(135deg, #4facfe, #00f2fe); color: #fff;
+        }
+        .lc-fid-btn.auth-btn {
+            background: linear-gradient(135deg, #00d084, #00f260); color: #fff;
+        }
+        .lc-fid-btn.retake-btn {
+            background: rgba(0,0,0,0.07); color: #555;
+            border: 1.5px solid #ddd;
+        }
+        .lc-fid-btn:hover { transform: translateY(-2px); }
+
+        .lc-fid-msg {
+            padding: 10px 14px; border-radius: 8px; font-size: 13px;
+            display: none; align-items: center; gap: 8px; margin-top: 10px;
+        }
+        .lc-fid-msg.error { background: rgba(220,53,69,0.1); color: #c0392b; border-left: 3px solid #e74c3c; }
+        .lc-fid-msg.success { background: rgba(0,208,132,0.1); color: #27ae60; border-left: 3px solid #2ecc71; }
     </style>
 </head>
 <body>
+    {# ═══════════════════════════════════════════════
+       COMPACT CARD LAYOUT (< 992px only, via CSS)
+    ═══════════════════════════════════════════════ #}
+    <div class="login-compact-card">
+        {# Header banner #}
+        <div class="lc-header">
+            <a href="{{ path('front_home') }}">
+                <img src="{{ asset('assets/images/logo-white-2.png') }}" alt="EducaVision">
+            </a>
+            <p>Plateforme d'apprentissage en ligne</p>
+        </div>
+
+        {# Tab switcher #}
+        <div class="lc-tabs">
+            <button class="lc-tab active" onclick="switchTab('password', this)" id="tab-password-btn">
+                <i class="fa fa-lock"></i> Mot de passe
+            </button>
+            <button class="lc-tab" onclick="switchTab('faceid', this)" id="tab-faceid-btn">
+                <i class="fa fa-user-shield"></i> Face ID
+            </button>
+        </div>
+
+        {# Password tab #}
+        <div class="lc-panel active" id="panel-password">
+            <h2 class="lc-title">Connexion</h2>
+            <p class="lc-subtitle">Pas encore de compte ? <a href="{{ path('app_register') }}">Créer un compte</a></p>
+
+            {% if error %}
+                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            <form method="post">
+                <div class="lc-input-group">
+                    <label for="lc-email">Email</label>
+                    <input type="email" id="lc-email" name="_username" value="{{ last_username }}"
+                           autocomplete="email" required autofocus placeholder="votre@email.com">
+                </div>
+                <div class="lc-input-group">
+                    <label for="lc-password">Mot de passe</label>
+                    <input type="password" id="lc-password" name="_password"
+                           autocomplete="current-password" required placeholder="••••••••">
+                </div>
+                <div class="lc-meta">
+                    <label>
+                        <input type="checkbox" name="_remember_me" style="margin-right:5px;">
+                        Se souvenir de moi
+                    </label>
+                    <a href="{{ path('app_forgot_password_request') }}">Mot de passe oublié ?</a>
+                </div>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <button type="submit" class="lc-btn">Se connecter</button>
+            </form>
+        </div>
+
+        {# Face ID tab #}
+        <div class="lc-panel" id="panel-faceid">
+            <div class="lc-faceid-header">
+                <div class="lc-fid-icon"><i class="fa fa-user-shield"></i></div>
+                <h4>Connexion Face ID</h4>
+                <p>Authentification biométrique rapide et sécurisée</p>
+            </div>
+
+            <div class="lc-input-group">
+                <label for="lc-fid-email">Votre email</label>
+                <input type="email" id="lc-fid-email" placeholder="votre@email.com">
+            </div>
+
+            <div class="lc-fid-camera" id="lc-cameraZone">
+                <div class="lc-fid-placeholder" id="lc-cameraPlaceholder">
+                    <i class="fa fa-camera"></i>
+                    <span>Cliquez pour activer la caméra</span>
+                </div>
+                <video id="lc-cameraPreview" style="width:100%;height:100%;object-fit:cover;display:none;border-radius:10px;" autoplay playsinline></video>
+                <canvas id="lc-faceCanvas" style="display:none;"></canvas>
+            </div>
+
+            <button class="lc-fid-btn capture-btn" id="lc-btnCapture"><i class="fa fa-camera"></i> Capturer</button>
+            <button class="lc-fid-btn auth-btn" id="lc-btnAuth"><i class="fa fa-check-circle"></i> <span id="lc-authText">S'authentifier</span></button>
+            <button class="lc-fid-btn retake-btn" id="lc-btnRetake"><i class="fa fa-redo"></i> Reprendre</button>
+
+            <div class="lc-fid-msg error" id="lc-faceError"><i class="fa fa-exclamation-circle"></i><span id="lc-faceErrorText"></span></div>
+            <div class="lc-fid-msg success" id="lc-faceSuccess"><i class="fa fa-check-circle"></i><span id="lc-faceSuccessText"></span></div>
+        </div>
+    </div>
+
+    {# ═══════════════════════════════════════════════
+       FULLSCREEN LAYOUT (≥ 992px, shown via CSS)
+    ═══════════════════════════════════════════════ #}
     <div class="account-form">
         <div class="account-head" style="background-image:url({{ asset('assets/images/background/bg2.jpg') }});">
             <a href="{{ path('front_home') }}"><img src="{{ asset('assets/images/logo-white-2.png') }}" alt="EducaVision"></a>
@@ -74,60 +787,458 @@
         <div class="account-form-inner">
             <div class="account-container">
                 <div class="heading-bx left">
-                    <h2 class="title-head">Connexion à votre <span>Compte</span></h2>
-                    <p>Pas encore de compte ? <a href="{{ path('app_register') }}">Créer un compte</a></p>
+                    <h2 class="title-head">Connexion a votre <span>Compte</span></h2>
+                    <p>Pas encore de compte ? <a href="{{ path('app_register') }}">Creer un compte</a></p>
                 </div>
 
                 {% if error %}
                     <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
                 {% endif %}
-
                 {% for label, messages in app.flashes %}
                     {% for message in messages %}
                         <div class="alert alert-{{ label }}">{{ message }}</div>
                     {% endfor %}
                 {% endfor %}
 
-                <form method="post" class="contact-bx">
-                    <div class="row placeani">
-                        <div class="col-lg-12">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <label>Adresse Email</label>
-                                    <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" class="form-control" autocomplete="email" required autofocus placeholder="votre@email.com">
+                <div class="row">
+                    <div class="col-lg-12 mb-4">
+                        <ul class="nav nav-tabs fs-tabs" id="fsLoginTab" role="tablist" style="border-bottom:2px solid #f0f0f0;">
+                            <li class="nav-item flex-fill text-center" role="presentation">
+                                <button class="nav-link active w-100" id="fs-password-tab" data-toggle="tab" data-target="#fs-password" type="button" role="tab" style="border:none;background:none;color:#555;font-weight:600;padding:12px;border-bottom:3px solid transparent;" onclick="this.style.borderBottomColor='#ff5e14';this.style.color='#ff5e14';document.getElementById('fs-faceid-tab').style.borderBottomColor='transparent';document.getElementById('fs-faceid-tab').style.color='#555';">
+                                    <i class="fa fa-lock mr-2"></i>Mot de passe
+                                </button>
+                            </li>
+                            <li class="nav-item flex-fill text-center" role="presentation">
+                                <button class="nav-link w-100" id="fs-faceid-tab" data-toggle="tab" data-target="#fs-faceid" type="button" role="tab" style="border:none;background:none;color:#555;font-weight:600;padding:12px;border-bottom:3px solid transparent;" onclick="this.style.borderBottomColor='#ff5e14';this.style.color='#ff5e14';document.getElementById('fs-password-tab').style.borderBottomColor='transparent';document.getElementById('fs-password-tab').style.color='#555';">
+                                    <i class="fa fa-user-shield mr-2"></i>Face ID
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="fsLoginTabContent">
+                    <!-- PASSWORD PANEL -->
+                    <div class="tab-pane fade show active" id="fs-password" role="tabpanel">
+                        <form method="post" class="contact-bx">
+                            <div class="row placeani">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label>Adresse Email</label>
+                                            <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" class="form-control" autocomplete="email" required autofocus placeholder="votre@email.com">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label>Mot de passe</label>
+                                            <input type="password" name="_password" id="inputPassword" class="form-control" autocomplete="current-password" required placeholder="********">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group form-forget d-flex justify-content-between align-items-center">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="rememberMe" name="_remember_me">
+                                            <label class="custom-control-label" for="rememberMe">Se souvenir de moi</label>
+                                        </div>
+                                        <div>
+                                            <a href="{{ path('app_forgot_password_request') }}" class="text-primary" style="font-size: 14px;">Mot de passe oublié ?</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                                <div class="col-lg-12 m-b30">
+                                    <button type="submit" class="btn button-md" style="width: 100%;">Se connecter</button>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <label>Mot de passe</label>
-                                    <input type="password" name="_password" id="inputPassword" class="form-control" autocomplete="current-password" required placeholder="••••••••">
+                        </form>
+                    </div>
+
+                    <!-- FACE ID PANEL -->
+                    <div class="tab-pane fade" id="fs-faceid" role="tabpanel">
+                        <div class="face-id-section mt-3">
+                            <div class="face-id-header">
+                                <div class="face-id-logo">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <h3 class="face-id-title">Connexion Face ID</h3>
+                                <p class="face-id-subtitle">Authentification biometrique rapide et securisee</p>
+                            </div>
+
+                            <div class="face-id-content">
+                                <input type="email" id="faceIdEmail" class="face-id-email-input" placeholder="Entrez votre adresse email">
+                                
+                                <div class="camera-zone" id="cameraZone">
+                                    <div class="camera-placeholder" id="cameraPlaceholder">
+                                        <div class="camera-placeholder-icon">
+                                            <i class="fas fa-camera"></i>
+                                        </div>
+                                        <div class="camera-placeholder-text">Cliquez pour activer la camera</div>
+                                        <div class="camera-placeholder-hint">Positionnez votre visage dans le cadre</div>
+                                    </div>
+                                    <video id="cameraPreview" class="camera-preview" autoplay playsinline></video>
+                                    <canvas id="faceCanvas" style="display: none;"></canvas>
+                                    <div class="camera-overlay" id="cameraOverlay"></div>
+                                    <div class="scanning-line" id="scanningLine"></div>
+                                </div>
+
+                                <button type="button" class="btn-face-id btn-capture" id="btnCapture">
+                                    <i class="fas fa-camera"></i>
+                                    <span>Capturer le visage</span>
+                                </button>
+
+                                <button type="button" class="btn-face-id btn-authenticate" id="btnFaceIdAuth">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span id="btnFaceIdAuthText">S'authentifier</span>
+                                </button>
+
+                                <button type="button" class="btn-face-id btn-retake" id="btnRetake">
+                                    <i class="fas fa-redo"></i>
+                                    <span>Reprendre</span>
+                                </button>
+
+                                <div class="face-id-message error" id="faceIdError">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span id="faceIdErrorText"></span>
+                                </div>
+                                <div class="face-id-message success" id="faceIdSuccess">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span id="faceIdSuccessText"></span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="form-group form-forget">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="rememberMe" name="_remember_me">
-                                    <label class="custom-control-label" for="rememberMe">Se souvenir de moi</label>
-                                </div>
-                            </div>
-                        </div>
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                        <div class="col-lg-12 m-b30">
-                            <button type="submit" class="btn button-md" style="width: 100%;">Se connecter</button>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- JS -->
+    <!-- JavaScript pour Face ID -->
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/bootstrap/js/popper.min.js') }}"></script>
     <script src="{{ asset('assets/vendors/bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/functions.js') }}"></script>
+
+    <script>
+        let stream = null;
+        let canvas = null;
+        let isCameraActive = false;
+        let photoCaptured = false;
+
+        const cameraZone = document.getElementById('cameraZone');
+        const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+        const cameraPreview = document.getElementById('cameraPreview');
+        const cameraOverlay = document.getElementById('cameraOverlay');
+        const scanningLine = document.getElementById('scanningLine');
+        const btnCapture = document.getElementById('btnCapture');
+        const btnFaceIdAuth = document.getElementById('btnFaceIdAuth');
+        const btnRetake = document.getElementById('btnRetake');
+        const faceIdEmail = document.getElementById('faceIdEmail');
+        const faceIdError = document.getElementById('faceIdError');
+        const faceIdErrorText = document.getElementById('faceIdErrorText');
+        const faceIdSuccess = document.getElementById('faceIdSuccess');
+        const faceIdSuccessText = document.getElementById('faceIdSuccessText');
+
+        // Click on camera zone to start camera
+        cameraZone.addEventListener('click', async () => {
+            if (!isCameraActive && !photoCaptured) {
+                await startCamera();
+            }
+        });
+
+        // Start camera
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'user', width: 640, height: 480 },
+                    audio: false 
+                });
+                cameraPreview.srcObject = stream;
+                cameraPreview.style.display = 'block';
+                cameraPlaceholder.style.display = 'none';
+                cameraOverlay.style.display = 'block';
+                scanningLine.style.display = 'block';
+                cameraZone.classList.add('active');
+                btnCapture.style.display = 'flex';
+                isCameraActive = true;
+                hideError();
+            } catch (err) {
+                showError('Impossible d\'acceder a la camera: ' + err.message);
+            }
+        }
+
+        // Capture photo
+        btnCapture.addEventListener('click', () => {
+            if (isCameraActive) {
+                capturePhoto();
+            }
+        });
+
+        function capturePhoto() {
+            canvas = document.getElementById('faceCanvas');
+            canvas.width = cameraPreview.videoWidth;
+            canvas.height = cameraPreview.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(cameraPreview, 0, 0);
+            
+            // Stop camera
+            stream.getTracks().forEach(track => track.stop());
+            
+            // Show captured image
+            cameraPreview.style.display = 'none';
+            cameraOverlay.style.display = 'none';
+            scanningLine.style.display = 'none';
+            
+            // Create and show snapshot
+            const snapshot = canvas.toDataURL('image/jpeg');
+            cameraZone.style.backgroundImage = `url(${snapshot})`;
+            cameraZone.style.backgroundSize = 'cover';
+            cameraZone.style.backgroundPosition = 'center';
+            cameraZone.classList.remove('active');
+            cameraZone.classList.add('captured');
+            
+            // Update buttons
+            btnCapture.style.display = 'none';
+            btnFaceIdAuth.style.display = 'flex';
+            btnRetake.style.display = 'flex';
+            
+            isCameraActive = false;
+            photoCaptured = true;
+            
+            showSuccess('Photo capturee avec succes');
+        }
+
+        // Retake photo
+        btnRetake.addEventListener('click', async () => {
+            cameraZone.style.backgroundImage = '';
+            cameraZone.classList.remove('captured');
+            cameraPlaceholder.style.display = 'flex';
+            btnFaceIdAuth.style.display = 'none';
+            btnRetake.style.display = 'none';
+            photoCaptured = false;
+            canvas = null;
+            hideSuccess();
+            hideError();
+            await startCamera();
+        });
+
+        // Authenticate with Face ID
+        btnFaceIdAuth.addEventListener('click', async () => {
+            const email = faceIdEmail.value.trim();
+
+            if (!email) {
+                showError('Veuillez entrer votre email');
+                return;
+            }
+
+            if (!canvas) {
+                showError('Veuillez d\'abord capturer une photo de votre visage');
+                return;
+            }
+
+            btnFaceIdAuth.disabled = true;
+            const btnText = document.getElementById('btnFaceIdAuthText');
+            const originalText = btnText.textContent;
+            btnText.innerHTML = '<span class="spinner"></span> Authentification...';
+
+            try {
+                const imageBase64 = canvas.toDataURL('image/jpeg').split(',')[1];
+
+                const response = await fetch('{{ path('app_login_face_id') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'email=' + encodeURIComponent(email) + '&face_image=' + encodeURIComponent(imageBase64)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    hideError();
+                    
+                    // Store JWT token in localStorage
+                    if (data.jwt) {
+                        localStorage.setItem('jwt_token', data.jwt);
+                        localStorage.setItem('jwt_expires_at', Date.now() + (data.expires_in * 1000));
+                        localStorage.setItem('jwt_user', JSON.stringify(data.user));
+                        console.log('JWT Token stored successfully');
+                    }
+                    
+                    showSuccess('Authentification reussie! Bienvenue ' + data.user.name + ' ! Redirection...');
+                    
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 1500);
+                } else {
+                    showError(data.error || 'Authentification echouee');
+                    btnFaceIdAuth.disabled = false;
+                    btnText.textContent = originalText;
+                }
+
+            } catch (err) {
+                showError('Erreur lors de l\'authentification: ' + err.message);
+                btnFaceIdAuth.disabled = false;
+                btnText.textContent = originalText;
+            }
+        });
+
+        // Helper function to get JWT token for API requests
+        function getJwtToken() {
+            const expiresAt = localStorage.getItem('jwt_expires_at');
+            if (expiresAt && Date.now() > parseInt(expiresAt)) {
+                // Token expired, clear storage
+                localStorage.removeItem('jwt_token');
+                localStorage.removeItem('jwt_expires_at');
+                localStorage.removeItem('jwt_user');
+                return null;
+            }
+            return localStorage.getItem('jwt_token');
+        }
+
+        // Helper function to make authenticated API requests
+        async function apiRequest(url, options = {}) {
+            const token = getJwtToken();
+            if (token) {
+                options.headers = options.headers || {};
+                options.headers['Authorization'] = 'Bearer ' + token;
+            }
+            return fetch(url, options);
+        }
+
+        function showError(message) {
+            faceIdErrorText.textContent = message;
+            faceIdError.style.display = 'flex';
+            faceIdSuccess.style.display = 'none';
+        }
+
+        function hideError() {
+            faceIdError.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            faceIdSuccessText.textContent = message;
+            faceIdSuccess.style.display = 'flex';
+            faceIdError.style.display = 'none';
+        }
+
+        function hideSuccess() {
+            faceIdSuccess.style.display = 'none';
+        }
+
+        // ═══════════ COMPACT CARD: Tab switching ═══════════
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.lc-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.lc-panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('panel-' + tab).classList.add('active');
+        }
+
+        // ═══════════ COMPACT CARD: Face ID logic ═══════════
+        (function() {
+            const lcCameraZone = document.getElementById('lc-cameraZone');
+            if (!lcCameraZone) return;
+
+            const lcPlaceholder = document.getElementById('lc-cameraPlaceholder');
+            const lcPreview     = document.getElementById('lc-cameraPreview');
+            const lcCanvas      = document.getElementById('lc-faceCanvas');
+            const lcBtnCapture  = document.getElementById('lc-btnCapture');
+            const lcBtnAuth     = document.getElementById('lc-btnAuth');
+            const lcBtnRetake   = document.getElementById('lc-btnRetake');
+            const lcFidEmail    = document.getElementById('lc-fid-email');
+            const lcErrBox      = document.getElementById('lc-faceError');
+            const lcErrText     = document.getElementById('lc-faceErrorText');
+            const lcOkBox       = document.getElementById('lc-faceSuccess');
+            const lcOkText      = document.getElementById('lc-faceSuccessText');
+
+            let lcStream = null, lcPhoto = null, lcCameraOn = false;
+
+            function lcShowErr(msg) { lcErrText.textContent = msg; lcErrBox.style.display = 'flex'; lcOkBox.style.display = 'none'; }
+            function lcShowOk(msg)  { lcOkText.textContent  = msg; lcOkBox.style.display  = 'flex'; lcErrBox.style.display = 'none'; }
+
+            lcCameraZone.addEventListener('click', async () => {
+                if (!lcCameraOn && !lcPhoto) await lcStartCamera();
+            });
+
+            async function lcStartCamera() {
+                try {
+                    lcStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+                    lcPreview.srcObject = lcStream;
+                    lcPreview.style.display = 'block';
+                    lcPlaceholder.style.display = 'none';
+                    lcCameraZone.classList.add('active');
+                    lcBtnCapture.style.display = 'flex';
+                    lcCameraOn = true;
+                } catch(e) { lcShowErr('Impossible d\'accéder à la caméra: ' + e.message); }
+            }
+
+            lcBtnCapture.addEventListener('click', () => {
+                lcCanvas.width  = lcPreview.videoWidth;
+                lcCanvas.height = lcPreview.videoHeight;
+                lcCanvas.getContext('2d').drawImage(lcPreview, 0, 0);
+                lcStream.getTracks().forEach(t => t.stop());
+                lcPreview.style.display = 'none';
+                const snap = lcCanvas.toDataURL('image/jpeg');
+                lcCameraZone.style.cssText += `;background-image:url(${snap});background-size:cover;background-position:center;`;
+                lcCameraZone.classList.remove('active');
+                lcCameraZone.classList.add('captured');
+                lcBtnCapture.style.display = 'none';
+                lcBtnAuth.style.display    = 'flex';
+                lcBtnRetake.style.display  = 'flex';
+                lcCameraOn = false; lcPhoto = lcCanvas;
+                lcShowOk('Photo capturée ✓');
+            });
+
+            lcBtnRetake.addEventListener('click', async () => {
+                lcCameraZone.style.backgroundImage = '';
+                lcCameraZone.classList.remove('captured');
+                lcPlaceholder.style.display = 'flex';
+                lcBtnAuth.style.display   = 'none';
+                lcBtnRetake.style.display = 'none';
+                lcPhoto = null;
+                lcOkBox.style.display = 'none';
+                await lcStartCamera();
+            });
+
+            lcBtnAuth.addEventListener('click', async () => {
+                const email = lcFidEmail.value.trim();
+                if (!email) { lcShowErr('Veuillez entrer votre email'); return; }
+                if (!lcPhoto) { lcShowErr('Veuillez capturer une photo'); return; }
+
+                lcBtnAuth.disabled = true;
+                const span = document.getElementById('lc-authText');
+                span.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;"></span> Authentification...';
+
+                try {
+                    const b64 = lcCanvas.toDataURL('image/jpeg').split(',')[1];
+                    const res = await fetch('{{ path('app_login_face_id') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'email=' + encodeURIComponent(email) + '&face_image=' + encodeURIComponent(b64)
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        if (data.jwt) {
+                            localStorage.setItem('jwt_token', data.jwt);
+                            localStorage.setItem('jwt_expires_at', Date.now() + data.expires_in * 1000);
+                        }
+                        lcShowOk('Authentifié ! Redirection...');
+                        setTimeout(() => window.location.href = data.redirect, 1200);
+                    } else {
+                        lcShowErr(data.error || 'Authentification échouée');
+                        lcBtnAuth.disabled = false;
+                        span.textContent = 'S\'authentifier';
+                    }
+                } catch(e) {
+                    lcShowErr('Erreur: ' + e.message);
+                    lcBtnAuth.disabled = false;
+                    span.textContent = 'S\'authentifier';
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

@@ -30,7 +30,7 @@
                     <div class="course-detail-card mb-4">
                         <div class="course-header">
                             {% if course.imageUrl %}
-                                <img src="{{ asset('front-assets/images/courses/' ~ course.imageUrl) }}" 
+                                <img src="{{ course.imageUrl }}" 
                                      alt="{{ course.titre }}" 
                                      class="img-fluid rounded"
                                      style="width: 100%; height: 300px; object-fit: cover;"
@@ -75,6 +75,68 @@
                                 {% endif %}
                             </div>
                         </div>
+
+                        <!-- Résumé IA (DeepSeek) - résume le PDF du cours -->
+                        <div class="course-summary-section mt-4 p-4 bg-light rounded">
+                            <h3><i class="fa fa-lightbulb-o text-warning"></i> Résumé du Cours (IA DeepSeek)</h3>
+                            {% if summary %}
+                                <div class="alert alert-info">
+                                    <p class="mb-0">{{ summary }}</p>
+                                </div>
+                                <p class="text-muted small mb-0"><i class="fa fa-robot"></i> Généré par l'IA DeepSeek</p>
+                            {% else %}
+                                {% if course.pdfFile %}
+                                    <p class="text-muted mb-3">Générez un résumé intelligent du document PDF du cours en un clic grâce à l'IA DeepSeek.</p>
+                                    <button type="button" class="btn btn-primary" onclick="generateSummary({{ course.id }})">
+                                        <i class="fa fa-file-pdf-o"></i> Résumer le PDF avec l'IA
+                                    </button>
+                                {% else %}
+                                    <p class="text-muted mb-3">Aucun document PDF. Le professeur peut en ajouter un pour activer le résumé IA du contenu.</p>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <!-- Mots-clés -->
+                        <div class="course-keywords-section mt-4 p-4 bg-light rounded">
+                            <h3><i class="fa fa-tags text-info"></i> Mots-clés</h3>
+                            {% if keywords %}
+                                <div class="keywords-cloud mb-0">
+                                    {% for keyword in keywords|split(',') %}
+                                        <span class="badge badge-secondary mr-2 mb-2">{{ keyword|trim }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted mb-3">Mots-clés non disponibles</p>
+                                <button class="btn btn-sm btn-primary" onclick="generateKeywords({{ course.id }}, this)">
+                                    <i class="fa fa-cog"></i> Générer Mots-clés IA
+                                </button>
+                            {% endif %}
+                        </div>
+
+                        <!-- Ressources Complémentaires Wikipedia -->
+                        {% if complementaryResources|length > 0 %}
+                        <div class="course-resources-section mt-4 p-4 bg-light rounded">
+                            <h3><i class="fa fa-book text-success"></i> Ressources Complémentaires (Wikipedia)</h3>
+                            <div class="resources-list">
+                                {% for resource in complementaryResources %}
+                                <div class="resource-card mb-3 p-3 bg-white rounded border-left" style="border-left: 4px solid #007bff;">
+                                    <h5 class="mb-2">
+                                        <a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">
+                                            <i class="fa fa-external-link"></i> {{ resource.title }}
+                                        </a>
+                                    </h5>
+                                    <p class="text-muted mb-2">{{ resource.summary }}</p>
+                                    <div class="resource-meta">
+                                        <small>
+                                            <span class="badge badge-light">{{ resource.source }}</span>
+                                            <span class="text-muted ml-2">Pertinence: {{ (resource.relevance_score * 100)|round(0) }}%</span>
+                                        </small>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
 
                         {% if course.pdfFile %}
                         <div class="course-pdf mt-4">
@@ -315,5 +377,192 @@
 .badge-danger { background-color: #dc3545; color: white; }
 .badge-info { background-color: #17a2b8; color: white; }
 .badge-primary { background-color: #007bff; color: white; }
+
+/* Ressources */
+.resource-card {
+    transition: all 0.3s ease;
+}
+
+.resource-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.keywords-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.keywords-cloud .badge {
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: default;
+}
 </style>
+
+<script>
+const API_BASE = '/cours/api';
+
+// Annuler toutes les requêtes IA en cours lors du rafraîchissement/fermeture
+var activeAIControllers = [];
+var pageUnloading = false;
+window.addEventListener('beforeunload', function() {
+    pageUnloading = true;
+    activeAIControllers.forEach(function(c) {
+        try { c.abort(); } catch(e) {}
+    });
+});
+
+// Générer résumé IA (DeepSeek)
+function generateSummary(courseId) {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Analyse du PDF... (20-60 sec)';
+
+    const controller = new AbortController();
+    activeAIControllers.push(controller);
+    const timeoutId = setTimeout(function() {
+        controller.abort();
+        var i = activeAIControllers.indexOf(controller);
+        if (i >= 0) activeAIControllers.splice(i, 1);
+    }, 180000);
+
+    fetch(`${API_BASE}/${courseId}/generate-summary`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        signal: controller.signal
+    })
+    .then(async function(res) {
+        clearTimeout(timeoutId);
+        var i = activeAIControllers.indexOf(controller);
+        if (i >= 0) activeAIControllers.splice(i, 1);
+        const text = await res.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            throw new Error('Réponse serveur invalide. Vérifiez les logs (var/log/dev.log).');
+        }
+        if (!res.ok) {
+            throw new Error(data.error || 'Erreur serveur ' + res.status);
+        }
+        return data;
+    })
+    .then(data => {
+        if (data.success) {
+            alert('✅ Résumé généré avec succès !');
+            location.reload();
+        } else {
+            alert('❌ ' + (data.error || 'Erreur inconnue'));
+        }
+    })
+    .catch(function(err) {
+        clearTimeout(timeoutId);
+        var i = activeAIControllers.indexOf(controller);
+        if (i >= 0) activeAIControllers.splice(i, 1);
+        console.error('Erreur génération résumé:', err);
+        if (err.name === 'AbortError') {
+            if (!pageUnloading) {
+                alert('⏱️ Timeout. L\'API DeepSeek met trop de temps. Réessayez ou vérifiez votre connexion internet.');
+            }
+        } else {
+            alert('❌ ' + (err.message || 'Erreur réseau ou API. Vérifiez DEEPSEEK_API_KEY dans .env'));
+        }
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa fa-file-pdf-o"></i> Résumer le PDF avec l\'IA';
+    });
+}
+
+// Générer mots-clés IA
+function generateKeywords(courseId, btnEl) {
+    const btn = btnEl || (typeof event !== 'undefined' && event && event.target) || document.querySelector('.course-keywords-section .btn-primary');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Génération... (max 2 min)';
+
+    const controller = new AbortController();
+    activeAIControllers.push(controller);
+    const timeoutId = setTimeout(function() {
+        controller.abort();
+        var i = activeAIControllers.indexOf(controller);
+        if (i >= 0) activeAIControllers.splice(i, 1);
+    }, 120000);
+
+    fetch(`${API_BASE}/${courseId}/generate-keywords`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        signal: controller.signal
+    })
+    .then(async function(res) {
+        clearTimeout(timeoutId);
+        var i = activeAIControllers.indexOf(controller);
+        if (i >= 0) activeAIControllers.splice(i, 1);
+        const text = await res.text();
+        var data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            throw new Error('Réponse serveur invalide');
+        }
+        if (!res.ok) throw new Error(data.error || 'Erreur serveur ' + res.status);
+        return data;
+    })
+    .then(function(data) {
+        if (data.success) {
+            alert('✅ Mots-clés générés avec succès !');
+            location.reload();
+        } else {
+            alert('❌ ' + (data.error || 'Erreur inconnue'));
+        }
+    })
+    .catch(function(err) {
+        clearTimeout(timeoutId);
+        var i = activeAIControllers.indexOf(controller);
+        if (i >= 0) activeAIControllers.splice(i, 1);
+        if (err.name === 'AbortError') {
+            if (!pageUnloading) alert('⏱️ Timeout (2 min). L\'API IA a mis trop de temps. Réessayez ou vérifiez votre connexion internet.');
+            return;
+        }
+        console.error('Erreur:', err);
+        alert('❌ ' + (err.message || 'Erreur lors de la génération'));
+    })
+    .finally(function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa fa-cog"></i> Générer Mots-clés IA';
+    });
+}
+
+// Liker un cours
+function likeCourse(courseId) {
+    fetch(`${API_BASE}/${courseId}/like`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('❤️ Cours liké avec succès !');
+            location.reload();
+        } else {
+            alert('❌ Erreur: ' + data.error);
+        }
+    })
+    .catch(err => console.error('Erreur:', err));
+}
+</script>
 {% endblock %}

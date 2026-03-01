@@ -33,17 +33,18 @@
                 </div>
             </div>
 
-            <!-- Filtres de recherche -->
+            <!-- Filtres de recherche avancée -->
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <form method="GET" class="search-box bg-light p-3 rounded">
+                    <form id="advancedSearchForm" class="search-box bg-light p-4 rounded shadow-sm">
                         <div class="row">
-                            <div class="col-md-5">
-                                <input type="text" name="search" class="form-control" placeholder="Rechercher un cours..." value="{{ search }}">
+                            <div class="col-md-3 mb-2 mb-md-0">
+                                <input type="text" name="title" id="searchTitle" class="form-control" 
+                                       placeholder="Titre du cours..." value="{{ search }}">
                             </div>
-                            <div class="col-md-4">
-                                <select name="category" class="form-control">
-                                    <option value="">Toutes les catégories</option>
+                            <div class="col-md-2 mb-2 mb-md-0">
+                                <select name="category" id="searchCategory" class="form-control">
+                                    <option value="">Toutes catégories</option>
                                     {% for category in categories %}
                                         <option value="{{ category }}" {% if selectedCategory == category %}selected{% endif %}>
                                             {{ category }}
@@ -51,9 +52,22 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2 mb-2 mb-md-0">
+                                <input type="text" name="keywords" id="searchKeywords" class="form-control" 
+                                       placeholder="Mots-clés (séparés par ,)">
+                            </div>
+                            <div class="col-md-2 mb-2 mb-md-0">
+                                <select name="sort" id="searchSort" class="form-control">
+                                    <option value="date">Plus récents</option>
+                                    <option value="popularity">Plus populaires</option>
+                                    <option value="views">Plus vus</option>
+                                    <option value="price_asc">Prix ↑</option>
+                                    <option value="price_desc">Prix ↓</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-2 mb-md-0">
                                 <button type="submit" class="btn btn-primary btn-block">
-                                    <i class="fa fa-search"></i> Rechercher
+                                    <i class="fa fa-search"></i> Recherche Avancée
                                 </button>
                             </div>
                         </div>
@@ -62,69 +76,22 @@
             </div>
 
             <!-- Cours -->
-            <div class="row" id="courses-list">
-                {% if courses|length > 0 %}
-                    {% for course in courses %}
-                    <div class="col-md-4 col-sm-6 m-b30">
-                        <div class="course-card">
-                            <div class="course-image">
-                                {% if course.imageUrl %}
-                                    <img src="{{ asset('front-assets/images/courses/' ~ course.imageUrl) }}" 
-                                         alt="{{ course.titre }}" 
-                                         class="img-fluid"
-                                         style="height: 200px; width: 100%; object-fit: cover;"
-                                         onerror="this.src='{{ asset('front-assets/images/courses/pic1.jpg') }}'">
-                                {% else %}
-                                    <img src="{{ asset('front-assets/images/courses/pic1.jpg') }}" 
-                                         alt="{{ course.titre }}" 
-                                         class="img-fluid"
-                                         style="height: 200px; width: 100%; object-fit: cover;">
-                                {% endif %}
-                                {% if course.category %}
-                                    <div class="course-category">
-                                        <span class="badge badge-info">{{ course.category }}</span>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="course-content p-3">
-                                <h4><a href="{{ path('front_cours_show', {'id': course.id}) }}">{{ course.titre }}</a></h4>
-                                
-                                <p class="mb-2">{{ course.description|striptags|slice(0, 150) }}...</p>
-                                
-                                <div class="course-meta d-flex justify-content-between mb-2">
-                                    {% if course.price %}
-                                        <span class="badge badge-success">
-                                            <i class="fa fa-euro"></i> {{ course.price }}
-                                        </span>
-                                    {% else %}
-                                        <span class="badge badge-primary">
-                                            <i class="fa fa-gift"></i> Gratuit
-                                        </span>
-                                    {% endif %}
-                                    
-                                    <span class="text-muted">
-                                        <i class="fa fa-calendar"></i> {{ course.createdAt|date('d/m/Y') }}
-                                    </span>
-                                </div>
-                                
-                                <div class="mt-3">
-                                    <a href="{{ path('front_cours_show', {'id': course.id}) }}" class="btn btn-primary btn-block">
-                                        <i class="fa fa-info-circle"></i> Voir le cours
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="col-12">
-                        <div class="alert alert-info text-center">
-                            <i class="fa fa-info-circle fa-2x mb-3"></i>
-                            <h4 class="alert-heading">Aucun cours disponible pour le moment</h4>
-                            <p>Nos cours seront bientôt disponibles. Revenez plus tard.</p>
-                        </div>
-                    </div>
-                {% endif %}
+            <div class="row" id="results-container">
+                <!-- Les résultats seront affichés ici par JavaScript -->
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted"><i class="fa fa-spinner fa-spin"></i> Chargement des cours...</p>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="row mt-4">
+                <div class="col-12 d-flex justify-content-center">
+                    <nav aria-label="Page navigation" id="pagination-container" style="display: none;">
+                        <ul class="pagination" id="pagination-list">
+                            <!-- La pagination sera généré ici -->
+                        </ul>
+                    </nav>
+                </div>
             </div>
 
             <!-- Statistiques des cours -->
@@ -330,6 +297,226 @@ document.addEventListener('DOMContentLoaded', function() {
         
         observer.observe(counter);
     });
+
+    // ========== RECHERCHE DYNAMIQUE DES COURS ==========
+    const advancedSearchForm = document.getElementById('advancedSearchForm');
+    const resultsContainer = document.getElementById('results-container');
+    const paginationContainer = document.getElementById('pagination-container');
+    const paginationList = document.getElementById('pagination-list');
+
+    // Vérifier que tous les éléments existent
+    if (!advancedSearchForm || !resultsContainer) {
+        console.error('Éléments du formulaire de recherche non trouvés');
+        resultsContainer.innerHTML = '<div class="col-12"><div class="alert alert-danger">Erreur: formulaire de recherche non trouvé</div></div>';
+        return;
+    }
+
+    // Charger les cours au démarrage
+    loadCourses();
+
+    // Gérer la soumission du formulaire de recherche
+    advancedSearchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        loadCourses(1); // Retour à la page 1 lors de la nouvelle recherche
+    });
+
+    // Écouteurs pour les changements en temps réel
+    const searchTitle = document.getElementById('searchTitle');
+    const searchCategory = document.getElementById('searchCategory');
+    const searchKeywords = document.getElementById('searchKeywords');
+    const searchSort = document.getElementById('searchSort');
+
+    if (searchTitle) searchTitle.addEventListener('input', debounce(() => loadCourses(1), 500));
+    if (searchCategory) searchCategory.addEventListener('change', () => loadCourses(1));
+    if (searchKeywords) searchKeywords.addEventListener('input', debounce(() => loadCourses(1), 500));
+    if (searchSort) searchSort.addEventListener('change', () => loadCourses(1));
+
+    function loadCourses(page = 1) {
+        // Afficher le chargement
+        resultsContainer.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted"><i class="fa fa-spinner fa-spin"></i> Chargement des cours...</p></div>';
+
+        // Récupérer les paramètres de recherche
+        const title = document.getElementById('searchTitle').value || '';
+        const category = document.getElementById('searchCategory').value || '';
+        const keywords = document.getElementById('searchKeywords').value || '';
+        const sortBy = document.getElementById('searchSort').value || 'date';
+        const limit = 12; // Nombre de cours par page
+
+        // Construire l'URL avec les paramètres
+        let url = `/cours/api/search?page=${page}&limit=${limit}&sort=${sortBy}`;
+        if (title) url += `&title=${encodeURIComponent(title)}`;
+        if (category) url += `&category=${encodeURIComponent(category)}`;
+        if (keywords) url += `&keywords=${encodeURIComponent(keywords)}`;
+
+        // Effectuer la requête API
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Erreur réseau');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success || data.data) {
+                const responseData = data.data || data;
+                displayResults(responseData.data || []);
+                displayPagination(responseData.pagination || {total: 0, page: 1, pages: 1});
+            } else {
+                resultsContainer.innerHTML = '<div class="col-12"><div class="alert alert-warning text-center"><i class="fa fa-exclamation-triangle fa-2x mb-3"></i><h4>Aucun cours trouvé</h4><p>Essayez de modifier vos critères de recherche.</p></div></div>';
+                paginationContainer.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Erreur complète:', error);
+            let errorMessage = error.message || 'Erreur inconnue';
+            resultsContainer.innerHTML = '<div class="col-12"><div class="alert alert-danger text-center"><i class="fa fa-exclamation-circle fa-2x mb-3"></i><h4>Erreur lors du chargement</h4><p>' + errorMessage + '</p><small class="text-muted">Vérifiez la console (F12) pour plus de détails</small></div></div>';
+            paginationContainer.style.display = 'none';
+        });
+    }
+
+    function displayResults(courses) {
+        if (!courses || courses.length === 0) {
+            resultsContainer.innerHTML = '<div class="col-12"><div class="alert alert-info text-center"><i class="fa fa-info-circle fa-2x mb-3"></i><h4>Aucun cours disponible</h4><p>Aucun cours ne correspond à vos critères de recherche.</p></div></div>';
+            return;
+        }
+
+        let html = '';
+        courses.forEach(course => {
+            const price = course.price > 0 
+                ? `<span class="badge badge-success"><i class="fa fa-euro"></i> ${course.price}</span>` 
+                : '<span class="badge badge-primary"><i class="fa fa-gift"></i> Gratuit</span>';
+            
+            const image = course.imageUrl 
+                ? `/uploads/courses/${course.imageUrl}` 
+                : '{{ asset("front-assets/images/courses/pic1.jpg") }}';
+            
+            const description = (course.description || '').substring(0, 150) + '...';
+            const category = course.category ? `<div class="course-category"><span class="badge badge-info">${course.category}</span></div>` : '';
+            const date = new Date(course.createdAt).toLocaleDateString('fr-FR');
+
+            html += `
+                <div class="col-md-4 col-sm-6 m-b30">
+                    <div class="course-card">
+                        <div class="course-image">
+                            <img src="${image}" 
+                                 alt="${course.titre}" 
+                                 class="img-fluid"
+                                 style="height: 200px; width: 100%; object-fit: cover;"
+                                 onerror="this.src='{{ asset('front-assets/images/courses/pic1.jpg') }}'">
+                            ${category}
+                        </div>
+                        <div class="course-content p-3">
+                            <h4><a href="/cours/${course.id}">${course.titre}</a></h4>
+                            <p class="mb-2">${description}</p>
+                            <div class="course-meta d-flex justify-content-between mb-2">
+                                ${price}
+                                <span class="text-muted">
+                                    <i class="fa fa-calendar"></i> ${date}
+                                </span>
+                            </div>
+                            <div class="mt-3">
+                                <a href="/cours/${course.id}" class="btn btn-primary btn-block">
+                                    <i class="fa fa-info-circle"></i> Voir le cours
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        resultsContainer.innerHTML = html;
+    }
+
+    function displayPagination(pagination) {
+        if (!pagination || pagination.pages <= 1) {
+            paginationContainer.style.display = 'none';
+            return;
+        }
+
+        paginationList.innerHTML = '';
+        const currentPage = pagination.page || 1;
+        const totalPages = pagination.pages || 1;
+
+        // Bouton Précédent
+        if (currentPage > 1) {
+            const prevBtn = `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="goToPage(${currentPage - 1}); return false;">
+                        <i class="fa fa-chevron-left"></i> Précédent
+                    </a>
+                </li>
+            `;
+            paginationList.innerHTML += prevBtn;
+        }
+
+        // Numéros de pages (afficher les 5 pages autour de la page actuelle)
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+
+        if (startPage > 1) {
+            paginationList.innerHTML += '<li class="page-item"><a class="page-link" href="#" onclick="goToPage(1); return false;">1</a></li>';
+            if (startPage > 2) {
+                paginationList.innerHTML += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const activeClass = i === currentPage ? 'active' : '';
+            const pageBtn = `
+                <li class="page-item ${activeClass}">
+                    <a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i}</a>
+                </li>
+            `;
+            paginationList.innerHTML += pageBtn;
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                paginationList.innerHTML += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+            }
+            paginationList.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="goToPage(${totalPages}); return false;">${totalPages}</a></li>`;
+        }
+
+        // Bouton Suivant
+        if (currentPage < totalPages) {
+            const nextBtn = `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="goToPage(${currentPage + 1}); return false;">
+                        Suivant <i class="fa fa-chevron-right"></i>
+                    </a>
+                </li>
+            `;
+            paginationList.innerHTML += nextBtn;
+        }
+
+        paginationContainer.style.display = 'block';
+
+        // Scroll vers les résultats
+        resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Fonction globale pour aller à une page
+    window.goToPage = function(page) {
+        loadCourses(page);
+    };
+
+    // Fonction utilitaire pour debounce (éviter trop de requêtes)
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
 });
 </script>
 {% endblock %}

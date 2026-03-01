@@ -23,29 +23,38 @@ class CourseType extends AbstractType
                 'constraints' => [
                     new Assert\NotBlank(['message' => 'Le titre du cours est obligatoire']),
                     new Assert\Length([
-                        'min' => 2,
+                        'min' => 3,
                         'max' => 255,
                         'minMessage' => 'Le titre doit contenir au moins {{ limit }} caractères',
                         'maxMessage' => 'Le titre ne peut pas dépasser {{ limit }} caractères'
+                    ]),
+                    new Assert\Regex([
+                        'pattern' => '/^[a-zA-Z0-9\sàâäéèêëïîôöùûüçÀÂÄÉÈÊËÏÎÔÖÙÛÜÇ\-\,\.\:\!\?]+$/',
+                        'message' => 'Le titre contient des caractères non valides'
                     ])
                 ],
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Titre du cours'
+                    'placeholder' => 'Ex: Introduction à Symfony 6',
+                    'maxlength' => 255
                 ]
             ])
             ->add('description', TextareaType::class, [
-                'required' => false,
+                'required' => true,
                 'constraints' => [
+                    new Assert\NotBlank(['message' => 'La description est obligatoire']),
                     new Assert\Length([
-                        'max' => 5000,
+                        'min' => 10,
+                        'max' => 2000,
+                        'minMessage' => 'La description doit contenir au moins {{ limit }} caractères',
                         'maxMessage' => 'La description ne peut pas dépasser {{ limit }} caractères'
                     ])
                 ],
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 6,
-                    'placeholder' => 'Description détaillée du cours'
+                    'placeholder' => 'Décrivez en détail le contenu du cours, les prérequis, les objectifs...',
+                    'maxlength' => 2000
                 ]
             ])
             ->add('imageUrl', TextType::class, [
@@ -61,12 +70,31 @@ class CourseType extends AbstractType
                     'placeholder' => 'Nom du fichier image (ex: mon-cours.jpg)'
                 ]
             ])
+            ->add('category', ChoiceType::class, [
+                'required' => true,
+                'constraints' => [
+                    new Assert\NotBlank(['message' => 'La catégorie est obligatoire'])
+                ],
+                'choices' => [
+                    'Développement' => 'Développement',
+                    'Design' => 'Design',
+                    'Marketing' => 'Marketing',
+                    'Business' => 'Business',
+                    'Science' => 'Science',
+                    'Langues' => 'Langues',
+                    'Autre' => 'Autre'
+                ],
+                'placeholder' => 'Choisissez une catégorie',
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
             ->add('price', NumberType::class, [
                 'required' => false,
                 'scale' => 2,
                 'constraints' => [
-                    new Assert\Positive([
-                        'message' => 'Le prix doit être un nombre positif'
+                    new Assert\PositiveOrZero([
+                        'message' => 'Le prix doit être un nombre positif ou nul'
                     ]),
                     new Assert\LessThanOrEqual([
                         'value' => 9999.99,
@@ -78,19 +106,6 @@ class CourseType extends AbstractType
                     'placeholder' => '0.00',
                     'step' => '0.01',
                     'min' => '0'
-                ]
-            ])
-            ->add('category', TextType::class, [
-                'required' => false,
-                'constraints' => [
-                    new Assert\Length([
-                        'max' => 255,
-                        'maxMessage' => 'La catégorie ne peut pas dépasser {{ limit }} caractères'
-                    ])
-                ],
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'Catégorie du cours'
                 ]
             ])
             ->add('pdfUpload', FileType::class, [

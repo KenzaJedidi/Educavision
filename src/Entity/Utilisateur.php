@@ -10,11 +10,53 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
+
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[ORM\Table(name: 'utilisateurs')]
 #[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé.')]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $banUntil = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $banReason = null;
+
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $resetToken = null;
+
+    public function getBanUntil(): ?\DateTimeInterface
+    {
+        return $this->banUntil;
+    }
+
+    public function setBanUntil(?\DateTimeInterface $banUntil): static
+    {
+        $this->banUntil = $banUntil;
+        return $this;
+    }
+
+    public function getBanReason(): ?string
+    {
+        return $this->banReason;
+    }
+
+    public function setBanReason(?string $banReason): static
+    {
+        $this->banReason = $banReason;
+        return $this;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?string $resetToken): static
+    {
+        $this->resetToken = $resetToken;
+        return $this;
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -56,6 +98,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'datetime')]
     private ?\DateTime $dateModification = null;
+
+    // Face ID Fields
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $faceIdToken = null;
+
+    #[ORM\Column(nullable: true, options: ['default' => false])]
+    private ?bool $faceIdEnrolled = false;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTime $faceIdEnrollmentDate = null;
 
     // ========== Getters / Setters ==========
 
@@ -211,5 +263,40 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void
     {
         // Clear temporary sensitive data if needed
+    }
+
+    // ========== Face ID Methods ==========
+
+    public function getFaceIdToken(): ?string
+    {
+        return $this->faceIdToken;
+    }
+
+    public function setFaceIdToken(?string $faceIdToken): static
+    {
+        $this->faceIdToken = $faceIdToken;
+        return $this;
+    }
+
+    public function isFaceIdEnrolled(): ?bool
+    {
+        return $this->faceIdEnrolled;
+    }
+
+    public function setFaceIdEnrolled(?bool $faceIdEnrolled): static
+    {
+        $this->faceIdEnrolled = $faceIdEnrolled;
+        return $this;
+    }
+
+    public function getFaceIdEnrollmentDate(): ?\DateTime
+    {
+        return $this->faceIdEnrollmentDate;
+    }
+
+    public function setFaceIdEnrollmentDate(?\DateTime $faceIdEnrollmentDate): static
+    {
+        $this->faceIdEnrollmentDate = $faceIdEnrollmentDate;
+        return $this;
     }
 }

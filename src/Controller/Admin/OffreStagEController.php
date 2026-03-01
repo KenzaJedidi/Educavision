@@ -5,9 +5,12 @@ namespace App\Controller\Admin;
 use App\Entity\OffreStage;
 use App\Form\OffreStagEType;
 use App\Repository\OffreStagERepository;
+use App\Service\AiRecruitmentService;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,19 +19,61 @@ use Symfony\Component\Routing\Annotation\Route;
 class OffreStagEController extends AbstractController
 {
     #[Route('/', name: 'admin_offre_stage_index', methods: ['GET'])]
-    public function index(Request $request, OffreStagERepository $offreStagERepository): Response
+    public function index(Request $request, OffreStagERepository $offreStagERepository, PaginatorInterface $paginator): Response
     {
         $search = $request->query->get('search', '');
         
         if ($search) {
-            $offres_stage = $offreStagERepository->searchByTitre($search);
+            $query = $offreStagERepository->searchByTitre($search);
         } else {
-            $offres_stage = $offreStagERepository->findAllOrderedByDate();
+            $query = $offreStagERepository->findAllOrderedByDate();
         }
 
+        // Pagination avec KnpPaginator
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            6 // 6 éléments par page
+        );
+
+        // Statistiques pour les graphiques Chart.js
+        $allOffres = $offreStagERepository->findAll();
+        $statsParMois = [];
+        $statuts = ['Ouvert' => 0, 'Fermé' => 0, 'Pourvu' => 0];
+        $entreprises = [];
+        $salaires = [];
+        
+        foreach ($allOffres as $offre) {
+            // Stats par mois
+            if ($offre->getDateCreation()) {
+                $mois = $offre->getDateCreation()->format('Y-m');
+                $statsParMois[$mois] = ($statsParMois[$mois] ?? 0) + 1;
+            }
+            // Stats par statut
+            $statuts[$offre->getStatut()] = ($statuts[$offre->getStatut()] ?? 0) + 1;
+            // Stats par entreprise
+            $ent = $offre->getEntreprise();
+            $entreprises[$ent] = ($entreprises[$ent] ?? 0) + 1;
+            // Salaires
+            if ($offre->getSalaire()) {
+                $salaires[] = (float) $offre->getSalaire();
+            }
+        }
+
+        ksort($statsParMois);
+        arsort($entreprises);
+        $topEntreprises = array_slice($entreprises, 0, 5, true);
+        $salaireMoyen = !empty($salaires) ? round(array_sum($salaires) / count($salaires), 2) : 0;
+
         return $this->render('admin/offre_stage/index.html.twig', [
-            'offres_stage' => $offres_stage,
+            'offres_stage' => is_array($query) ? $query : $allOffres,
+            'pagination' => $pagination,
             'search' => $search,
+            'stats_par_mois' => $statsParMois,
+            'statuts' => $statuts,
+            'top_entreprises' => $topEntreprises,
+            'salaire_moyen' => $salaireMoyen,
+            'total_offres' => count($allOffres),
         ]);
     }
 
@@ -193,6 +238,40 @@ class OffreStagEController extends AbstractController
         $response->headers->set('Content-Disposition', 'attachment; filename="offres_stage_' . date('Y-m-d_H-i-s') . '.pdf"');
 
         return $response;
+    }
+
+    /**
+     * API AJAX : Générer une description d'offre via IA (Scénario C)
+     * IMPORTANT : cette route doit être AVANT les routes /{id} pour éviter le conflit
+     */
+    #[Route('/api/generer-description', name: 'admin_offre_stage_generer_description', methods: ['POST'])]
+    public function genererDescription(Request $request, AiRecruitmentService $aiService): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $titre = $data['titre'] ?? '';
+        $entreprise = $data['entreprise'] ?? '';
+        $motsCles = $data['mots_cles'] ?? '';
+        $lieu = $data['lieu'] ?? '';
+
+        if (empty($titre) || empty($entreprise)) {
+            return new JsonResponse(['error' => 'Le titre et l\'entreprise sont obligatoires'], 400);
+        }
+
+        if (!$aiService->isConfigured()) {
+            return new JsonResponse(['error' => 'API IA non configurée. Ajoutez GEMINI_API_KEY dans .env'], 500);
+        }
+
+        $description = $aiService->genererDescriptionOffre($titre, $entreprise, $motsCles, $lieu);
+
+        if ($description === 'Description IA non disponible.') {
+            $erreur = $aiService->getLastError() ?: 'Erreur inconnue';
+            return new JsonResponse(['error' => 'Erreur IA : ' . $erreur], 500);
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'description' => $description,
+        ]);
     }
 
     #[Route('/{id}', name: 'admin_offre_stage_show', methods: ['GET'])]

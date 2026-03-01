@@ -1,0 +1,192 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test Correction IA{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <a href="{{ path('ai_test_index') }}" class="btn btn-outline-secondary mb-4">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+            
+            <h1 class="mb-4">
+                <i class="fas fa-check-circle text-success"></i>
+                Test de Correction Intelligente
+            </h1>
+            <p class="text-muted mb-4">
+                Testez la correction automatique des réponses ouvertes avec analyse NLP
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit"></i> Formulaire de Test
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Question exemple:</label>
+                            <p class="text-muted">
+                                "Qu'est-ce que l'Intelligence Artificielle?"
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="user_answer" class="form-label">
+                                Réponse de l'étudiant <span class="text-danger">*</span>
+                            </label>
+                            <textarea 
+                                class="form-control" 
+                                id="user_answer" 
+                                name="user_answer" 
+                                rows="4" 
+                                required
+                                placeholder="Entrez votre réponse ici...">{{ app.request.request.get('user_answer') }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="expected_answer" class="form-label">
+                                Réponse attendue <span class="text-danger">*</span>
+                            </label>
+                            <textarea 
+                                class="form-control" 
+                                id="expected_answer" 
+                                name="expected_answer" 
+                                rows="3" 
+                                required
+                                placeholder="La réponse correcte...">{{ app.request.request.get('expected_answer', "L'intelligence artificielle est une technologie qui permet aux machines d'apprendre et de s'adapter automatiquement") }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="keywords" class="form-label">
+                                Mots-clés importants (séparés par des virgules)
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="keywords" 
+                                name="keywords" 
+                                value="{{ app.request.request.get('keywords', 'intelligence artificielle, machines, apprendre, adapter') }}"
+                                placeholder="mot1, mot2, mot3">
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-robot"></i> Corriger avec l'IA
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            {% if result %}
+            <div class="card shadow-sm">
+                <div class="card-header {% if result.isCorrect %}bg-success{% elseif result.partiallyCorrect %}bg-warning{% else %}bg-danger{% endif %} text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar"></i> Résultats de l'Analyse
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Score global -->
+                    <div class="text-center mb-4">
+                        <div class="display-4 fw-bold {% if result.isCorrect %}text-success{% elseif result.partiallyCorrect %}text-warning{% else %}text-danger{% endif %}">
+                            {{ result.score }}%
+                        </div>
+                        <p class="text-muted">Score de similarité</p>
+                    </div>
+
+                    <!-- Statut -->
+                    <div class="alert {% if result.isCorrect %}alert-success{% elseif result.partiallyCorrect %}alert-warning{% else %}alert-danger{% endif %}">
+                        <strong>
+                            {% if result.isCorrect %}
+                                ✅ Réponse Correcte
+                            {% elseif result.partiallyCorrect %}
+                                ⚠️ Réponse Partiellement Correcte
+                            {% else %}
+                                ❌ Réponse Incorrecte
+                            {% endif %}
+                        </strong>
+                    </div>
+
+                    <!-- Feedback -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold">Feedback:</h6>
+                        <p class="mb-0">{{ result.feedback }}</p>
+                    </div>
+
+                    <!-- Détails des scores -->
+                    <h6 class="fw-bold mb-3">Détails de l'analyse:</h6>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Similarité textuelle</span>
+                            <span class="fw-bold">{{ result.details.similarityScore }}%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-info" style="width: {{ result.details.similarityScore }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Mots-clés trouvés</span>
+                            <span class="fw-bold">{{ result.details.keywordScore }}%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-warning" style="width: {{ result.details.keywordScore }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Analyse sémantique</span>
+                            <span class="fw-bold">{{ result.details.semanticScore }}%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: {{ result.details.semanticScore }}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Structure de la réponse -->
+                    {% if result.structure %}
+                    <h6 class="fw-bold mb-3 mt-4">Structure de la réponse:</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-paragraph text-primary"></i> {{ result.structure.sentenceCount }} phrase(s)</li>
+                        <li><i class="fas fa-font text-primary"></i> {{ result.structure.wordCount }} mot(s)</li>
+                        <li>
+                            <i class="fas {% if result.structure.isWellStructured %}fa-check-circle text-success{% else %}fa-times-circle text-danger{% endif %}"></i>
+                            {% if result.structure.isWellStructured %}Bien structurée{% else %}Structure à améliorer{% endif %}
+                        </li>
+                    </ul>
+                    {% endif %}
+
+                    <!-- Suggestions -->
+                    {% if result.suggestions is defined and result.suggestions|length > 0 %}
+                    <div class="alert alert-info mt-4">
+                        <h6 class="fw-bold">💡 Suggestions d'amélioration:</h6>
+                        <ul class="mb-0">
+                            {% for suggestion in result.suggestions %}
+                            <li>{{ suggestion }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="card shadow-sm">
+                <div class="card-body text-center text-muted">
+                    <i class="fas fa-arrow-left fa-3x mb-3"></i>
+                    <p>Remplissez le formulaire et cliquez sur "Corriger avec l'IA" pour voir les résultats</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

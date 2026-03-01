@@ -5,6 +5,9 @@ namespace App\Controller\Front;
 use App\Entity\Candidature;
 use App\Entity\OffreStage;
 use App\Form\CandidatureType;
+use App\Service\AiRecruitmentService;
+use App\Service\CvAnalyzerService;
+use App\Repository\OffreStagERepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -18,7 +21,9 @@ class CandidatureController extends AbstractController
     public function new(
         int $id,
         Request $request,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        CvAnalyzerService $cvAnalyzer,
+        AiRecruitmentService $aiService
     ): Response {
         $offre = $em->getRepository(OffreStage::class)->find($id);
         if (!$offre) {
@@ -53,12 +58,32 @@ class CandidatureController extends AbstractController
                 }
             }
 
-            // Vocal recording removed: no audio processing
-
             $em->persist($candidature);
             $em->flush();
 
-            // Store email in session for quick access to "Mes postulations"
+            // Analyse IA automatique après soumission (Scénario A)
+            try {
+                if ($candidature->getCv() && $aiService->isConfigured()) {
+                    $analyseCv = $cvAnalyzer->analyserCv($candidature->getCv());
+                    $candidature->setCompetencesDetectees($analyseCv);
+
+                    $scoring = $aiService->scoreCandidature($candidature, $offre);
+                    $candidature->setScoreIa((int) ($scoring['score'] ?? 0));
+
+                    $resume = "Score: " . ($scoring['score'] ?? 0) . "/100\n";
+                    $resume .= "Analyse: " . ($scoring['analyse'] ?? '') . "\n";
+                    if (!empty($scoring['points_forts'])) {
+                        $resume .= "Points forts: " . implode(', ', $scoring['points_forts']);
+                    }
+                    $candidature->setResumeIa($resume);
+
+                    $em->flush();
+                }
+            } catch (\Throwable $e) {
+                // L'analyse IA est optionnelle, ne pas bloquer la candidature
+            }
+
+            // Store email in session
             $request->getSession()->set('candidature_email', $candidature->getEmail());
 
             $this->addFlash('success', 'Votre candidature a été envoyée avec succès !');
@@ -72,7 +97,7 @@ class CandidatureController extends AbstractController
     }
 
     #[Route('/mes-postulations', name: 'front_candidature_my', methods: ['GET', 'POST'])]
-    public function my(Request $request, EntityManagerInterface $em): Response
+    public function my(Request $request, EntityManagerInterface $em, OffreStagERepository $offreRepo, AiRecruitmentService $aiService, CvAnalyzerService $cvAnalyzer): Response
     {
         $email = $request->query->get('email') ?: $request->getSession()->get('candidature_email');
 
@@ -84,13 +109,89 @@ class CandidatureController extends AbstractController
         }
 
         $candidatures = [];
+        $recommandations = [];
+
         if ($email) {
             $candidatures = $em->getRepository(Candidature::class)->findBy(['email' => $email], ['dateCandidature' => 'DESC']);
+
+            // Scénario C : Recommandations personnalisées
+            if (!empty($candidatures) && $aiService->isConfigured()) {
+                try {
+                    $derniereCandiature = $candidatures[0];
+                    $competences = [];
+
+                    // 1. Essayer les compétences déjà détectées
+                    $analyseCv = $derniereCandiature->getCompetencesDetectees();
+                    if ($analyseCv && is_array($analyseCv)) {
+                        $competences = array_merge(
+                            $analyseCv['competences_techniques'] ?? [],
+                            $analyseCv['competences_soft'] ?? []
+                        );
+                    }
+
+                    // 2. Si pas de compétences, analyser le CV à la volée
+                    if (empty($competences) && $derniereCandiature->getCv()) {
+                        try {
+                            $analyseVolee = $cvAnalyzer->analyserCv($derniereCandiature->getCv());
+                            $competences = array_merge(
+                                $analyseVolee['competences_techniques'] ?? [],
+                                $analyseVolee['competences_soft'] ?? []
+                            );
+                            $derniereCandiature->setCompetencesDetectees($analyseVolee);
+                            $em->flush();
+                        } catch (\Throwable $e) {
+                            // Fallback ci-dessous
+                        }
+                    }
+
+                    // 3. Si toujours vide, extraire des mots-clés depuis les offres postulées
+                    if (empty($competences)) {
+                        foreach ($candidatures as $c) {
+                            $offre = $c->getOffreStage();
+                            if ($offre) {
+                                $competences[] = $offre->getTitre();
+                                if ($offre->getCompetencesRequises()) {
+                                    $competences = array_merge($competences, $offre->getCompetencesRequises());
+                                }
+                            }
+                        }
+                        $competences = array_unique(array_filter($competences));
+                    }
+
+                    if (!empty($competences)) {
+                        $offresOuvertes = $offreRepo->findByStatut('Ouvert');
+                        $offresPostulees = array_map(fn($c) => $c->getOffreStage()?->getId(), $candidatures);
+                        $offresNonPostulees = array_filter($offresOuvertes, fn($o) => !in_array($o->getId(), $offresPostulees));
+
+                        if (!empty($offresNonPostulees)) {
+                            $recs = $aiService->recommanderOffres(
+                                $competences,
+                                $derniereCandiature->getNiveauEtude() ?? 'Non spécifié',
+                                array_values($offresNonPostulees)
+                            );
+
+                            foreach ($recs as $rec) {
+                                $offre = $offreRepo->find($rec['id'] ?? 0);
+                                if ($offre) {
+                                    $recommandations[] = [
+                                        'offre' => $offre,
+                                        'pertinence' => $rec['pertinence'] ?? 0,
+                                        'raison' => $rec['raison'] ?? '',
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // Recommandations IA optionnelles
+                }
+            }
         }
 
         return $this->render('front/pages/candidature/my.html.twig', [
             'email' => $email,
             'candidatures' => $candidatures,
+            'recommandations' => $recommandations,
         ]);
     }
 

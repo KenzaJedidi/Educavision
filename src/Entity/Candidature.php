@@ -53,6 +53,24 @@ class Candidature
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTime $dateCandidature = null;
 
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $scoreIa = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $resumeIa = null;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $competencesDetectees = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $noteAdmin = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $commentaireAdmin = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $favori = false;
+
     public function getId(): ?int { return $this->id; }
 
     public function getOffreStage(): ?OffreStage { return $this->offreStage; }
@@ -84,4 +102,22 @@ class Candidature
 
     public function getDateCandidature(): ?\DateTime { return $this->dateCandidature; }
     public function setDateCandidature(\DateTime $dateCandidature): self { $this->dateCandidature = $dateCandidature; return $this; }
+
+    public function getScoreIa(): ?int { return $this->scoreIa; }
+    public function setScoreIa(?int $scoreIa): self { $this->scoreIa = $scoreIa; return $this; }
+
+    public function getResumeIa(): ?string { return $this->resumeIa; }
+    public function setResumeIa(?string $resumeIa): self { $this->resumeIa = $resumeIa; return $this; }
+
+    public function getCompetencesDetectees(): ?array { return $this->competencesDetectees; }
+    public function setCompetencesDetectees(?array $competencesDetectees): self { $this->competencesDetectees = $competencesDetectees; return $this; }
+
+    public function getNoteAdmin(): ?int { return $this->noteAdmin; }
+    public function setNoteAdmin(?int $noteAdmin): self { $this->noteAdmin = $noteAdmin; return $this; }
+
+    public function getCommentaireAdmin(): ?string { return $this->commentaireAdmin; }
+    public function setCommentaireAdmin(?string $commentaireAdmin): self { $this->commentaireAdmin = $commentaireAdmin; return $this; }
+
+    public function isFavori(): bool { return $this->favori; }
+    public function setFavori(bool $favori): self { $this->favori = $favori; return $this; }
 }

@@ -1,0 +1,421 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Prévisualisation - {{ quizData.title }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('front-assets/css/quiz.css') }}?v=20260222">
+    <style>
+        .preview-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .preview-header {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+        
+        .preview-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .generated-by-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.25);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .preview-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .preview-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .preview-stat i {
+            font-size: 16px;
+        }
+        
+        .preview-analysis {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-analysis h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .analysis-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .analysis-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .analysis-label {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+        }
+        
+        .preview-questions {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-questions h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        
+        .question-preview {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .question-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .question-number {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .question-text {
+            flex-grow: 1;
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .question-type {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .answer-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .answer-item {
+            padding: 10px 15px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .answer-item.correct {
+            border-color: #48bb78;
+            background: rgba(72, 187, 120, 0.05);
+        }
+        
+        .answer-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .answer-item.correct .answer-icon {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .answer-item:not(.correct) .answer-icon {
+            background: #e2e8f0;
+            color: #718096;
+        }
+        
+        .preview-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+        }
+        
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+        
+        .btn-cancel:hover {
+            background: #cbd5e0;
+        }
+
+        .btn-regenerate {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-regenerate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-regenerate:disabled {
+            opacity: 0.8;
+            cursor: wait;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="preview-container">
+    <div class="preview-header">
+        <h1><i class="fas fa-check-circle"></i> Quiz Généré avec Succès!</h1>
+        <p>{{ quizData.description }}</p>
+        <div class="preview-stats">
+            <div class="preview-stat">
+                <i class="fas fa-list"></i>
+                <span>{{ quizData.questions|length }} questions</span>
+            </div>
+            <div class="preview-stat">
+                <i class="fas fa-clock"></i>
+                <span>{{ quizData.duration }} minutes</span>
+            </div>
+            <div class="preview-stat">
+                <i class="fas fa-signal"></i>
+                <span>Difficulté: {{ quizData.difficulty|capitalize }}</span>
+            </div>
+        </div>
+        {% if quizData.generatedBy|default('') == 'deepseek' %}
+        <div class="generated-by-badge"><i class="fas fa-robot"></i> Généré par DeepSeek (IA)</div>
+        {% elseif quizData.generatedBy|default('') == 'mixed' %}
+        <div class="generated-by-badge"><i class="fas fa-robot"></i> Généré par DeepSeek + complément</div>
+        {% elseif quizData.generatedBy|default('') == 'fallback' %}
+        <div class="generated-by-badge" style="background: rgba(255,200,0,0.3);"><i class="fas fa-exclamation-triangle"></i> Mode heuristique (vérifiez DEEPSEEK_API_KEY dans .env)</div>
+        {% endif %}
+    </div>
+    
+    <div class="preview-analysis">
+        <h2><i class="fas fa-chart-bar"></i> Analyse du Texte</h2>
+        <div class="analysis-grid">
+            <div class="analysis-item">
+                <div class="analysis-value">{{ quizData.analysis.wordCount }}</div>
+                <div class="analysis-label">Mots</div>
+            </div>
+            <div class="analysis-item">
+                <div class="analysis-value">{{ quizData.analysis.sentenceCount }}</div>
+                <div class="analysis-label">Phrases</div>
+            </div>
+            <div class="analysis-item">
+                <div class="analysis-value">{{ quizData.concepts|length }}</div>
+                <div class="analysis-label">Concepts Extraits</div>
+            </div>
+            <div class="analysis-item">
+                <div class="analysis-value">{{ quizData.analysis.complexity|capitalize }}</div>
+                <div class="analysis-label">Complexité</div>
+            </div>
+        </div>
+        
+        {% if quizData.analysis.topics|length > 0 %}
+        <div style="margin-top: 20px;">
+            <strong>Sujets identifiés:</strong>
+            {% for topic in quizData.analysis.topics %}
+                <span style="background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; margin-left: 5px;">
+                    {{ topic|capitalize }}
+                </span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="preview-questions">
+        <h2><i class="fas fa-question-circle"></i> Questions Générées</h2>
+        
+        {% for question in quizData.questions %}
+        <div class="question-preview">
+            <div class="question-header">
+                <div class="question-number">{{ loop.index }}</div>
+                <div class="question-text">{{ question.text }}</div>
+                <span class="question-type">{{ question.type }}</span>
+            </div>
+            
+            {% if question.type == 'open' %}
+                {# Question ouverte - afficher la réponse attendue #}
+                <div style="background: rgba(72, 187, 120, 0.1); padding: 15px; border-radius: 8px; margin-top: 10px; border-left: 3px solid #48bb78;">
+                    <strong style="color: #2d3748; display: block; margin-bottom: 8px;">
+                        <i class="fas fa-lightbulb" style="color: #48bb78;"></i> Réponse attendue :
+                    </strong>
+                    <p style="color: #4a5568; margin: 0; font-size: 14px;">{{ question.expectedAnswer }}</p>
+                    
+                    {% if question.keywords is defined and question.keywords|length > 0 %}
+                    <div style="margin-top: 10px;">
+                        <strong style="color: #718096; font-size: 12px; display: block; margin-bottom: 5px;">Mots-clés :</strong>
+                        {% for keyword in question.keywords %}
+                        <span style="background: #667eea; color: white; padding: 3px 10px; border-radius: 12px; font-size: 11px; margin-right: 5px; display: inline-block; margin-bottom: 5px;">
+                            {{ keyword }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                {# Questions QCM et Vrai/Faux - afficher les réponses #}
+                <ul class="answer-list">
+                    {% for answer in question.answers %}
+                    <li class="answer-item {% if answer.isCorrect %}correct{% endif %}">
+                        <div class="answer-icon">
+                            {% if answer.isCorrect %}
+                                <i class="fas fa-check"></i>
+                            {% else %}
+                                <i class="fas fa-times"></i>
+                            {% endif %}
+                        </div>
+                        <span>{{ answer.text }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="preview-actions">
+        <form action="{{ path('ai_quiz_save') }}" method="POST" style="display: inline;">
+            <input type="hidden" name="quizData" value="{{ quizData|json_encode }}">
+            <button type="submit" class="btn btn-save">
+                <i class="fas fa-save"></i>
+                Sauvegarder et Publier le Quiz
+            </button>
+        </form>
+
+        {% set rp = regenerateParams|default({
+            title: quizData.title,
+            description: quizData.description,
+            questionCount: quizData.questions|length,
+            difficulty: quizData.difficulty,
+            duration: quizData.duration,
+            includeQCM: 'on',
+            includeTrueFalse: 'on',
+            includeOpen: ''
+        }) %}
+        <form action="{{ path('ai_quiz_regenerate') }}" method="POST" style="display: inline;" class="regenerate-form">
+            <input type="hidden" name="originalText" value="{{ originalText|default('')|e('html_attr') }}">
+            <input type="hidden" name="title" value="{{ rp.title|e('html_attr') }}">
+            <input type="hidden" name="description" value="{{ rp.description|e('html_attr') }}">
+            <input type="hidden" name="questionCount" value="{{ rp.questionCount }}">
+            <input type="hidden" name="difficulty" value="{{ rp.difficulty }}">
+            <input type="hidden" name="duration" value="{{ rp.duration }}">
+            <input type="hidden" name="includeQCM" value="{{ rp.includeQCM|default('on') }}">
+            <input type="hidden" name="includeTrueFalse" value="{{ rp.includeTrueFalse|default('on') }}">
+            <input type="hidden" name="includeOpen" value="{{ rp.includeOpen|default('') }}">
+            <button type="submit" class="btn btn-regenerate" id="btnRegenerate">
+                <i class="fas fa-sync-alt"></i>
+                Régénérer d'autres questions
+            </button>
+        </form>
+        
+        <a href="{{ path('ai_quiz_create') }}" class="btn btn-cancel">
+            <i class="fas fa-times"></i>
+            Annuler
+        </a>
+    </div>
+</div>
+
+<script>
+document.querySelector('.regenerate-form')?.addEventListener('submit', function() {
+    const btn = document.getElementById('btnRegenerate');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Régénération en cours…';
+    }
+});
+</script>
+{% endblock %}

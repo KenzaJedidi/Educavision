@@ -1,0 +1,392 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chapitres - {{ course.titre }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{{ course.titre }} - Chapitres</h1>
+            <p class="text-muted">Gérez les chapitres de ce cours</p>
+        </div>
+        <div class="col-md-4 text-right">
+            <a href="{{ path('teacher_chapter_new', {'courseId': course.id}) }}" class="btn btn-primary">
+                <i class="fa fa-plus"></i> Nouveau Chapitre
+            </a>
+        </div>
+    </div>
+
+    <!-- Vue Brouillons -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning">
+            <h5 class="mb-0">📝 Brouillons ({{ draftCount }})</h5>
+        </div>
+        <div class="card-body">
+            <div id="draftChapters" class="chapter-list" data-course-id="{{ course.id }}">
+                <!-- Rempli par JavaScript -->
+                <p class="text-muted">Chargement...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vue Publiés -->
+    <div class="card">
+        <div class="card-header bg-success">
+            <h5 class="mb-0">✅ Publiés ({{ publishedCount }})</h5>
+        </div>
+        <div class="card-body">
+            <div id="publishedChapters" class="chapter-list" data-course-id="{{ course.id }}" style="background: #f9f9f9;">
+                <!-- Rempli par JavaScript -->
+                <p class="text-muted">Chargement...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Détail Chapitre -->
+<div class="modal fade" id="chapterModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="chapterTitle">...</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="chapterContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chapter-item {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background: white;
+    cursor: move;
+    transition: all 0.3s ease;
+}
+
+.chapter-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.chapter-item.draft {
+    border-left: 4px solid #ffc107;
+}
+
+.chapter-item.published {
+    border-left: 4px solid #28a745;
+}
+
+.chapter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.chapter-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.chapter-meta {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.chapter-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 3px;
+    margin-right: 5px;
+    font-size: 0.8rem;
+}
+
+.badge-draft {
+    background: #ffc107;
+    color: black;
+}
+
+.badge-published {
+    background: #28a745;
+    color: white;
+}
+
+.badge-level {
+    background: #17a2b8;
+    color: white;
+}
+
+.chapter-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.chapter-actions button {
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    border-radius: 3px;
+}
+
+.chapter-list {
+    min-height: 100px;
+}
+
+.sortable-ghost {
+    opacity: 0.5;
+    background: #f0f0f0;
+}
+
+.spinner {
+    display: none;
+    margin-left: 10px;
+    color: #007bff;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="{{ asset('js/chapter-api-client.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const api = new ChapterAPIClient();
+    const courseId = parseInt(document.querySelector('.chapter-list').dataset.courseId);
+
+    // Charger les chapitres
+    loadChapters();
+
+    async function loadChapters() {
+        try {
+            const response = await api.getChaptersByCourse(courseId);
+            
+            if (!response.success) {
+                alert('Erreur: ' + response.error);
+                return;
+            }
+
+            const draftContainer = document.getElementById('draftChapters');
+            const publishedContainer = document.getElementById('publishedChapters');
+
+            draftContainer.innerHTML = '';
+            publishedContainer.innerHTML = '';
+
+            const chapters = response.data || [];
+
+            chapters.forEach(chapter => {
+                const html = renderChapter(chapter);
+                
+                if (chapter.status === 'draft') {
+                    draftContainer.innerHTML += html;
+                } else {
+                    publishedContainer.innerHTML += html;
+                }
+            });
+
+            // Initialiser le drag & drop
+            initDragDrop();
+
+            // Attacher les event listeners
+            attachChapterActions();
+
+        } catch (error) {
+            console.error('Erreur chargement chapitres:', error);
+        }
+    }
+
+    function renderChapter(chapter) {
+        return `
+            <div class="chapter-item ${chapter.status}" data-chapter-id="${chapter.id}">
+                <div class="chapter-header">
+                    <div>
+                        <div class="chapter-title">
+                            <i class="fa fa-bars"></i> ${chapter.titre}
+                        </div>
+                        <div class="chapter-meta">
+                            Position: ${chapter.position || '-'} | ${new Date(chapter.createdAt).toLocaleDateString('fr-FR')}
+                        </div>
+                    </div>
+                    <div class="chapter-actions">
+                        <span class="chapter-badge badge-${chapter.status}">
+                            ${chapter.status === 'draft' ? 'Brouillon' : 'Publié'}
+                        </span>
+                        ${chapter.difficultyLevel ? `
+                            <span class="chapter-badge badge-level">
+                                ${chapter.difficultyLevel}
+                            </span>
+                        ` : ''}
+                        ${chapter.hasEnrichedContent ? `
+                            <span class="chapter-badge" style="background: #6f42c1; color: white;">
+                                <i class="fa fa-magic"></i> IA
+                            </span>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="chapter-meta">
+                    ${chapter.description ? chapter.description.substring(0, 100) + '...' : 'Pas de description'}
+                </div>
+                <div style="margin-top: 10px;">
+                    <button class="btn btn-sm btn-info edit-chapter" data-chapter-id="${chapter.id}">
+                        <i class="fa fa-edit"></i> Éditer
+                    </button>
+                    <button class="btn btn-sm btn-secondary enrich-btn" data-chapter-id="${chapter.id}">
+                        <i class="fa fa-magic"></i> Enrichir IA
+                        <span class="spinner"><i class="fa fa-spinner fa-spin"></i></span>
+                    </button>
+                    <button class="btn btn-sm btn-info translate-btn" data-chapter-id="${chapter.id}">
+                        <i class="fa fa-globe"></i> Traduire
+                    </button>
+                    ${chapter.status === 'draft' ? `
+                        <button class="btn btn-sm btn-success publish-btn" data-chapter-id="${chapter.id}">
+                            <i class="fa fa-check"></i> Publier
+                        </button>
+                    ` : ''}
+                    <button class="btn btn-sm btn-danger delete-btn" data-chapter-id="${chapter.id}">
+                        <i class="fa fa-trash"></i> Supprimer
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function initDragDrop() {
+        const containers = document.querySelectorAll('.chapter-list');
+        
+        containers.forEach(container => {
+            new Sortable(container, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: async function() {
+                    // Construire le nouvel ordre
+                    const positions = [];
+                    Array.from(container.children).forEach((el, idx) => {
+                        const chapterId = parseInt(el.dataset.chapterId);
+                        positions.push({
+                            chapterId: chapterId,
+                            position: idx + 1
+                        });
+                    });
+
+                    try {
+                        await api.reorderChapters(courseId, positions);
+                        console.log('✓ Ordre mis à jour');
+                    } catch (error) {
+                        alert('Erreur réorganisation: ' + error.message);
+                        loadChapters(); // Recharger
+                    }
+                }
+            });
+        });
+    }
+
+    function attachChapterActions() {
+        // Éditer
+        document.querySelectorAll('.edit-chapter').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const chapterId = this.dataset.chapterId;
+                const response = await api.getChapter(chapterId);
+                if (response.success) {
+                    window.location.href = '/teacher/chapters/' + chapterId + '/edit';
+                }
+            });
+        });
+
+        // Enrichir
+        document.querySelectorAll('.enrich-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const chapterId = this.dataset.chapterId;
+                const spinner = this.querySelector('.spinner');
+                
+                try {
+                    spinner.style.display = 'inline-block';
+                    this.disabled = true;
+                    
+                    const response = await api.enrichChapter(chapterId);
+                    
+                    if (response.success) {
+                        alert('✓ Chapitre enrichi avec succès!\n\nNiveau: ' + response.data.difficultyLevel);
+                        loadChapters();
+                    }
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                } finally {
+                    spinner.style.display = 'none';
+                    this.disabled = false;
+                }
+            });
+        });
+
+        // Traduire
+        document.querySelectorAll('.translate-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const chapterId = this.dataset.chapterId;
+                const lang = prompt('Code langue (en, es, de, it, pt, ru, ja, zh, ar):', 'en');
+                
+                if (!lang) return;
+                
+                try {
+                    const response = await api.translateChapter(chapterId, lang);
+                    
+                    if (response.success) {
+                        alert('✓ Chapitre traduit en ' + lang + '!');
+                        loadChapters();
+                    }
+                } catch (error) {
+                    alert('Erreur traduction: ' + error.message);
+                }
+            });
+        });
+
+        // Publier
+        document.querySelectorAll('.publish-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const chapterId = this.dataset.chapterId;
+                
+                if (!confirm('Publier ce chapitre?')) return;
+                
+                try {
+                    const response = await api.publishChapter(chapterId);
+                    
+                    if (response.success) {
+                        alert('✓ Chapitre publié!');
+                        loadChapters();
+                    }
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                }
+            });
+        });
+
+        // Supprimer
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const chapterId = this.dataset.chapterId;
+                
+                if (!confirm('Êtes-vous sûr? Cette action est irréversible.')) return;
+                
+                try {
+                    const response = await api.deleteChapter(chapterId);
+                    
+                    if (response.success) {
+                        alert('✓ Chapitre supprimé!');
+                        loadChapters();
+                    }
+                } catch (error) {
+                    alert('Erreur: ' + error.message);
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

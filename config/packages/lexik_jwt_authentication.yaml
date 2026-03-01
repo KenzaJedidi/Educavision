@@ -1,0 +1,6 @@
+lexik_jwt_authentication:
+    # Using HMAC algorithm (simpler, no SSL keys needed)
+    secret_key: '%env(JWT_SECRET)%'
+    token_ttl: 3600  # Token valid for 1 hour
+    encoder:
+        signature_algorithm: 'HS256'

@@ -1,0 +1,374 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Résultats - {{ quiz.titre }} - EducaVision{% endblock %}
+
+{% block body %}
+
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/banner3.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Résultats du Quiz</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li><a href="{{ path('quiz_list') }}">Quiz</a></li>
+            <li>Résultats</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <!-- Score Card -->
+            <div class="row justify-content-center mb-5">
+                <div class="col-md-8">
+                    <div class="score-card card shadow-lg rounded-lg p-5 mb-4">
+                        <!-- Score Display -->
+                        <div class="text-center mb-4">
+                            <div class="score-circle {% if finalScore >= 90 %}success{% elseif finalScore >= 70 %}warning{% elseif finalScore >= 50 %}info{% else %}danger{% endif %}">
+                                <span class="score-value">{{ finalScore }}</span>
+                                <span class="score-unit">%</span>
+                            </div>
+                        </div>
+
+                        <!-- Quiz Title -->
+                        <h2 class="text-center mb-4 fw-bold">{{ quiz.titre }}</h2>
+
+                        <!-- Evaluation Badge -->
+                        <div class="text-center mb-4">
+                            {% if finalScore >= 90 %}
+                                <span class="badge badge-success p-3 fs-6">
+                                    <i class="fa fa-trophy"></i> Excellent!
+                                </span>
+                                <p class="text-muted mt-2">Résultat exceptionnel, continuez comme ça!</p>
+                            {% elseif finalScore >= 70 %}
+                                <span class="badge badge-primary p-3 fs-6">
+                                    <i class="fa fa-thumbs-up"></i> Bon Travail!
+                                </span>
+                                <p class="text-muted mt-2">Bonne performance, bravo!</p>
+                            {% elseif finalScore >= 50 %}
+                                <span class="badge badge-warning p-3 fs-6">
+                                    <i class="fa fa-star"></i> À Améliorer
+                                </span>
+                                <p class="text-muted mt-2">Encore un effort pour progresser!</p>
+                            {% else %}
+                                <span class="badge badge-danger p-3 fs-6">
+                                    <i class="fa fa-exclamation-triangle"></i> À Revoir
+                                </span>
+                                <p class="text-muted mt-2">Conseil: révisez et réessayez!</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="progress mb-4 rounded-lg" style="height: 10px;">
+                            <div class="progress-bar {% if finalScore >= 90 %}bg-success{% elseif finalScore >= 70 %}bg-primary{% elseif finalScore >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                 style="width: {{ finalScore }}%; transition: width 0.5s ease;">
+                            </div>
+                        </div>
+
+                        <!-- Stats Row -->
+                        <div class="row text-center mb-4">
+                            <div class="col-md-4">
+                                <div class="stat-box p-3 rounded-lg bg-light">
+                                    <i class="fa fa-check-circle text-success fa-2x mb-2"></i>
+                                    <h6 class="text-muted mb-1">Bonnes Réponses</h6>
+                                    <h4 class="text-success fw-bold">{{ correctAnswers }}/{{ totalQuestions }}</h4>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-box p-3 rounded-lg bg-light">
+                                    <i class="fa fa-percentage text-primary fa-2x mb-2"></i>
+                                    <h6 class="text-muted mb-1">Taux de Réussite</h6>
+                                    <h4 class="text-primary fw-bold">{{ finalScore }}%</h4>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-box p-3 rounded-lg bg-light">
+                                    <i class="fa fa-signal text-info fa-2x mb-2"></i>
+                                    <h6 class="text-muted mb-1">Difficulté</h6>
+                                    <h4 class="text-info fw-bold">{{ quiz.difficultyLevel }}</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CTA Buttons -->
+                        <div class="d-flex gap-3 justify-content-center flex-wrap">
+                            <a href="{{ path('quiz_export_pdf') }}" class="btn btn-danger btn-lg rounded-lg fw-bold" target="_blank">
+                                <i class="fa fa-file-pdf-o"></i> Exporter les résultats en PDF
+                            </a>
+                            <a href="{{ path('quiz_generator') }}" class="btn btn-primary btn-lg rounded-lg fw-bold">
+                                <i class="fa fa-plus-circle"></i> Nouveau Quiz
+                            </a>
+                            <a href="{{ path('quiz_list') }}" class="btn btn-outline-primary btn-lg rounded-lg fw-bold">
+                                <i class="fa fa-list"></i> Tous les Quiz
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answer Review Section -->
+            {% if answers %}
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <h3 class="mb-4 fw-bold">Détail de Vos Réponses</h3>
+
+                    {% for question in quiz.questions %}
+                    <div class="answer-card card mb-4 shadow-sm rounded-lg border-0">
+                        <!-- Question Header -->
+                        <div class="card-header bg-gradient-light p-4 border-bottom">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-2">
+                                        <i class="fa fa-question-circle text-primary"></i>
+                                        Question {{ loop.index }}
+                                    </h5>
+                                    <p class="text-dark fw-bold mb-0">{{ question.texte }}</p>
+                                </div>
+                                {% set answer = answers[question.id] | default(null) %}
+                                {% set isAnswered = answer is not null and answer.selectedIndex is defined and answer.selectedIndex >= 0 %}
+                                {% set isCorrect = answer and answer.isCorrect %}
+                                
+                                <div class="text-end">
+                                    {% if isCorrect %}
+                                        <span class="badge bg-success p-2">
+                                            <i class="fa fa-check-circle"></i> Correct
+                                        </span>
+                                    {% elseif isAnswered %}
+                                        <span class="badge bg-danger p-2">
+                                            <i class="fa fa-times-circle"></i> Incorrect
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary p-2">
+                                            <i class="fa fa-minus-circle"></i> Non répondu
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Answers -->
+                        <div class="card-body p-4">
+                            {% for choice in question.answers %}
+                            <div class="answer-choice p-3 mb-3 rounded-lg border {% if choice.correct %}border-success bg-success-light{% else %}border-light{% endif %}">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <p class="mb-0 {% if choice.correct %}fw-bold text-success{% endif %}">
+                                            {{ loop.index }}) {{ choice.texte }}
+                                            {% if choice.correct %}
+                                                <i class="fa fa-check-circle text-success ms-2"></i>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    {% set answer = answers[question.id] | default(null) %}
+                                    {% if answer and answer.selectedIndex == loop.index0 %}
+                                        <div class="badge {% if choice.correct %}bg-success{% else %}bg-danger{% endif %}">
+                                            <i class="fa fa-hand-o-right"></i> Votre réponse
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="section-area bg-primary text-white section-sp2">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3>Continuez à Progresser</h3>
+                    <p class="mb-0">Testez-vous avec d'autres quiz pour améliorer vos connaissances</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="{{ path('quiz_list') }}" class="btn btn-white btn-lg rounded-lg fw-bold">
+                        <i class="fa fa-arrow-right"></i> Explore Plus
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .score-card {
+        border: none;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 1px solid #e0e0e0;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .score-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        font-weight: bold;
+        color: white;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .score-circle.success {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    }
+
+    .score-circle.warning {
+        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    }
+
+    .score-circle.info {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    }
+
+    .score-circle.danger {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    }
+
+    .score-value {
+        font-size: 3rem;
+        line-height: 1;
+    }
+
+    .score-unit {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .stat-box {
+        transition: all 0.3s ease;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .rounded-lg {
+        border-radius: 12px;
+    }
+
+    .bg-gradient-light {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    .answer-card {
+        transition: all 0.3s ease;
+    }
+
+    .answer-card:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .answer-choice {
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+    }
+
+    .answer-choice:hover {
+        background-color: #e9ecef;
+    }
+
+    .bg-success-light {
+        background-color: #d4edda !important;
+        border-color: #28a745 !important;
+    }
+
+    .answer-choice p {
+        color: #333;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .badge {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .card-header {
+        border: none;
+    }
+
+    .fw-bold {
+        font-weight: 600;
+    }
+
+    .gap-3 {
+        gap: 1rem;
+    }
+
+    .text-end {
+        text-align: right;
+    }
+
+    @media (max-width: 768px) {
+        .score-circle {
+            width: 120px;
+            height: 120px;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+        }
+
+        .score-unit {
+            font-size: 1rem;
+        }
+
+        .d-flex {
+            flex-direction: column;
+        }
+
+        .text-end {
+            text-align: left;
+            margin-top: 1rem;
+        }
+
+        .stat-box {
+            margin-bottom: 1rem;
+        }
+
+        .gap-3 {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .answer-card {
+            margin-bottom: 1.5rem;
+        }
+    }
+</style>
+
+{% endblock %}

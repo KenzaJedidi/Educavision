@@ -1,0 +1,283 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Quiz - EducaVision{% endblock %}
+
+{% block body %}
+
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/banner1.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Nos Quiz</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li>Quiz</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left">
+                    <h2 class="title-head">Découvrez Nos <span>Quiz</span></h2>
+                    <p>Testez vos connaissances avec nos quiz interactifs</p>
+                </div>
+            </div>
+
+            {% if quizzes|length > 0 %}
+                <!-- Quiz Grid -->
+                <div class="row">
+                    {% for quiz in quizzes %}
+                    <div class="col-md-4 col-sm-6 m-b30">
+                        <div class="quiz-card">
+                            <div class="quiz-header bg-primary text-white p-4 rounded-top">
+                                <h4 class="card-title mb-2">
+                                    <a href="{{ path('quiz_play', {'quizId': quiz.idquiz}) }}" class="text-white text-decoration-none">
+                                        {{ quiz.titre }}
+                                    </a>
+                                </h4>
+                                <span class="badge badge-light">
+                                    <i class="fa fa-question"></i> {{ quiz.questions | length }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text text-muted mb-3">
+                                    {{ quiz.description | slice(0, 100) }}{% if quiz.description | length > 100 %}...{% endif %}
+                                </p>
+
+                                <div class="quiz-meta mt-3 mb-3">
+                                    <div class="meta-item mb-2">
+                                        <small class="text-muted">
+                                            <i class="fa fa-signal"></i>
+                                            <strong>Difficulté: </strong>
+                                            <span class="badge badge-{{ quiz.difficultyLevel|lower == 'facile' ? 'success' : (quiz.difficultyLevel|lower == 'moyen' ? 'warning' : 'danger') }}">
+                                                {{ quiz.difficultyLevel }}
+                                            </span>
+                                        </small>
+                                    </div>
+                                    <div class="meta-item mb-2">
+                                        <small class="text-muted">
+                                            <i class="fa fa-clock"></i>
+                                            <strong>Temps: </strong> {{ quiz.timeLimit }}s
+                                        </small>
+                                    </div>
+                                    <div class="meta-item">
+                                        <small class="text-muted">
+                                            <i class="fa fa-calendar"></i>
+                                            <strong>Créé: </strong> {{ quiz.datecreation|date('d/m/Y') }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-light">
+                                <a href="{{ path('quiz_play', {'quizId': quiz.idquiz}) }}" class="btn btn-primary btn-sm w-100">
+                                    <i class="fa fa-play-circle"></i> Jouer maintenant
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Statistiques -->
+                <div class="row mt-5">
+                    <div class="col-md-12">
+                        <div class="stats-section bg-light p-4 rounded">
+                            <h4 class="mb-4">Statistiques des Quiz</h4>
+                            <div class="row">
+                                <div class="col-md-3 col-sm-6 text-center">
+                                    <div class="stat-item p-3">
+                                        <i class="fa fa-question-circle fa-2x text-primary mb-2"></i>
+                                        <h5 class="counter">{{ quizzes | length }}</h5>
+                                        <p class="text-muted">Quiz totaux</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 text-center">
+                                    <div class="stat-item p-3">
+                                        <i class="fa fa-list fa-2x text-primary mb-2"></i>
+                                        <h5>
+                                            {% set totalQuestions = 0 %}
+                                            {% for quiz in quizzes %}
+                                                {% set totalQuestions = totalQuestions + (quiz.questions | length) %}
+                                            {% endfor %}
+                                            {{ totalQuestions }}
+                                        </h5>
+                                        <p class="text-muted">Questions au total</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 text-center">
+                                    <div class="stat-item p-3">
+                                        <i class="fa fa-signal fa-2x text-primary mb-2"></i>
+                                        <h5>
+                                            {% set difficulties = {'Facile': false, 'Moyen': false, 'Difficile': false} %}
+                                            {% for quiz in quizzes %}
+                                                {% set difficulties = difficulties | merge({(quiz.difficultyLevel): true}) %}
+                                            {% endfor %}
+                                            {% set uniqueCount = 0 %}
+                                            {% for key, value in difficulties %}
+                                                {% if value %}{% set uniqueCount = uniqueCount + 1 %}{% endif %}
+                                            {% endfor %}
+                                            {{ uniqueCount }}
+                                        </h5>
+                                        <p class="text-muted">Niveaux de difficulté</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-6 text-center">
+                                    <div class="stat-item p-3">
+                                        <i class="fa fa-trophy fa-2x text-primary mb-2"></i>
+                                        <h5>100%</h5>
+                                        <p class="text-muted">Accessibles</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Empty State -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="empty-state text-center py-5">
+                            <i class="fa fa-inbox fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">Aucun quiz disponible pour le moment</h4>
+                            <p class="text-muted mb-4">Créez le vôtre ou revenez plus tard</p>
+                            <a href="{{ path('quiz_generator') }}" class="btn btn-primary btn-lg">
+                                <i class="fa fa-plus-circle"></i> Créer un Quiz
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="section-area bg-primary text-white section-sp2">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3>Prêt à créer votre propre quiz?</h3>
+                    <p class="mb-0">Utilisez notre générateur IA pour créer un quiz personnalisé</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="{{ path('quiz_generator') }}" class="btn btn-white btn-lg rounded-lg">
+                        <i class="fa fa-magic"></i> Créer un Quiz
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .quiz-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .quiz-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .quiz-header {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        border-radius: 0;
+    }
+
+    .quiz-header a {
+        transition: all 0.3s ease;
+    }
+
+    .quiz-header a:hover {
+        text-decoration: underline !important;
+    }
+
+    .card-body {
+        flex-grow: 1;
+    }
+
+    .card-footer {
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .quiz-meta {
+        background-color: #f8f9fa;
+        padding: 12px;
+        border-radius: 4px;
+    }
+
+    .meta-item {
+        border-bottom: 1px solid #e0e0e0;
+        padding: 8px 0;
+    }
+
+    .meta-item:last-child {
+        border-bottom: none;
+    }
+
+    .stat-item {
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .stat-item i {
+        color: #007bff;
+    }
+
+    .stat-item h5 {
+        color: #007bff;
+        font-weight: bold;
+        font-size: 1.8rem;
+    }
+
+    .m-b30 {
+        margin-bottom: 30px;
+    }
+
+    .empty-state {
+        padding: 60px 20px;
+    }
+
+    .rounded-lg {
+        border-radius: 12px;
+    }
+
+    .text-end {
+        text-align: right;
+    }
+
+    .badge {
+        padding: 5px 10px;
+        font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+        .text-end {
+            text-align: left;
+            margin-top: 1rem;
+        }
+    }
+
+    .btn-sm {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+</style>
+
+{% endblock %}

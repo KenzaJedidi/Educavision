@@ -1,0 +1,562 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}{{ course.id ? 'Modifier' : 'Créer' }} un Cours - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}{{ course.id ? 'Modifier' : 'Créer' }} un Cours{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_dashboard') }}">Dashboard</a></li>
+<li><a href="{{ path('admin_course_index') }}">Cours</a></li>
+<li>{{ course.id ? 'Modifier' : 'Créer' }}</li>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fa fa-{{ course.id ? 'edit' : 'plus' }}"></i>
+                    {{ course.id ? 'Modifier le cours' : 'Créer un nouveau cours' }}
+                </h5>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'id': 'courseForm', 'novalidate': 'novalidate'}}) }}
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            {{ form_label(form.titre, 'Titre du cours *', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                            {{ form_widget(form.titre, {'attr': {
+                                'class': 'form-control ' ~ (form.titre.vars.valid ? '' : 'is-invalid'),
+                                'placeholder': 'Ex: Introduction à Symfony 6',
+                                'onchange': 'generateContentSuggestions()'
+                            }}) }}
+                            {% if form.titre.vars.errors|length > 0 %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.titre.vars.errors %}
+                                        {{ error.message }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Choisissez un titre clair et descriptif</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form_label(form.category, 'Catégorie *', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                            {{ form_widget(form.category, {'attr': {
+                                'class': 'form-select ' ~ (form.category.vars.valid ? '' : 'is-invalid')
+                            }}) }}
+                            {% if form.category.vars.errors|length > 0 %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.category.vars.errors %}
+                                        {{ error.message }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.description, 'Description *', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                    {{ form_widget(form.description, {'attr': {
+                        'class': 'form-control ' ~ (form.description.vars.valid ? '' : 'is-invalid'),
+                        'rows': 6,
+                        'placeholder': 'Décrivez en détail le contenu du cours, les prérequis, les objectifs...',
+                        'onchange': 'generateContentSuggestions()'
+                    }}) }}
+                    {% if form.description.vars.errors|length > 0 %}
+                        <div class="invalid-feedback">
+                            {% for error in form.description.vars.errors %}
+                                {{ error.message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="d-flex justify-content-between mt-1">
+                        <small class="form-text text-muted">Soyez précis sur les contenus et objectifs pédagogiques</small>
+                        <small class="text-muted"><span id="charCount">0</span>/2000 caractères</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.price, 'Prix (€)', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                            {{ form_widget(form.price, {'attr': {
+                                'class': 'form-control ' ~ (form.price.vars.valid ? '' : 'is-invalid'),
+                                'placeholder': '0.00',
+                                'step': '0.01'
+                            }}) }}
+                            {% if form.price.vars.errors|length > 0 %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.price.vars.errors %}
+                                        {{ error.message }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Laissez vide ou mettez 0 pour un cours gratuit</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.status, 'Statut', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                            {{ form_widget(form.status, {'attr': {
+                                'class': 'form-select'
+                            }}) }}
+                            <small class="form-text text-muted">Un cours inactif n'est pas visible par les étudiants</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.pdfUpload, 'Fichier PDF', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                    {{ form_widget(form.pdfUpload, {'attr': {
+                        'class': 'form-control',
+                        'accept': '.pdf'
+                    }}) }}
+                    {% if course.pdfFile %}
+                        <small class="form-text text-info">
+                            <i class="fa fa-file-pdf"></i> Fichier actuel: {{ course.pdfFile }}
+                            <a href="{{ asset('uploads/courses/pdf/' ~ course.pdfFile) }}" target="_blank" class="ms-2">
+                                <i class="fa fa-eye"></i> Voir
+                            </a>
+                        </small>
+                    {% endif %}
+                    <small class="form-text text-muted">PDF optionnel contenant le support de cours</small>
+                </div>
+
+                <!-- Section API automatique -->
+                <div class="card border-primary mb-3">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">
+                            <i class="fa fa-magic"></i> 
+                            Contenu généré automatiquement par IA
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-outline-info w-100 mb-2" onclick="searchUnsplashImages()">
+                                    <i class="fa fa-image"></i> Rechercher une image
+                                </button>
+                                <div id="imagePreview" class="mt-2"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-outline-success w-100 mb-2" onclick="getWikipediaSummary()">
+                                    <i class="fa fa-wikipedia-w"></i> Récupérer un résumé
+                                </button>
+                                <div id="summaryPreview" class="mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image actuelle -->
+                {% if course.imageUrl %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Image actuelle</label>
+                    <div class="d-flex align-items-center">
+                        <img src="{{ asset(course.imageUrl) }}" alt="{{ course.titre }}" 
+                             class="rounded me-3" style="width: 100px; height: 80px; object-fit: cover;">
+                        <div>
+                            <small class="text-muted">{{ course.imageUrl }}</small><br>
+                            <button type="button" class="btn btn-sm btn-outline-danger mt-1" onclick="removeCurrentImage()">
+                                <i class="fa fa-trash"></i> Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Mots-clés générés -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        <i class="fa fa-tags"></i> Mots-clés suggérés
+                    </label>
+                    <div id="keywordsContainer" class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-secondary">Générez le contenu pour voir les mots-clés</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('admin_course_index') }}" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Retour
+                    </a>
+                    <div>
+                        <button type="button" class="btn btn-outline-primary me-2" onclick="previewCourse()">
+                            <i class="fa fa-eye"></i> Aperçu
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-{{ course.id ? 'save' : 'plus' }}"></i>
+                            {{ course.id ? 'Mettre à jour' : 'Créer' }} le cours
+                        </button>
+                    </div>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Colonne latérale d'aide -->
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fa fa-lightbulb"></i> Conseils
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <i class="fa fa-check text-success"></i>
+                        Utilisez un titre accrocheur et descriptif
+                    </li>
+                    <li class="mb-2">
+                        <i class="fa fa-check text-success"></i>
+                        Décrivez clairement les prérequis et objectifs
+                    </li>
+                    <li class="mb-2">
+                        <i class="fa fa-check text-success"></i>
+                        Choisissez une catégorie appropriée
+                    </li>
+                    <li class="mb-2">
+                        <i class="fa fa-check text-success"></i>
+                        Une image de qualité augmente l'attractivité
+                    </li>
+                    <li class="mb-2">
+                        <i class="fa fa-check text-success"></i>
+                        Les mots-clés aident à la recherche
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fa fa-info-circle"></i> Fonctionnalités IA
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">
+                    EducaVision utilise l'intelligence artificielle pour enrichir automatiquement vos cours :
+                </p>
+                <ul class="list-unstyled small">
+                    <li class="mb-2">
+                        <strong>Images Unsplash:</strong> Images gratuites et de qualité
+                    </li>
+                    <li class="mb-2">
+                        <strong>Résumés Wikipedia:</strong> Contenu encyclopédique pertinent
+                    </li>
+                    <li class="mb-2">
+                        <strong>Mots-clés:</strong> Génération automatique pour le référencement
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fa fa-chart-line"></i> Statistiques prévisionnelles
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="mb-2">
+                        <small class="text-muted">Score de popularité estimé</small>
+                        <h4 class="text-primary mb-0" id="estimatedScore">0</h4>
+                    </div>
+                    <small class="text-muted">
+                        Basé sur la qualité et la complétude du contenu
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de sélection d'image -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-image"></i> Sélectionner une image
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="imageSearchInput" 
+                               placeholder="Rechercher des images...">
+                        <button class="btn btn-outline-secondary" type="button" onclick="searchImages()">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="imageSearchResults" class="row">
+                    <div class="col-12 text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal d'aperçu -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-eye"></i> Aperçu du cours
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="previewContent">
+                <!-- Contenu généré dynamiquement -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+let selectedImageUrl = null;
+let selectedSummary = null;
+
+// Compteur de caractères
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.querySelector('textarea[name="course[description]"]');
+    if (textarea) {
+        textarea.addEventListener('input', function() {
+            document.getElementById('charCount').textContent = this.value.length;
+        });
+        // Initialiser le compteur
+        document.getElementById('charCount').textContent = textarea.value.length;
+    }
+});
+
+function generateContentSuggestions() {
+    const title = document.querySelector('input[name="course[titre]"]').value;
+    const description = document.querySelector('textarea[name="course[description]"]').value;
+    
+    if (title.length > 3) {
+        generateKeywords(title, description);
+        updateEstimatedScore(title, description);
+    }
+}
+
+function generateKeywords(title, description) {
+    const text = (title + ' ' + description).toLowerCase();
+    const words = text.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/);
+    const stopWords = ['le', 'la', 'les', 'de', 'des', 'du', 'et', 'à', 'a', 'pour', 'dans', 'avec', 'sur', 'par'];
+    
+    const keywords = words.filter(word => 
+        word.length > 2 && !stopWords.includes(word)
+    );
+    
+    const keywordCounts = {};
+    keywords.forEach(word => {
+        keywordCounts[word] = (keywordCounts[word] || 0) + 1;
+    });
+    
+    const sortedKeywords = Object.entries(keywordCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(([word]) => word);
+    
+    displayKeywords(sortedKeywords);
+}
+
+function displayKeywords(keywords) {
+    const container = document.getElementById('keywordsContainer');
+    container.innerHTML = keywords.map(keyword => 
+        `<span class="badge bg-primary">${keyword}</span>`
+    ).join('');
+}
+
+function updateEstimatedScore(title, description) {
+    let score = 0;
+    
+    // Score basé sur la longueur du titre
+    if (title.length >= 10 && title.length <= 60) score += 10;
+    
+    // Score basé sur la description
+    if (description.length >= 100) score += 15;
+    if (description.length >= 500) score += 10;
+    
+    // Score basé sur les mots-clés
+    const keywords = (title + ' ' + description).toLowerCase().split(/\s+/);
+    const qualityWords = ['apprendre', 'formation', 'cours', 'maîtriser', 'développer', 'créer'];
+    qualityWords.forEach(word => {
+        if (keywords.includes(word)) score += 5;
+    });
+    
+    document.getElementById('estimatedScore').textContent = score;
+}
+
+function searchUnsplashImages() {
+    const title = document.querySelector('input[name="course[titre]"]').value;
+    if (!title) {
+        alert('Veuillez d\'abord entrer un titre pour le cours');
+        return;
+    }
+    
+    document.getElementById('imageSearchInput').value = title;
+    searchImages();
+    new bootstrap.Modal(document.getElementById('imageModal')).show();
+}
+
+function searchImages() {
+    const query = document.getElementById('imageSearchInput').value;
+    const resultsDiv = document.getElementById('imageSearchResults');
+    
+    resultsDiv.innerHTML = `
+        <div class="col-12 text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Recherche en cours...</span>
+            </div>
+        </div>
+    `;
+    
+    fetch('/admin/course/api/search-unsplash', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: `query=${encodeURIComponent(query)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayImages(data.images);
+        } else {
+            resultsDiv.innerHTML = '<div class="col-12"><p class="text-danger">Aucune image trouvée</p></div>';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        resultsDiv.innerHTML = '<div class="col-12"><p class="text-danger">Erreur lors de la recherche</p></div>';
+    });
+}
+
+function displayImages(images) {
+    const resultsDiv = document.getElementById('imageSearchResults');
+    resultsDiv.innerHTML = images.map(image => `
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <img src="${image.url}" class="card-img-top" style="height: 150px; object-fit: cover; cursor: pointer;" 
+                     onclick="selectImage('${image.url}', '${image.photographer}')" alt="${image.description}">
+                <div class="card-body p-2">
+                    <small class="text-muted">Photo par ${image.photographer}</small>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function selectImage(url, photographer) {
+    selectedImageUrl = url;
+    document.getElementById('imagePreview').innerHTML = `
+        <div class="alert alert-success">
+            <i class="fa fa-check"></i> Image sélectionnée
+            <br><small>Photo par ${photographer}</small>
+        </div>
+    `;
+    bootstrap.Modal.getInstance(document.getElementById('imageModal')).hide();
+}
+
+function getWikipediaSummary() {
+    const title = document.querySelector('input[name="course[titre]"]').value;
+    if (!title) {
+        alert('Veuillez d\'abord entrer un titre pour le cours');
+        return;
+    }
+    
+    fetch('/admin/course/api/get-wikipedia-summary', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: `query=${encodeURIComponent(title)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            selectedSummary = data.summary.summary;
+            document.getElementById('summaryPreview').innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fa fa-check"></i> Résumé récupéré
+                    <br><small>Source: Wikipedia</small>
+                </div>
+            `;
+        } else {
+            document.getElementById('summaryPreview').innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle"></i> Aucun résumé trouvé
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('summaryPreview').innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fa fa-times"></i> Erreur lors de la récupération
+            </div>
+        `;
+    });
+}
+
+function removeCurrentImage() {
+    if (confirm('Êtes-vous sûr de vouloir supprimer l\'image actuelle ?')) {
+        // Logique à implémenter selon vos besoins
+        alert('Fonctionnalité à implémenter');
+    }
+}
+
+function previewCourse() {
+    const title = document.querySelector('input[name="course[titre]"]').value;
+    const description = document.querySelector('textarea[name="course[description]"]').value;
+    const category = document.querySelector('select[name="course[category]"]').value;
+    const price = document.querySelector('input[name="course[price]"]').value;
+    
+    const previewContent = `
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">${title || 'Titre du cours'}</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Catégorie:</strong> ${category || 'Non définie'}</p>
+                <p><strong>Prix:</strong> ${price ? price + ' €' : 'Gratuit'}</p>
+                <p><strong>Description:</strong></p>
+                <p>${description || 'Aucune description'}</p>
+                ${selectedImageUrl ? `<img src="${selectedImageUrl}" class="img-fluid rounded mt-3" alt="Image du cours">` : ''}
+                ${selectedSummary ? `
+                    <div class="mt-3">
+                        <h6>Résumé Wikipedia:</h6>
+                        <p class="text-muted">${selectedSummary}</p>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('previewContent').innerHTML = previewContent;
+    new bootstrap.Modal(document.getElementById('previewModal')).show();
+}
+</script>
+{% endblock %}

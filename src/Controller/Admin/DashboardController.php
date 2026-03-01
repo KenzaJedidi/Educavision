@@ -16,7 +16,8 @@ class DashboardController extends AbstractController
         \App\Repository\ReclamationRepository $reclRepo, 
         \App\Repository\ReponseRepository $repRepo,
         \App\Repository\FiliereRepository $filiereRepo,
-        \App\Repository\FormationRepository $formationRepo
+        \App\Repository\FormationRepository $formationRepo,
+        \App\Repository\QuizRepository $quizRepo
     ): Response
     {
         // Compute dynamic counts for dashboard metrics
@@ -37,9 +38,56 @@ class DashboardController extends AbstractController
 
         $reponsesTotal = $repRepo->count([]);
 
+        // Aggregated rating metrics for responses
+        $avgRating = 0;
+        $ratedCount = 0;
+        $percentRated = 0;
+        $ratingBuckets = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
+
+        // Average rating
+        try {
+            $avg = $repRepo->createQueryBuilder('r')
+                ->select('AVG(r.rating) as avgRating')
+                ->where('r.rating IS NOT NULL')
+                ->getQuery()
+                ->getSingleScalarResult();
+            $avgRating = $avg !== null ? round((float) $avg, 2) : 0;
+        } catch (\Throwable $e) {
+            $avgRating = 0;
+        }
+
+        // Count rated and buckets
+        try {
+            $rows = $repRepo->createQueryBuilder('r')
+                ->select('r.rating as rating, COUNT(r.id) as cnt')
+                ->where('r.rating IS NOT NULL')
+                ->groupBy('r.rating')
+                ->getQuery()
+                ->getResult();
+            foreach ($rows as $row) {
+                $rating = (int) $row['rating'];
+                $cnt = (int) $row['cnt'];
+                if (isset($ratingBuckets[$rating])) {
+                    $ratingBuckets[$rating] = $cnt;
+                }
+                $ratedCount += $cnt;
+            }
+        } catch (\Throwable $e) {
+            // ignore, keep defaults
+        }
+
+        if ($reponsesTotal > 0) {
+            $percentRated = (int) round(($ratedCount * 100) / $reponsesTotal);
+        }
         // Nouveaux compteurs pour les formations et filières
         $totalFilieres = $filiereRepo->count([]);
         $totalFormations = $formationRepo->count([]);
+
+        // Quiz Statistics
+        $totalQuizzes = $quizRepo->count([]);
+        $publishedQuizzes = $quizRepo->count(['status' => 'published']);
+        $draftQuizzes = $totalQuizzes - $publishedQuizzes;
+        $pctPublishedQuizzes = $totalQuizzes > 0 ? (int) round(($publishedQuizzes * 100) / $totalQuizzes) : 0;
 
         return $this->render('admin/dashboard/index.html.twig', [
             'controller_name' => 'DashboardController',
@@ -63,6 +111,10 @@ class DashboardController extends AbstractController
                 'reponses' => [
                     'total' => $reponsesTotal,
                     'pctTraitees' => $pctReclamationsTraitees,
+                    'avgRating' => $avgRating,
+                    'ratedCount' => $ratedCount,
+                    'percentRated' => $percentRated,
+                    'ratingBuckets' => $ratingBuckets,
                 ],
                 // Ajout des nouvelles statistiques
                 'filieres' => [
@@ -72,6 +124,12 @@ class DashboardController extends AbstractController
                 'formations' => [
                     'total' => $totalFormations,
                     'pct' => 100 // Vous pouvez ajuster si vous avez un champ 'disponible'
+                ],
+                'quizzes' => [
+                    'total' => $totalQuizzes,
+                    'published' => $publishedQuizzes,
+                    'draft' => $draftQuizzes,
+                    'pct' => $pctPublishedQuizzes,
                 ],
             ],
         ]);

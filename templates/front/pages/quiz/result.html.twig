@@ -319,41 +319,283 @@ body {
     margin: 0 auto;
 }
 
-/* Charts Section */
-.charts-section {
+/* Recommandations IA - Inspiré du design EducaVision */
+.ai-recommendations-section {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border-radius: 20px;
-    padding: 30px;
+    border-radius: 30px;
+    padding: 0;
     margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
 }
 
-.charts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+.ai-recommendations-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #ff6b35, #f7931e, #fdc830, #ff6b35);
+    background-size: 200% 100%;
+    animation: gradient 3s ease infinite;
 }
 
-.chart-card {
-    background: #f7fafc;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-}
-
-.chart-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 20px;
+.ai-recommendations-header {
+    padding: 35px 40px 25px;
     text-align: center;
 }
 
-.chart-container {
-    position: relative;
-    height: 250px;
+.ai-section-title {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
+
+.ai-section-title i {
+    -webkit-text-fill-color: #ff6b35;
+}
+
+.ai-section-subtitle {
+    font-size: 15px;
+    color: #718096;
+    margin: 0;
+    font-weight: 500;
+}
+
+.ai-recommendations-body {
+    padding: 0 40px 40px;
+}
+
+.ai-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.ai-card {
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 10px 25px rgba(255, 107, 53, 0.35);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ai-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(255, 107, 53, 0.45);
+}
+
+.ai-card-next {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+    box-shadow: 0 10px 25px rgba(66, 153, 225, 0.35);
+}
+.ai-card-next:hover { box-shadow: 0 15px 35px rgba(66, 153, 225, 0.45); }
+
+.ai-card-motivation {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    box-shadow: 0 10px 25px rgba(72, 187, 120, 0.35);
+}
+.ai-card-motivation:hover { box-shadow: 0 15px 35px rgba(72, 187, 120, 0.45); }
+
+.ai-card-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+    opacity: 0.95;
+}
+.ai-card-label {
+    font-size: 11px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+}
+.ai-card-value {
+    font-size: 19px;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+.ai-message-box {
+    background: rgba(255, 107, 53, 0.08);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+    border-left: 5px solid #ff6b35;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+.ai-message-box:hover {
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.12);
+}
+
+.ai-message-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ai-message-title i { color: #ff6b35; }
+.ai-message-text {
+    font-size: 15px;
+    color: #4a5568;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.ai-motivational-box {
+    background: linear-gradient(135deg, rgba(253, 200, 48, 0.15), rgba(247, 147, 30, 0.1));
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+    border: 2px solid rgba(255, 107, 53, 0.2);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+.ai-motivational-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.ai-topics-box, .ai-help-box {
+    background: #f8fafc;
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+}
+.ai-topics-title, .ai-help-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ai-topics-title i, .ai-help-title i { color: #ff6b35; }
+.ai-topics-list { display: flex; flex-wrap: wrap; gap: 10px; }
+.ai-topic-tag {
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 25px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+    transition: all 0.3s ease;
+}
+.ai-topic-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.ai-help-list { margin: 0; padding-left: 22px; color: #4a5568; line-height: 1.7; }
+.ai-help-list li { margin-bottom: 8px; }
+
+.ai-improvement-box {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(72, 187, 120, 0.1);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+    border-left: 5px solid #38a169;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.ai-improvement-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
+    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+}
+
+.ai-improvement-title { font-size: 16px; font-weight: 700; color: #2d3748; margin-bottom: 4px; }
+.ai-improvement-text { font-size: 14px; color: #4a5568; margin: 0; line-height: 1.5; }
+
+.ai-similar-quizzes-box { margin-top: 28px; padding-top: 24px; border-top: 2px solid #e2e8f0; }
+.ai-similar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ai-similar-title i { color: #ff6b35; }
+.ai-similar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.ai-similar-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #f8fafc;
+    border-radius: 20px;
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    border: 2px solid #e2e8f0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+}
+
+.ai-similar-card:hover {
+    border-color: #ff6b35;
+    background: white;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(255, 107, 53, 0.2);
+}
+
+.ai-similar-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.35);
+}
+
+.ai-similar-info { flex: 1; min-width: 0; }
+.ai-similar-name { font-size: 15px; font-weight: 700; color: #2d3748; margin-bottom: 4px; }
+.ai-similar-desc { font-size: 13px; color: #718096; margin: 0; }
+.ai-similar-arrow {
+    color: #ff6b35;
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+.ai-similar-card:hover .ai-similar-arrow { transform: translateX(5px); }
 
 /* Detailed Results */
 .results-section {
@@ -745,6 +987,27 @@ body {
         width: 100%;
         max-width: 280px;
     }
+    
+    .ai-recommendations-header {
+        padding: 28px 20px 20px;
+    }
+    
+    .ai-recommendations-body {
+        padding: 0 20px 30px;
+    }
+    
+    .ai-section-title {
+        font-size: 22px;
+    }
+    
+    .ai-cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 14px;
+    }
+    
+    .ai-similar-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 576px) {
@@ -768,6 +1031,18 @@ body {
     
     .results-title {
         font-size: 20px;
+    }
+    
+    .ai-section-title {
+        font-size: 20px;
+    }
+    
+    .ai-card {
+        padding: 18px;
+    }
+    
+    .ai-card-value {
+        font-size: 16px;
     }
 }
 </style>
@@ -872,30 +1147,96 @@ body {
         </p>
     </div>
 
-    <!-- Charts Section -->
-    <div class="charts-section">
-        <div class="charts-grid">
-            <div class="chart-card">
-                <h3 class="chart-title">
-                    <i class="fas fa-chart-pie"></i>
-                    Répartition des Réponses
-                </h3>
-                <div class="chart-container">
-                    <canvas id="answersChart"></canvas>
-                </div>
+    <!-- Recommandations IA -->
+    {% if aiRecommendations is defined and aiRecommendations %}
+    <div class="ai-recommendations-section">
+        <div class="ai-recommendations-header">
+            <h3 class="ai-section-title"><i class="fas fa-robot"></i> Recommandations IA</h3>
+            <p class="ai-section-subtitle">Analyse intelligente de votre performance</p>
+        </div>
+        
+        <div class="ai-recommendations-body">
+        <div class="ai-cards-grid">
+            {% if userLevel is defined and userLevel %}
+            <div class="ai-card ai-card-level">
+                <div class="ai-card-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="ai-card-label">Votre Niveau</div>
+                <div class="ai-card-value">{{ userLevel|replace({'_': ' '})|title }}</div>
             </div>
-            
-            <div class="chart-card">
-                <h3 class="chart-title">
-                    <i class="fas fa-chart-bar"></i>
-                    Performance par Question
-                </h3>
-                <div class="chart-container">
-                    <canvas id="performanceChart"></canvas>
-                </div>
+            {% endif %}
+            <div class="ai-card ai-card-next">
+                <div class="ai-card-icon"><i class="fas fa-arrow-right"></i></div>
+                <div class="ai-card-label">Prochain Quiz</div>
+                <div class="ai-card-value">{{ (aiRecommendations.nextQuizDifficulty|default('medium'))|replace({'_': ' '})|title }}</div>
+            </div>
+            <div class="ai-card ai-card-motivation">
+                <div class="ai-card-icon"><i class="fas fa-heart"></i></div>
+                <div class="ai-card-label">Motivation</div>
+                <div class="ai-card-value">{{ (aiRecommendations.level|default('intermediate'))|replace({'_': ' '})|title }}</div>
             </div>
         </div>
+        
+        <div class="ai-message-box">
+            <h5 class="ai-message-title"><i class="fas fa-lightbulb"></i> Analyse de votre performance</h5>
+            <p class="ai-message-text">{{ aiRecommendations.message }}</p>
+        </div>
+        
+        <div class="ai-motivational-box">
+            <h4 class="ai-motivational-text">{{ aiRecommendations.motivationalMessage }}</h4>
+        </div>
+        
+        {% if aiRecommendations.suggestedTopics is defined and aiRecommendations.suggestedTopics|length > 0 %}
+        <div class="ai-topics-box">
+            <h5 class="ai-topics-title"><i class="fas fa-book"></i> Sujets à réviser</h5>
+            <div class="ai-topics-list">
+                {% for topic in aiRecommendations.suggestedTopics %}
+                <span class="ai-topic-tag">{{ topic }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if aiRecommendations.additionalHelp is defined and aiRecommendations.additionalHelp|length > 0 %}
+        <div class="ai-help-box">
+            <h5 class="ai-help-title"><i class="fas fa-hands-helping"></i> Aide supplémentaire recommandée</h5>
+            <ul class="ai-help-list">
+                {% for help in aiRecommendations.additionalHelp %}
+                <li>{{ help }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        {% if aiRecommendations.improvementTime is defined %}
+        <div class="ai-improvement-box">
+            <div class="ai-improvement-icon"><i class="fas fa-clock"></i></div>
+            <div class="ai-improvement-content">
+                <h5 class="ai-improvement-title">Temps d'amélioration estimé</h5>
+                <p class="ai-improvement-text">{{ aiRecommendations.improvementTime }}</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if similarQuizzes is defined and similarQuizzes|length > 0 %}
+        <div class="ai-similar-quizzes-box">
+            <h5 class="ai-similar-title"><i class="fas fa-lightbulb"></i> Quiz recommandés pour vous</h5>
+            <div class="ai-similar-grid">
+                {% for similarQuiz in similarQuizzes %}
+                <a href="{{ path('quiz_take', {'id': similarQuiz.idquiz}) }}" class="ai-similar-card">
+                    <div class="ai-similar-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="ai-similar-info">
+                        <h6 class="ai-similar-name">{{ similarQuiz.titre }}</h6>
+                        <p class="ai-similar-desc">{{ similarQuiz.questions|length }} questions</p>
+                    </div>
+                    <div class="ai-similar-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        </div>
     </div>
+    {% endif %}
 
     <!-- Detailed Results -->
     <div class="results-section">
@@ -982,6 +1323,10 @@ body {
     <!-- Action Buttons -->
     <div class="actions-section">
         <div class="button-group">
+            <a href="{{ path('quiz_export_pdf') }}" class="btn btn-danger" target="_blank">
+                <i class="fas fa-file-pdf"></i>
+                Exporter les résultats en PDF
+            </a>
             <a href="{{ path('quiz_index') }}" class="btn btn-primary">
                 <i class="fas fa-arrow-left"></i>
                 Retour aux Quiz
@@ -998,138 +1343,7 @@ body {
     </div>
 </div>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-// Chart.js Configuration
-Chart.defaults.font.family = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-Chart.defaults.color = '#4a5568';
-
-// Answers Distribution Chart
-const answersCtx = document.getElementById('answersChart');
-if (answersCtx) {
-    const correctCount = {{ (score / totalQuestions)|round(0, 'floor') }};
-    const incorrectCount = {{ totalQuestions - (score / totalQuestions)|round(0, 'floor') }};
-    
-    new Chart(answersCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Correctes', 'Incorrectes'],
-            datasets: [{
-                data: [correctCount, incorrectCount],
-                backgroundColor: [
-                    'rgba(255, 107, 53, 0.8)',
-                    'rgba(253, 126, 20, 0.8)'
-                ],
-                borderColor: [
-                    'rgba(255, 107, 53, 1)',
-                    'rgba(253, 126, 20, 1)'
-                ],
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        font: {
-                            size: 14,
-                            weight: '600'
-                        }
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.parsed || 0;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return label + ': ' + value + ' (' + percentage + '%)';
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-// Performance Chart
-const performanceCtx = document.getElementById('performanceChart');
-if (performanceCtx) {
-    const performanceData = [];
-    const labels = [];
-    
-    {% for result in results %}
-        performanceData.push({
-            y: {{ result.earnedPoints }},
-            backgroundColor: '{{ result.isCorrect ? "rgba(255, 107, 53, 0.6)" : "rgba(253, 126, 20, 0.6)" }}',
-            borderColor: '{{ result.isCorrect ? "rgba(255, 107, 53, 1)" : "rgba(253, 126, 20, 1)" }}',
-            borderWidth: 2,
-            borderRadius: 5
-        });
-        labels.push('Q{{ loop.index }}');
-    {% endfor %}
-    
-    new Chart(performanceCtx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Points Obtenus',
-                data: performanceData.map(d => d.y),
-                backgroundColor: performanceData.map(d => d.backgroundColor),
-                borderColor: performanceData.map(d => d.borderColor),
-                borderWidth: 2,
-                borderRadius: 5
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return 'Points: ' + context.parsed.y + ' / ' + {{ totalPoints }};
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: {{ totalPoints }},
-                    title: {
-                        display: true,
-                        text: 'Points',
-                        font: {
-                            weight: '600'
-                        }
-                    }
-                },
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Questions',
-                        font: {
-                            weight: '600'
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
 // Animate elements on scroll
 const observerOptions = {
     threshold: 0.1,

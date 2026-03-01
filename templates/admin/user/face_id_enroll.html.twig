@@ -1,0 +1,258 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Enregistrement Face ID{% endblock %}
+
+{% block body %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">📱 Enregistrement Face ID</h5>
+                </div>
+                <div class="card-body">
+                    {% if not utilisateur.faceIdEnrolled %}
+                        <div class="alert alert-info" role="alert">
+                            <h6 class="alert-heading">Première connexion ?</h6>
+                            <p>Enregistrez votre visage pour vous connecter rapidement lors de vos prochaines visites. C'est rapide et sécurisé !</p>
+                        </div>
+
+                        <div class="face-id-enrollment-container">
+                            <h6 class="mb-4">Veuillez suivre ces étapes :</h6>
+
+                            <ol>
+                                <li>Assurez-vous que votre visage est bien visible</li>
+                                <li>Cliquez sur le bouton ci-dessous pour activer la caméra</li>
+                                <li>Prenez une photo claire de votre visage</li>
+                                <li>Confirmez l'enregistrement</li>
+                            </ol>
+
+                            <div class="face-id-registration-box mt-4 mb-4">
+                                <div class="face-id-button-enroll" id="faceIdButtonEnroll">
+                                    <div class="face-id-button-icon-enroll">📷</div>
+                                    <div class="face-id-button-text-enroll">Cliquez pour activer la caméra</div>
+                                </div>
+
+                                <video id="cameraPreviewEnroll" class="camera-preview-enroll" style="display: none; margin-top: 15px; border-radius: 8px;"></video>
+
+                                <div class="face-id-error" id="faceIdErrorEnroll" style="display: none; color: #dc3545; margin-top: 10px;"></div>
+                                <div class="face-id-success" id="faceIdSuccessEnroll" style="display: none; color: #28a745; margin-top: 10px;"></div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-success" id="btnConfirmFaceIdEnroll" style="display: none; flex: 1;">
+                                    ✓ Confirmer l'enregistrement Face ID
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="btnCancelFaceIdEnroll" style="flex: 1;">Annuler</button>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success" role="alert">
+                            <h6 class="alert-heading">✓ Face ID Enregistré</h6>
+                            <p>Votre visage a été enregistré avec succès le <strong>{{ utilisateur.faceIdEnrollmentDate|date('d/m/Y à H:i') }}</strong></p>
+                            <p>Vous pouvez maintenant vous connecter directement via Face ID.</p>
+                        </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-danger" id="btnRemoveFaceIdEnroll">
+                                    🗑️ Supprimer l'enregistrement Face ID
+                                </button>
+                                <a href="{{ path('front_home') }}" class="btn btn-primary">← Retour à l'accueil</a>
+                            </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .face-id-enrollment-container {
+        max-width: 100%;
+    }
+
+    .face-id-registration-box {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        border: 2px dashed #667eea;
+    }
+
+    .face-id-button-enroll {
+        width: 100%;
+        padding: 40px;
+        border: 2px dashed #667eea;
+        border-radius: 8px;
+        background-color: #f0f4ff;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+    }
+
+    .face-id-button-enroll:hover {
+        border-color: #764ba2;
+        background-color: #e8ecff;
+    }
+
+    .face-id-button-enroll.active {
+        border-color: #28a745;
+        background-color: #e8f5e9;
+    }
+
+    .face-id-button-icon-enroll {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .face-id-button-text-enroll {
+        font-size: 14px;
+        color: #667eea;
+        font-weight: 500;
+    }
+
+    .camera-preview-enroll {
+        width: 100%;
+        max-width: 400px;
+        height: 300px;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+    }
+</style>
+
+<script>
+    let streamEnroll = null;
+    let canvasEnroll = null;
+    let isCameraActiveEnroll = false;
+
+    const faceIdButtonEnroll = document.getElementById('faceIdButtonEnroll');
+    const cameraPreviewEnroll = document.getElementById('cameraPreviewEnroll');
+    const btnConfirmFaceIdEnroll = document.getElementById('btnConfirmFaceIdEnroll');
+    const btnCancelFaceIdEnroll = document.getElementById('btnCancelFaceIdEnroll');
+    const btnRemoveFaceIdEnroll = document.getElementById('btnRemoveFaceIdEnroll');
+    const faceIdErrorEnroll = document.getElementById('faceIdErrorEnroll');
+    const faceIdSuccessEnroll = document.getElementById('faceIdSuccessEnroll');
+
+    // Ouvrir la caméra pour l'enregistrement
+    if (faceIdButtonEnroll) {
+        faceIdButtonEnroll.addEventListener('click', async () => {
+            if (!isCameraActiveEnroll) {
+                try {
+                    streamEnroll = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'user' },
+                        audio: false
+                    });
+                    cameraPreviewEnroll.srcObject = streamEnroll;
+                    cameraPreviewEnroll.style.display = 'block';
+                    faceIdButtonEnroll.classList.add('active');
+                    faceIdButtonEnroll.innerHTML = '<div class="face-id-button-icon-enroll">⏹️</div><div class="face-id-button-text-enroll">Cliquez pour prendre une photo</div>';
+                    faceIdErrorEnroll.style.display = 'none';
+                    isCameraActiveEnroll = true;
+                } catch (err) {
+                    faceIdErrorEnroll.textContent = 'Impossible d\'accéder à la caméra: ' + err.message;
+                    faceIdErrorEnroll.style.display = 'block';
+                }
+            } else {
+                // Capturer la photo
+                capturePhotoEnroll();
+            }
+        });
+    }
+
+    // Capturer la photo
+    function capturePhotoEnroll() {
+        if (!canvasEnroll) {
+            canvasEnroll = document.createElement('canvas');
+            canvasEnroll.width = cameraPreviewEnroll.videoWidth;
+            canvasEnroll.height = cameraPreviewEnroll.videoHeight;
+        }
+        const ctx = canvasEnroll.getContext('2d');
+        ctx.drawImage(cameraPreviewEnroll, 0, 0);
+        streamEnroll.getTracks().forEach(track => track.stop());
+        cameraPreviewEnroll.style.display = 'none';
+        isCameraActiveEnroll = false;
+        faceIdButtonEnroll.classList.remove('active');
+        faceIdButtonEnroll.innerHTML = '<div class="face-id-button-icon-enroll">📷</div><div class="face-id-button-text-enroll">Cliquez pour reprendre une photo</div>';
+        faceIdSuccessEnroll.textContent = '✓ Photo capturée avec succès';
+        faceIdSuccessEnroll.style.display = 'block';
+        faceIdErrorEnroll.style.display = 'none';
+        btnConfirmFaceIdEnroll.style.display = 'block';
+    }
+
+    // Confirmer l'enregistrement
+    {% if not utilisateur.faceIdEnrolled %}
+    if (btnConfirmFaceIdEnroll) {
+        btnConfirmFaceIdEnroll.addEventListener('click', async () => {
+            if (!canvasEnroll) {
+                faceIdErrorEnroll.textContent = 'Veuillez d\'abord capturer une photo';
+                faceIdErrorEnroll.style.display = 'block';
+                return;
+            }
+
+            btnConfirmFaceIdEnroll.disabled = true;
+            const originalText = btnConfirmFaceIdEnroll.textContent;
+            btnConfirmFaceIdEnroll.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Enregistrement en cours...';
+
+            try {
+                const imageBase64 = canvasEnroll.toDataURL('image/jpeg').split(',')[1];
+
+                const response = await fetch('{{ path('admin_user_face_id_register', {id: utilisateur.id}) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'face_image=' + encodeURIComponent(imageBase64)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    faceIdSuccessEnroll.textContent = '✓ Enregistrement Face ID réussi! Redirection en cours...';
+                    faceIdSuccessEnroll.style.display = 'block';
+                    faceIdErrorEnroll.style.display = 'none';
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    faceIdErrorEnroll.textContent = 'Erreur: ' + data.error;
+                    faceIdErrorEnroll.style.display = 'block';
+                    btnConfirmFaceIdEnroll.disabled = false;
+                    btnConfirmFaceIdEnroll.textContent = originalText;
+                }
+            } catch (err) {
+                faceIdErrorEnroll.textContent = 'Erreur: ' + err.message;
+                faceIdErrorEnroll.style.display = 'block';
+                btnConfirmFaceIdEnroll.disabled = false;
+                btnConfirmFaceIdEnroll.textContent = originalText;
+            }
+        });
+    }
+    {% endif %}
+
+    // Annuler
+    if (btnCancelFaceIdEnroll) {
+        btnCancelFaceIdEnroll.addEventListener('click', () => {
+            if (streamEnroll) {
+                streamEnroll.getTracks().forEach(track => track.stop());
+            }
+            window.history.back();
+        });
+    }
+
+    // Supprimer l'enregistrement
+    {% if utilisateur.faceIdEnrolled %}
+    if (btnRemoveFaceIdEnroll) {
+        btnRemoveFaceIdEnroll.addEventListener('click', () => {
+            if (confirm('Êtes-vous sûr de vouloir supprimer votre enregistrement Face ID ? Vous devrez vous reconnecter avec email et mot de passe.')) {
+                // Send POST request to remove Face ID
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ path('admin_user_face_id_remove', {id: utilisateur.id}) }}';
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+    {% endif %}
+</script>
+{% endblock %}

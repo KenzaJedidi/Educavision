@@ -1,0 +1,329 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Créer un Quiz par IA{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('front-assets/css/quiz.css') }}?v=20260222">
+    <style>
+        .ai-create-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .ai-create-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .ai-create-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .ai-create-header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+        
+        .ai-create-form {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-label i {
+            color: #667eea;
+            margin-right: 5px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .file-upload-zone input[type="file"] {
+            padding: 15px;
+            border: 2px dashed #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+            cursor: pointer;
+        }
+        .file-upload-zone input[type="file"]:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .form-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .form-check label {
+            cursor: pointer;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        
+        .form-help {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 5px;
+        }
+        
+        .btn-generate {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-generate i {
+            font-size: 18px;
+        }
+        
+        .btn-generate:disabled {
+            opacity: 0.8;
+            cursor: wait;
+        }
+        
+        .ai-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .ai-feature {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .ai-feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .ai-feature h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .ai-feature p {
+            font-size: 13px;
+            color: #718096;
+            margin: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="ai-create-container">
+    <div class="ai-create-header">
+        <h1><i class="fas fa-robot"></i> Créer un Quiz par IA</h1>
+        <p>Importez votre cours (PDF ou TXT), l'IA génère automatiquement des questions</p>
+    </div>
+    
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+    
+    <div class="ai-create-form">
+        <form action="{{ path('ai_quiz_generate') }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-heading"></i>
+                    Titre du Quiz
+                </label>
+                <input type="text" name="title" class="form-control" placeholder="Ex: Quiz sur la Programmation" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-align-left"></i>
+                    Description
+                </label>
+                <input type="text" name="description" class="form-control" placeholder="Courte description du quiz">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-paperclip"></i>
+                    Insérer une pièce jointe (cours au format PDF ou TXT)
+                </label>
+                <div class="file-upload-zone">
+                    <input type="file" name="courseFile" id="courseFile" accept=".pdf,.txt,application/pdf,text/plain" class="form-control" required>
+                </div>
+                <div class="form-help">
+                    💡 Formats acceptés : PDF, TXT. Le fichier doit contenir au moins 100 caractères. L'IA DeepSeek analyse votre document (30 à 90 secondes selon la taille).
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-list-ol"></i>
+                        Nombre de Questions
+                    </label>
+                    <input type="number" name="questionCount" class="form-control" value="10" min="5" max="50" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-signal"></i>
+                        Difficulté
+                    </label>
+                    <select name="difficulty" class="form-control">
+                        <option value="easy">Facile</option>
+                        <option value="medium" selected>Moyen</option>
+                        <option value="hard">Difficile</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-clock"></i>
+                        Durée (minutes)
+                    </label>
+                    <input type="number" name="duration" class="form-control" value="30" min="5" max="180" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-check-square"></i>
+                    Types de Questions
+                </label>
+                <div class="form-check">
+                    <input type="checkbox" name="includeQCM" id="includeQCM" checked>
+                    <label for="includeQCM">QCM (Questions à Choix Multiples)</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" name="includeTrueFalse" id="includeTrueFalse" checked>
+                    <label for="includeTrueFalse">Vrai/Faux</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" name="includeOpen" id="includeOpen">
+                    <label for="includeOpen">Questions Ouvertes (expérimental)</label>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-generate" id="btnGenerate">
+                <i class="fas fa-magic"></i>
+                <span id="btnLabel">Générer le Quiz avec l'IA</span>
+            </button>
+        </form>
+    </div>
+    
+    <div class="ai-features">
+        <div class="ai-feature">
+            <div class="ai-feature-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h3>IA Intelligente</h3>
+            <p>Analyse automatique du contenu et extraction des concepts clés</p>
+        </div>
+        
+        <div class="ai-feature">
+            <div class="ai-feature-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h3>Génération Rapide</h3>
+            <p>Créez un quiz complet en quelques secondes</p>
+        </div>
+        
+        <div class="ai-feature">
+            <div class="ai-feature-icon">
+                <i class="fas fa-sliders-h"></i>
+            </div>
+            <h3>Personnalisable</h3>
+            <p>Choisissez le nombre, le type et la difficulté des questions</p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelector('form[action="{{ path('ai_quiz_generate') }}"]')?.addEventListener('submit', function() {
+    const btn = document.getElementById('btnGenerate');
+    const label = document.getElementById('btnLabel');
+    if (btn && label) {
+        btn.disabled = true;
+        label.textContent = 'Analyse en cours… L\'IA traite votre document (30-90 s)';
+        const icon = btn.querySelector('i');
+        if (icon) { icon.classList.remove('fa-magic'); icon.classList.add('fa-spinner', 'fa-spin'); }
+    }
+});
+</script>
+{% endblock %}

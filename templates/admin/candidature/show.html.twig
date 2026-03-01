@@ -9,31 +9,76 @@
     <li>Détails</li>
 {% endblock %}
 
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .ai-card { border-left: 4px solid #667eea; }
+    .ai-badge { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+    .score-gauge { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; position: relative; }
+    .score-gauge .score-text { font-size: 28px; font-weight: 800; z-index: 2; }
+    .competence-tag { display: inline-block; padding: 3px 10px; border-radius: 15px; font-size: 11px; margin: 2px; font-weight: 500; }
+    .star-rating { display: inline-flex; gap: 4px; }
+    .star-rating label { cursor: pointer; font-size: 22px; color: #ddd; transition: color 0.2s; }
+    .star-rating label:hover, .star-rating label:hover ~ label { color: #f1c40f; }
+    .star-rating input:checked ~ label { color: #f1c40f; }
+    .star-rating { direction: rtl; }
+    .star-rating input { display: none; }
+    .favori-toggle { font-size: 24px; cursor: pointer; border: none; background: none; transition: transform 0.2s; }
+    .favori-toggle:hover { transform: scale(1.3); }
+    .resume-ia-box { background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%); border-radius: 12px; padding: 15px; white-space: pre-line; font-size: 13px; line-height: 1.6; }
+</style>
+{% endblock %}
+
 {% block body %}
-<div class="mb-3 d-flex justify-content-between align-items-center">
-    <a href="{{ path('admin_candidature_index') }}" class="btn btn-outline-secondary">Retour aux candidatures</a>
-    <span></span>
+<div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <a href="{{ path('admin_candidature_index') }}" class="btn btn-outline-secondary" style="border-radius:10px;"><i class="fa fa-arrow-left"></i> Retour</a>
+    <div class="d-flex align-items-center gap-2">
+        {# Favori Toggle #}
+        <form method="post" action="{{ path('admin_candidature_toggle_favori', {id: c.id}) }}" style="display:inline">
+            <button type="submit" class="favori-toggle" title="{{ c.favori ? 'Retirer des favoris' : 'Ajouter aux favoris' }}">
+                {{ c.favori ? '⭐' : '☆' }}
+            </button>
+        </form>
+        {# Bouton Analyse IA #}
+        <form method="post" action="{{ path('admin_candidature_analyser_ia', {id: c.id}) }}" style="display:inline">
+            <button type="submit" class="btn btn-sm text-white" style="border-radius:20px;background:linear-gradient(135deg,#667eea,#764ba2);" onclick="this.innerHTML='<i class=\'fa fa-spinner fa-spin\'></i> Analyse en cours...'; this.disabled=true; this.form.submit();">
+                <i class="fa fa-robot"></i> Analyser avec IA
+            </button>
+        </form>
+    </div>
 </div>
 
+{# ======== EN-TÊTE ======== #}
 <div class="card border-0 shadow-sm mb-4 overflow-hidden">
-    <div class="p-3 p-md-4 d-flex justify-content-between align-items-center" style="background:linear-gradient(135deg,#fff2cc,#ffc107);">
+    <div class="p-3 p-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2" style="background:linear-gradient(135deg,#fff2cc,#ffc107);">
         <div class="d-flex align-items-center gap-3">
             <div class="display-6 text-dark"><i class="fa fa-user-circle"></i></div>
             <div>
-                <h2 class="h4 fw-bold mb-1 text-dark">Candidat: {{ c.nom }} {{ c.prenom }}</h2>
-                <div class="text-muted">Détails de la candidature</div>
+                <h2 class="h4 fw-bold mb-1 text-dark">
+                    {{ c.nom }} {{ c.prenom }}
+                    {% if c.favori %}<span title="Favori">⭐</span>{% endif %}
+                </h2>
+                <div class="text-muted">
+                    Candidature #{{ c.id }}
+                    {% if c.scoreIa is not null %}
+                        — <span class="ai-badge"><i class="fa fa-robot"></i> Score IA: {{ c.scoreIa }}/100</span>
+                    {% endif %}
+                </div>
             </div>
         </div>
-        <span class="badge {{ c.statut == 'En attente' ? 'bg-warning text-dark' : (c.statut == 'Accepté' ? 'bg-success' : 'bg-danger') }} px-3 py-2" style="border-radius:20px;">
+        <span class="badge {{ c.statut == 'En attente' ? 'bg-warning text-dark' : (c.statut == 'Accepté' ? 'bg-success' : 'bg-danger') }} px-3 py-2" style="border-radius:20px;font-size:14px;">
             <i class="fa {{ c.statut == 'Accepté' ? 'fa-check' : (c.statut == 'Refusé' ? 'fa-times' : 'fa-hourglass-half') }}"></i> {{ c.statut }}
         </span>
     </div>
 </div>
 
-<div class="row">
+<div class="row g-3">
+    {# ======== COLONNE GAUCHE - INFOS + IA ======== #}
     <div class="col-md-8">
-        <div class="card border-0 shadow-sm">
+        {# Infos candidat #}
+        <div class="card border-0 shadow-sm mb-3">
             <div class="card-body">
+                <h5 class="fw-bold mb-3"><i class="fa fa-id-card"></i> Informations du candidat</h5>
                 <div class="row">
                     <div class="col-md-6">
                         <p class="mb-2"><strong><i class="fa fa-envelope"></i> Email:</strong> {{ c.email }}</p>
@@ -43,8 +88,8 @@
                     <div class="col-md-6">
                         <p class="mb-2"><strong><i class="fa fa-calendar"></i> Date candidature:</strong> {{ c.dateCandidature|date('d/m/Y H:i') }}</p>
                         {% if c.cv %}
-                            <p class="mb-0"><strong><i class="fa fa-file-pdf-o"></i> CV:</strong> 
-                                <a class="btn btn-warning text-dark shadow-sm" href="{{ c.cv }}" target="_blank" style="border-radius:10px;">
+                            <p class="mb-0"><strong><i class="fa fa-file-pdf-o"></i> CV:</strong>
+                                <a class="btn btn-sm btn-warning text-dark shadow-sm" href="{{ c.cv }}" target="_blank" style="border-radius:10px;">
                                     <i class="fa fa-file-pdf-o"></i> Ouvrir le CV
                                 </a>
                             </p>
@@ -53,14 +98,132 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="my-4"></div>
+            </div>
+        </div>
+
+        {# Lettre de motivation #}
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body">
                 <h5 class="fw-bold mb-3"><i class="fa fa-file-text-o"></i> Lettre de motivation</h5>
                 <div class="p-3 border rounded-3 bg-light" style="white-space:pre-line">{{ c.lettreMotivation ?? '—' }}</div>
             </div>
         </div>
+
+        {# ======== SECTION ANALYSE IA ======== #}
+        {% if c.scoreIa is not null or c.resumeIa is not null or c.competencesDetectees is not null %}
+        <div class="card border-0 shadow-sm mb-3 ai-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0" style="color:#667eea;"><i class="fa fa-robot"></i> Analyse Intelligence Artificielle</h5>
+                    <span class="ai-badge"><i class="fa fa-magic"></i> Gemini AI</span>
+                </div>
+
+                <div class="row g-3">
+                    {# Score Gauge #}
+                    {% if c.scoreIa is not null %}
+                    <div class="col-md-3 text-center">
+                        {% set scoreColor = c.scoreIa >= 70 ? '#2ecc71' : (c.scoreIa >= 40 ? '#f1c40f' : '#e74c3c') %}
+                        <div class="score-gauge" style="background: conic-gradient({{ scoreColor }} {{ c.scoreIa * 3.6 }}deg, #e9ecef {{ c.scoreIa * 3.6 }}deg);">
+                            <div style="width:90px;height:90px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;">
+                                <span class="score-text" style="color:{{ scoreColor }}">{{ c.scoreIa }}</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 small fw-bold" style="color:{{ scoreColor }}">
+                            {% if c.scoreIa >= 70 %}Excellent{% elseif c.scoreIa >= 50 %}Bon{% elseif c.scoreIa >= 30 %}Moyen{% else %}Faible{% endif %}
+                        </div>
+                        <small class="text-muted">Score sur 100</small>
+                    </div>
+                    {% endif %}
+
+                    {# Compétences détectées #}
+                    <div class="{{ c.scoreIa is not null ? 'col-md-9' : 'col-12' }}">
+                        {% if c.competencesDetectees is not null %}
+                            <h6 class="fw-bold mb-2"><i class="fa fa-tags"></i> Compétences détectées</h6>
+                            <div class="mb-3">
+                                {% if c.competencesDetectees.competences_techniques is defined %}
+                                    {% for comp in c.competencesDetectees.competences_techniques %}
+                                        <span class="competence-tag" style="background:rgba(102,126,234,0.15);color:#667eea;">{{ comp }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if c.competencesDetectees.competences_soft is defined %}
+                                    {% for comp in c.competencesDetectees.competences_soft %}
+                                        <span class="competence-tag" style="background:rgba(255,193,7,0.2);color:#e67e22;">{{ comp }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if c.competencesDetectees.langues is defined %}
+                                    {% for lang in c.competencesDetectees.langues %}
+                                        <span class="competence-tag" style="background:rgba(46,204,113,0.15);color:#27ae60;">🌐 {{ lang }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            {% if c.competencesDetectees.niveau_estime is defined %}
+                                <p class="small mb-2"><strong><i class="fa fa-graduation-cap"></i> Niveau estimé:</strong> {{ c.competencesDetectees.niveau_estime }}</p>
+                            {% endif %}
+                            {% if c.competencesDetectees.resume is defined %}
+                                <p class="small text-muted mb-0">{{ c.competencesDetectees.resume }}</p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# Résumé IA détaillé #}
+                {% if c.resumeIa is not null %}
+                    <hr>
+                    <h6 class="fw-bold mb-2"><i class="fa fa-file-text"></i> Résumé & Analyse IA</h6>
+                    <div class="resume-ia-box">{{ c.resumeIa }}</div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        {# Pas d'analyse IA, afficher bouton #}
+        <div class="card border-0 shadow-sm mb-3" style="border: 2px dashed #667eea !important;">
+            <div class="card-body text-center py-4">
+                <i class="fa fa-robot fa-3x mb-3" style="color:#667eea;opacity:0.5;"></i>
+                <h5 class="text-muted">Aucune analyse IA effectuée</h5>
+                <p class="text-muted small">Cliquez sur le bouton « Analyser avec IA » pour lancer l'analyse du CV et le scoring automatique.</p>
+                <form method="post" action="{{ path('admin_candidature_analyser_ia', {id: c.id}) }}" style="display:inline">
+                    <button type="submit" class="btn text-white px-4" style="border-radius:20px;background:linear-gradient(135deg,#667eea,#764ba2);" onclick="this.innerHTML='<i class=\'fa fa-spinner fa-spin\'></i> Analyse en cours...'; this.disabled=true; this.form.submit();">
+                        <i class="fa fa-magic"></i> Lancer l'analyse IA
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        {# ======== NOTATION ADMIN ======== #}
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3"><i class="fa fa-star"></i> Notation & Commentaire Admin</h5>
+                <form method="post" action="{{ path('admin_candidature_noter', {id: c.id}) }}">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Note (1-5 étoiles)</label>
+                            <div class="star-rating">
+                                {% for i in [5,4,3,2,1] %}
+                                    <input type="radio" id="star{{ i }}" name="note" value="{{ i }}" {{ c.noteAdmin == i ? 'checked' : '' }}>
+                                    <label for="star{{ i }}" title="{{ i }} étoile(s)">★</label>
+                                {% endfor %}
+                            </div>
+                            {% if c.noteAdmin %}
+                                <div class="mt-1 small text-muted">Note actuelle: {{ c.noteAdmin }}/5</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold">Commentaire</label>
+                            <textarea name="commentaire" class="form-control" rows="2" placeholder="Votre avis sur ce candidat..." style="border-radius:10px;">{{ c.commentaireAdmin }}</textarea>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-warning text-dark" style="border-radius:10px;"><i class="fa fa-save"></i> Enregistrer la note</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+
+    {# ======== COLONNE DROITE - OFFRE + ACTIONS ======== #}
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="card border-0 shadow-sm overflow-hidden mb-3">
             <div class="p-3" style="background:linear-gradient(135deg,#0dcaf0,#0b7ea1); color:#fff;">
                 <h5 class="mb-0"><i class="fa fa-briefcase"></i> Offre liée</h5>
             </div>
@@ -70,22 +233,49 @@
                     <p class="mb-2"><strong><i class="fa fa-building"></i> Entreprise:</strong> {{ c.offreStage.entreprise }}</p>
                     <p class="mb-2"><strong><i class="fa fa-map-marker"></i> Lieu:</strong> {{ c.offreStage.lieu ?? '—' }}</p>
                     <p class="mb-3"><strong><i class="fa fa-clock-o"></i> Durée:</strong> {{ c.offreStage.dureeJours }} jours</p>
-                    <p><a class="btn btn-warning text-dark shadow-sm" href="{{ path('admin_offre_stage_show', { id: c.offreStage.id }) }}" style="border-radius:10px;">Voir l'offre</a></p>
+                    {% if c.offreStage.competencesRequises is not null and c.offreStage.competencesRequises|length > 0 %}
+                        <p class="mb-2"><strong><i class="fa fa-list-ul"></i> Compétences requises:</strong></p>
+                        <div class="mb-3">
+                            {% for comp in c.offreStage.competencesRequises %}
+                                <span class="badge bg-light text-dark" style="border-radius:10px;">{{ comp }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <p><a class="btn btn-sm btn-warning text-dark shadow-sm" href="{{ path('admin_offre_stage_show', { id: c.offreStage.id }) }}" style="border-radius:10px;">Voir l'offre</a></p>
                 {% else %}
                     <p class="text-muted">Offre introuvable</p>
                 {% endif %}
-                <hr>
+            </div>
+        </div>
+
+        {# Actions sur le statut #}
+        <div class="card border-0 shadow-sm overflow-hidden mb-3">
+            <div class="p-3" style="background:linear-gradient(135deg,#28a745,#218838); color:#fff;">
+                <h5 class="mb-0"><i class="fa fa-cogs"></i> Actions</h5>
+            </div>
+            <div class="card-body">
                 <form method="post" action="{{ path('admin_candidature_change_status', { id: c.id }) }}" class="d-flex flex-column" style="gap:8px">
                     <input type="hidden" name="token" value="{{ csrf_token('candidature_status_' ~ c.id) }}">
                     <div class="d-flex flex-wrap gap-2">
-                        <button name="status" value="Accepté" class="btn" type="submit" style="border-radius:10px; background-color:#28a745; border-color:#28a745; color:#fff;"><i class="fa fa-check"></i> Accepter</button>
-                        <button name="status" value="Refusé" class="btn" type="submit" style="border-radius:10px; background-color:#dc3545; border-color:#dc3545; color:#fff;"><i class="fa fa-times"></i> Refuser</button>
+                        <button name="status" value="Accepté" class="btn text-white flex-fill" type="submit" style="border-radius:10px; background-color:#28a745;"><i class="fa fa-check"></i> Accepter</button>
+                        <button name="status" value="Refusé" class="btn text-white flex-fill" type="submit" style="border-radius:10px; background-color:#dc3545;"><i class="fa fa-times"></i> Refuser</button>
                     </div>
                     {% if c.statut != 'En attente' %}
                         <button name="status" value="En attente" class="btn btn-warning" type="submit" style="border-radius:10px;"><i class="fa fa-hourglass-half"></i> Remettre en attente</button>
                     {% endif %}
-                    <a href="{{ path('admin_candidature_index') }}" class="btn btn-outline-secondary mt-2">Retour aux candidatures</a>
                 </form>
+
+                <hr>
+
+                {# Favori #}
+                <form method="post" action="{{ path('admin_candidature_toggle_favori', {id: c.id}) }}">
+                    <button type="submit" class="btn {{ c.favori ? 'btn-warning' : 'btn-outline-warning' }} w-100" style="border-radius:10px;">
+                        {{ c.favori ? '⭐ Retirer des favoris' : '☆ Ajouter aux favoris' }}
+                    </button>
+                </form>
+
+                <hr>
+                <a href="{{ path('admin_candidature_index') }}" class="btn btn-outline-secondary w-100" style="border-radius:10px;"><i class="fa fa-arrow-left"></i> Retour aux candidatures</a>
             </div>
         </div>
     </div>

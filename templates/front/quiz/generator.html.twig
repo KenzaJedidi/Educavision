@@ -1,0 +1,287 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Générer un Quiz - EducaVision{% endblock %}
+
+{% block body %}
+
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/banner2.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">Générer un Quiz</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li><a href="{{ path('quiz_list') }}">Quiz</a></li>
+            <li>Générer</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 heading-bx left">
+                    <h2 class="title-head">Créez Votre <span>Quiz Personnalisé</span></h2>
+                    <p>Sélectionnez un chapitre et configurez votre quiz en quelques clics</p>
+                </div>
+            </div>
+
+            <!-- Quiz Generator Form -->
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="formation-card bg-white shadow-lg p-5 rounded-lg">
+                        <form id="quizGeneratorForm" method="post" action="#">
+                            <div class="form-group mb-4">
+                                <label for="chapterId" class="form-label fw-bold mb-2">
+                                    <i class="fa fa-book"></i> Sélectionnez un Chapitre
+                                </label>
+                                <select id="chapterId" name="chapterId" class="form-control form-control-lg" required>
+                                    <option value="">-- Choisir un chapitre --</option>
+                                    {% for chapter in chapters %}
+                                        <option value="{{ chapter.id }}">
+                                            📚 {{ chapter.titre }}
+                                            {% if chapter.difficultyLevel %}
+                                                ({{ chapter.difficultyLevel }})
+                                            {% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="numberOfQuestions" class="form-label fw-bold mb-2">
+                                            <i class="fa fa-list-ol"></i> Nombre de Questions
+                                        </label>
+                                        <div class="input-group input-group-lg">
+                                            <input type="number" id="numberOfQuestions" name="numberOfQuestions" 
+                                                   class="form-control" value="5" min="1" max="20" required>
+                                            <span class="input-group-text">/20</span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">Entre 1 et 20 questions</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="timeLimit" class="form-label fw-bold mb-2">
+                                            <i class="fa fa-hourglass-end"></i> Limite de Temps
+                                        </label>
+                                        <div class="input-group input-group-lg">
+                                            <input type="number" id="timeLimit" name="timeLimit" 
+                                                   class="form-control" value="300" min="60" step="60" required>
+                                            <span class="input-group-text">sec.</span>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">Minimum 60 secondes</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info rounded-lg p-4 mb-4">
+                                <i class="fa fa-lightbulb"></i>
+                                <strong>Conseil:</strong> Commencez par 5 questions pour tester, puis augmentez progressivement.
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-lg py-3">
+                                <i class="fa fa-magic"></i> Générer et Commencer
+                            </button>
+                        </form>
+
+                        <!-- Loading Spinner -->
+                        <div id="loadingMessage" class="text-center mt-4 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Génération en cours...</span>
+                            </div>
+                            <p class="text-muted mt-2">Création de votre quiz personnalisé...</p>
+                        </div>
+
+                        <!-- Success Message -->
+                        <div id="successMessage" class="alert alert-success rounded-lg d-none mt-4" role="alert">
+                            <i class="fa fa-check-circle"></i>
+                            <strong>Succès!</strong> Votre quiz a été créé avec succès.
+                            <a id="playLink" href="#" class="alert-link fw-bold">Cliquez ici pour jouer</a>
+                        </div>
+
+                        <!-- Error Message -->
+                        <div id="errorMessage" class="alert alert-danger rounded-lg d-none mt-4" role="alert">
+                            <i class="fa fa-exclamation-circle"></i>
+                            <strong>Erreur</strong>
+                            <p id="errorText" class="mb-0"></p>
+                        </div>
+                    </div>
+
+                    <!-- Info Cards -->
+                    <div class="row mt-5">
+                        <div class="col-md-4">
+                            <div class="info-card text-center p-4 rounded-lg bg-light">
+                                <i class="fa fa-magic fa-2x text-primary mb-3"></i>
+                                <h5>IA Intelligente</h5>
+                                <p class="text-muted text-sm">Génération automatique de questions</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card text-center p-4 rounded-lg bg-light">
+                                <i class="fa fa-clock fa-2x text-primary mb-3"></i>
+                                <h5>Chronomètre</h5>
+                                <p class="text-muted text-sm">Gérez votre temps efficacement</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card text-center p-4 rounded-lg bg-light">
+                                <i class="fa fa-chart-bar fa-2x text-primary mb-3"></i>
+                                <h5>Résultats Détaillés</h5>
+                                <p class="text-muted text-sm">Analysez vos performances</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="section-area bg-primary text-white section-sp2">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3>Testez-vous avec nos Quiz Interactifs</h3>
+                    <p class="mb-0">Évaluez vos connaissances et progressez rapidement</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="{{ path('quiz_list') }}" class="btn btn-white btn-lg rounded-lg">
+                        <i class="fa fa-arrow-right"></i> Voir tous les Quiz
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('quizGeneratorForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const chapterId = document.getElementById('chapterId').value;
+    const numberOfQuestions = document.getElementById('numberOfQuestions').value;
+    const timeLimit = document.getElementById('timeLimit').value;
+
+    if (!chapterId) {
+        showError('Veuillez sélectionner un chapitre');
+        return;
+    }
+
+    showLoading(true);
+
+    try {
+        const response = await fetch(`{{ path('quiz_generate', {'chapterId': 'REPLACE'}) }}`.replace('REPLACE', chapterId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                numberOfQuestions,
+                timeLimit
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showSuccess(`Quiz généré! ${data.data.numberOfQuestions} questions créées (${data.data.difficulty})`);
+            document.getElementById('playLink').href = `{{ path('quiz_play', {'quizId': 'REPLACE'}) }}`.replace('REPLACE', data.data.quizId);
+            
+            // Auto-redirect after 2 seconds
+            setTimeout(() => {
+                window.location.href = document.getElementById('playLink').href;
+            }, 2000);
+        } else {
+            showError(data.error || 'Erreur lors de la génération');
+        }
+    } catch (error) {
+        showError('Erreur: ' + error.message);
+    } finally {
+        showLoading(false);
+    }
+});
+
+function showLoading(show) {
+    document.getElementById('loadingMessage').classList.toggle('d-none', !show);
+}
+
+function showSuccess(message) {
+    document.getElementById('successMessage').classList.remove('d-none');
+    document.getElementById('errorMessage').classList.add('d-none');
+}
+
+function showError(message) {
+    document.getElementById('errorMessage').classList.remove('d-none');
+    document.getElementById('successMessage').classList.add('d-none');
+    document.getElementById('errorText').textContent = message;
+}
+</script>
+
+<style>
+    .formation-card {
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+    
+    .formation-card:hover {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .info-card {
+        border-left: 4px solid #007bff;
+        transition: all 0.3s ease;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .rounded-lg {
+        border-radius: 12px;
+    }
+    
+    .btn-lg {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+    }
+    
+    .form-control-lg {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+    
+    .form-label {
+        color: #333;
+    }
+    
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .text-end {
+        text-align: right;
+    }
+    
+    @media (max-width: 768px) {
+        .text-end {
+            text-align: left;
+            margin-top: 1rem;
+        }
+    }
+</style>
+
+{% endblock %}

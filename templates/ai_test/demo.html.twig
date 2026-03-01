@@ -1,0 +1,260 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Démo IA Complète{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <a href="{{ path('ai_test_index') }}" class="btn btn-outline-secondary mb-4">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+            
+            <h1 class="mb-4">
+                <i class="fas fa-rocket text-primary"></i>
+                Démonstration Complète du Système IA
+            </h1>
+            <p class="lead text-muted mb-5">
+                Exemples concrets de toutes les fonctionnalités d'Intelligence Artificielle
+            </p>
+        </div>
+    </div>
+
+    <!-- 1. Détection de niveau -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-chart-line"></i>
+                        1. Détection Automatique du Niveau
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Scores de l'étudiant:</h5>
+                            <ul class="list-group mb-3">
+                                {% for score in examples.level_detection.scores %}
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Quiz {{ loop.index }}</span>
+                                    <span class="badge bg-primary">{{ score }}%</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-success">
+                                <h5><i class="fas fa-trophy"></i> Niveau Détecté:</h5>
+                                <h2 class="text-uppercase">{{ examples.level_detection.detected_level }}</h2>
+                                <p class="mb-0">Basé sur une moyenne de {{ (examples.level_detection.scores|reduce((a, b) => a + b) / examples.level_detection.scores|length)|round(1) }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Correction intelligente -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-check-circle"></i>
+                        2. Correction Intelligente (NLP)
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Réponse de l'étudiant:</h5>
+                            <div class="alert alert-light">
+                                "L'IA permet aux machines d'apprendre et de s'adapter automatiquement"
+                            </div>
+                            
+                            <h5>Réponse attendue:</h5>
+                            <div class="alert alert-light">
+                                "L'intelligence artificielle permet aux machines d'apprendre et de s'adapter"
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Résultat de l'analyse:</h5>
+                            <div class="text-center mb-3">
+                                <div class="display-4 text-success fw-bold">{{ examples.correction.score }}%</div>
+                            </div>
+                            
+                            <div class="alert {% if examples.correction.isCorrect %}alert-success{% else %}alert-warning{% endif %}">
+                                {{ examples.correction.feedback }}
+                            </div>
+                            
+                            <h6>Détails:</h6>
+                            <ul class="list-unstyled">
+                                <li>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Similarité:</span>
+                                        <span class="fw-bold">{{ examples.correction.details.similarityScore }}%</span>
+                                    </div>
+                                    <div class="progress mb-2" style="height: 6px;">
+                                        <div class="progress-bar bg-info" style="width: {{ examples.correction.details.similarityScore }}%"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Mots-clés:</span>
+                                        <span class="fw-bold">{{ examples.correction.details.keywordScore }}%</span>
+                                    </div>
+                                    <div class="progress mb-2" style="height: 6px;">
+                                        <div class="progress-bar bg-warning" style="width: {{ examples.correction.details.keywordScore }}%"></div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Sémantique:</span>
+                                        <span class="fw-bold">{{ examples.correction.details.semanticScore }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-success" style="width: {{ examples.correction.details.semanticScore }}%"></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Génération de questions -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-magic"></i>
+                        3. Génération Automatique de Questions
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <h5>Question générée automatiquement:</h5>
+                    <div class="alert alert-light border-start border-warning border-4">
+                        <h6 class="fw-bold">{{ examples.generation.text }}</h6>
+                        <div class="mt-3">
+                            <span class="badge bg-secondary">Type: {{ examples.generation.type }}</span>
+                            <span class="badge bg-info">Difficulté: {{ examples.generation.difficulty }}</span>
+                            <span class="badge bg-success">Points: {{ examples.generation.points }}</span>
+                        </div>
+                    </div>
+                    
+                    <h6>Options de réponse:</h6>
+                    <div class="list-group">
+                        {% for option in examples.generation.options %}
+                        <div class="list-group-item {% if option.isCorrect %}list-group-item-success{% endif %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>{{ option.text }}</span>
+                                {% if option.isCorrect %}
+                                <span class="badge bg-success">✓ Correcte</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Adaptation de difficulté -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-sliders-h"></i>
+                        4. Adaptation Intelligente de la Difficulté
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Score obtenu: <span class="text-primary">75%</span></h5>
+                            <div class="progress mb-4" style="height: 30px;">
+                                <div class="progress-bar bg-primary" style="width: 75%">75%</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-info">
+                                <h6 class="fw-bold">Niveau: {{ examples.adaptation.level }}</h6>
+                                <p class="mb-0">{{ examples.adaptation.message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6>Recommandations:</h6>
+                            <ul>
+                                {% for topic in examples.adaptation.suggestedTopics %}
+                                <li>{{ topic }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-success">
+                                <strong>{{ examples.adaptation.motivationalMessage }}</strong>
+                            </div>
+                            <p class="mb-0">
+                                <i class="fas fa-arrow-right text-primary"></i>
+                                Prochain quiz: <strong>{{ examples.adaptation.nextQuizDifficulty }}</strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Résumé des compétences IA -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-brain"></i>
+                        Compétences IA Utilisées
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5><i class="fas fa-robot text-primary"></i> Machine Learning</h5>
+                            <ul>
+                                <li>Classification des niveaux</li>
+                                <li>Prédiction des performances</li>
+                                <li>Analyse de patterns</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h5><i class="fas fa-language text-success"></i> NLP</h5>
+                            <ul>
+                                <li>Analyse sémantique</li>
+                                <li>Extraction de mots-clés</li>
+                                <li>Calcul de similarité</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h5><i class="fas fa-chart-bar text-info"></i> Analytics</h5>
+                            <ul>
+                                <li>Analyse de performance</li>
+                                <li>Détection des lacunes</li>
+                                <li>Recommandations personnalisées</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

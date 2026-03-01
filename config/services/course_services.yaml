@@ -1,0 +1,60 @@
+# Configuration des services pour le module Cours amélioré
+
+services:
+    # Service Unsplash pour les images
+    App\Service\External\UnsplashService:
+        arguments:
+            $httpClient: '@http_client'
+            $parameterBag: '@parameter_bag'
+            $logger: '@logger'
+        tags:
+            - { name: 'monolog.logger', channel: 'course' }
+
+    # Service Wikipedia pour les résumés
+    App\Service\External\WikipediaService:
+        arguments:
+            $httpClient: '@http_client'
+            $logger: '@logger'
+        tags:
+            - { name: 'monolog.logger', channel: 'course' }
+
+    # Service de scoring des cours
+    App\Service\CourseScoringService:
+        arguments:
+            $courseRepository: '@App\Repository\CourseRepository'
+            $entityManager: '@doctrine.orm.entity_manager'
+            $logger: '@logger'
+        tags:
+            - { name: 'monolog.logger', channel: 'course' }
+
+    # Service de recommandation de cours
+    App\Service\CourseRecommendationService:
+        arguments:
+            $courseRepository: '@App\Repository\CourseRepository'
+            $logger: '@logger'
+        tags:
+            - { name: 'monolog.logger', channel: 'course' }
+
+    # Configuration des paramètres
+    parameters:
+        unsplash_access_key: '%env(string:UNSPLASH_ACCESS_KEY)%'
+        wikipedia_language: '%env(string:WIKIPEDIA_LANGUAGE:fr)%'
+        
+        # Configuration du scoring
+        course_scoring_weights:
+            views: 0.5
+            likes: 2.0
+            comments: 1.5
+        
+        course_scoring_thresholds:
+            trending_days: 7
+            trending_min_score: 50
+            popular_min_score: 25
+        
+        # Configuration des recommandations
+        course_recommendation_max: 5
+        course_similarity_threshold: 0.3
+        course_similarity_weights:
+            category: 0.3
+            title: 0.4
+            description: 0.3

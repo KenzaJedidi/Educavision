@@ -2,13 +2,18 @@
 
 {% block title %}Quiz - EducaVision{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('front-assets/css/quiz.css') }}?v={{ "now"|date("U") }}">
+{% endblock %}
+
 {% block body %}
-<!-- Page Title -->
-<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/quiz-banner.jpg') }});">
+<!-- Page Banner -->
+<div class="quiz-banner">
     <div class="container">
-        <div class="page-banner-entry">
-            <h1 class="text-white">Quiz d'Orientation</h1>
-            <p class="text-white m-b0">Testez vos connaissances et découvrez votre profil d'orientation</p>
+        <div class="quiz-banner-content">
+            <h1>Quiz d'Orientation</h1>
+            <p>Testez vos connaissances et découvrez votre profil d'orientation</p>
         </div>
     </div>
 </div>
@@ -27,33 +32,57 @@
 <div class="content-block">
     <div class="section-area section-sp2">
         <div class="container">
+            <!-- Bouton Créer Quiz par IA -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <a href="{{ path('ai_quiz_create') }}" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px 30px; border-radius: 15px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); transition: all 0.3s ease;">
+                    <i class="fas fa-robot" style="font-size: 20px;"></i>
+                    <span>Créer un Quiz avec l'IA</span>
+                    <i class="fas fa-magic" style="font-size: 16px;"></i>
+                </a>
+            </div>
+            
             {% if quizzes is empty %}
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="alert alert-info text-center">
-                            <i class="fas fa-info-circle"></i>
-                            Aucun quiz n'est disponible pour le moment. Revenez plus tard !
-                        </div>
+                <div class="quiz-empty-state">
+                    <div class="quiz-empty-icon">
+                        <i class="fas fa-question-circle"></i>
                     </div>
+                    <h2 class="quiz-empty-title">Aucun quiz disponible</h2>
+                    <p class="quiz-empty-message">
+                        Aucun quiz n'est disponible pour le moment. Revenez plus tard pour découvrir de nouveaux quiz passionnants !
+                    </p>
                 </div>
             {% else %}
-                <div class="row">
+                <div class="quiz-grid">
                     {% for quiz in quizzes %}
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="cours-bx">
-                                <div class="cours-info">
-                                    <h5><a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}">{{ quiz.titre }}</a></h5>
-                                    <p>{{ quiz.description|slice(0, 150) }}{% if quiz.description|length > 150 %}...{% endif %}</p>
-                                    <div class="cours-price">
-                                        <span class="price">{{ quiz.questions|length }} questions</span>
-                                        <span class="date">{{ quiz.datecreation|date('d/m/Y') }}</span>
-                                    </div>
+                        <div class="quiz-card">
+                            <div class="quiz-card-header">
+                                <div class="quiz-card-icon">
+                                    <i class="fas fa-brain"></i>
                                 </div>
-                                <div class="cours-admin">
-                                    <a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}" class="btn btn-primary radius-xl">
-                                        <i class="fas fa-play"></i> Commencer
-                                    </a>
+                                <h3 class="quiz-card-title">
+                                    <a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}">{{ quiz.titre }}</a>
+                                </h3>
+                            </div>
+                            <div class="quiz-card-body">
+                                <p class="quiz-card-description">
+                                    {{ quiz.description|slice(0, 150) }}{% if quiz.description|length > 150 %}...{% endif %}
+                                </p>
+                            </div>
+                            <div class="quiz-card-meta">
+                                <div class="quiz-meta-item">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span>{{ quiz.questions|length }} questions</span>
                                 </div>
+                                <div class="quiz-meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <span>{{ quiz.datecreation|date('d/m/Y') }}</span>
+                                </div>
+                            </div>
+                            <div class="quiz-card-footer">
+                                <a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}" class="quiz-start-btn">
+                                    <i class="fas fa-play"></i>
+                                    <span>Commencer</span>
+                                </a>
                             </div>
                         </div>
                     {% endfor %}

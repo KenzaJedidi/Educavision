@@ -14,6 +14,9 @@ class Quiz
     #[ORM\Column(name: "idquiz", type: "integer")]
     private ?int $idquiz = null;
 
+    #[ORM\ManyToOne(inversedBy: 'quizzes')]
+    #[ORM\JoinColumn(nullable: true, name: 'chapter_id')]
+    private ?Chapter $chapter = null;
 
     #[ORM\Column(type: "string", length: 255)]
     private ?string $titre = null;
@@ -29,6 +32,27 @@ class Quiz
 
     #[ORM\Column(type: "integer", nullable: true)]
     private ?int $duree = null; // Durée en minutes
+
+    #[ORM\Column(length: 50, nullable: true, options: ['default' => 'draft'])]
+    private ?string $status = 'draft'; // draft, published
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $difficultyLevel = null; // Facile, Moyen, Difficile
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $timeLimit = 0; // en secondes
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $numberOfQuestions = 0;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $attempts = 0;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $metadata = null;
 
     #[ORM\OneToMany(mappedBy: "quiz", targetEntity: Result::class, orphanRemoval: true)]
     private Collection $results;
@@ -159,6 +183,94 @@ class Quiz
                 $result->setQuiz(null);
             }
         }
+        return $this;
+    }
+
+    public function getChapter(): ?Chapter
+    {
+        return $this->chapter;
+    }
+
+    public function setChapter(?Chapter $chapter): static
+    {
+        $this->chapter = $chapter;
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    public function getDifficultyLevel(): ?string
+    {
+        return $this->difficultyLevel;
+    }
+
+    public function setDifficultyLevel(?string $difficultyLevel): static
+    {
+        $this->difficultyLevel = $difficultyLevel;
+        return $this;
+    }
+
+    public function getTimeLimit(): int
+    {
+        return $this->timeLimit;
+    }
+
+    public function setTimeLimit(int $timeLimit): static
+    {
+        $this->timeLimit = $timeLimit;
+        return $this;
+    }
+
+    public function getNumberOfQuestions(): int
+    {
+        return $this->numberOfQuestions;
+    }
+
+    public function setNumberOfQuestions(int $numberOfQuestions): static
+    {
+        $this->numberOfQuestions = $numberOfQuestions;
+        return $this;
+    }
+
+    public function getAttempts(): int
+    {
+        return $this->attempts;
+    }
+
+    public function setAttempts(int $attempts): static
+    {
+        $this->attempts = $attempts;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function getMetadata(): ?array
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(?array $metadata): static
+    {
+        $this->metadata = $metadata;
         return $this;
     }
 }

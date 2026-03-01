@@ -16,6 +16,13 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): RedirectResponse
     {
+        // Rediriger vers la page demandée si l'utilisateur tentait d'y accéder (ex: Mes réclamations)
+        $targetPath = $request->getSession()->get('_security.main.target_path');
+        if ($targetPath) {
+            $request->getSession()->remove('_security.main.target_path');
+            return new RedirectResponse($targetPath);
+        }
+
         $roles = $token->getRoleNames();
 
         if (in_array('ROLE_ADMIN', $roles, true)) {
@@ -26,6 +33,7 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
             return new RedirectResponse($this->router->generate('teacher_dashboard'));
         }
 
-        return new RedirectResponse($this->router->generate('front_home'));
+        // Étudiant ou ROLE_USER → interface étudiant (liste des cours)
+        return new RedirectResponse($this->router->generate('front_cours_list'));
     }
 }

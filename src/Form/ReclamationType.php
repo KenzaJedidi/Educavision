@@ -7,7 +7,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -68,17 +67,6 @@ class ReclamationType extends AbstractType
                 'constraints' => [
                     new NotBlank(['message' => 'L\'email est obligatoire.']),
                     new Email(['message' => 'Veuillez entrer une adresse email valide.']),
-                ],
-            ])
-            ->add('role', ChoiceType::class, [
-                'label' => 'Rôle',
-                'choices' => [
-                    'Étudiant' => 'etudiant',
-                    'Professeur' => 'professeur',
-                ],
-                'required' => false,
-                'constraints' => [
-                    new NotBlank(['message' => 'Le rôle est obligatoire.']),
                 ],
             ])
             ->add('titre', TextType::class, [

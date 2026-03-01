@@ -19,12 +19,15 @@ class RegistrationController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager
     ): Response {
-        // Already logged in? Redirect based on role
+        // Already logged in? Redirect to the right interface
         if ($this->getUser()) {
             if ($this->isGranted('ROLE_ADMIN')) {
                 return $this->redirectToRoute('admin_dashboard');
             }
-            return $this->redirectToRoute('front_home');
+            if ($this->isGranted('ROLE_PROF')) {
+                return $this->redirectToRoute('teacher_dashboard');
+            }
+            return $this->redirectToRoute('front_cours_list');
         }
 
         $utilisateur = new Utilisateur();

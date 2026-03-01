@@ -1,10 +1,3 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
-parameters:
-
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -12,6 +5,8 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
             $projectDir: '%kernel.project_dir%'
+            $geminiApiKey: '%env(GEMINI_API_KEY)%'
+            $openaiApiKey: '%env(default::OPENAI_API_KEY)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -22,23 +17,65 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # Configuration explicite pour SimulatorConfigService
-    App\Service\SimulatorConfigService:
-        arguments:
-            $projectDir: '%kernel.project_dir%'
-        # Assurez-vous que le service est public pour le debug
+    # Configuration explicite pour SummarizationService
+    App\Service\SummarizationService:
         public: true
 
-    # Configuration pour les contrôleurs (optionnel mais recommandé)
+    # EmailService with sender configuration from env
+    App\Service\EmailService:
+        public: true
+        arguments:
+            $fromAddress: '%env(MAILER_FROM_ADDRESS)%'
+            $fromName: '%env(MAILER_FROM_NAME)%'
+
+    # Configuration explicite pour SentimentService
+    App\Service\SentimentService:
+        public: true
+
+    # Configuration explicite pour ResolutionPredictionService
+    App\Service\ResolutionPredictionService:
+        public: true
+
+    # Services pour les Chapitres
+    App\Service\ChapterAIMockService:
+        public: true
+    
+    App\Service\ChapterAIService:
+        public: true
+        arguments:
+            $geminiApiKey: '%env(GEMINI_API_KEY)%'
+
+    App\Service\ChapterTranslationService:
+        public: true
+
+    App\Service\ChapterService:
+        public: true
+
+    # Services pour les Quiz
+    App\Service\QuizAIMockService:
+        public: true
+
+    App\Service\QuizService:
+        public: true
+
+    # Service OpenAI avec cache
+    App\Service\OpenAICourseService:
+        public: true
+        autowire: true
+        arguments:
+            $cache: '@cache.system'
+            $openaiApiKey: '%env(default::OPENAI_API_KEY)%'
+
+    # DeepSeek API pour génération de quiz IA
+    App\Service\AI\DeepSeekApiService:
+        public: true
+        arguments:
+            $apiKey: '%env(default::DEEPSEEK_API_KEY)%'
+
+    # Configuration pour les contrôleurs
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
-        public: true
-
-    # Configuration pour les repositories
-    App\Repository\:
-        resource: '../src/Repository/'
-        tags: ['doctrine.repository_service']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

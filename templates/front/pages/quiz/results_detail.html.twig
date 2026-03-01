@@ -2,13 +2,20 @@
 
 {% block title %}Détails des résultats - {{ quiz.titre }}{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('front-assets/css/quiz.css') }}?v={{ random() }}">
+    <link rel="stylesheet" href="{{ asset('front-assets/css/quiz-animations.css') }}?v={{ random() }}">
+    <link rel="stylesheet" href="{{ asset('front-assets/css/quiz-enhanced.css') }}?v={{ random() }}">
+{% endblock %}
+
 {% block body %}
-<!-- Page Title -->
-<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/quiz-banner.jpg') }});">
+<!-- Page Banner -->
+<div class="quiz-banner">
     <div class="container">
-        <div class="page-banner-entry">
-            <h1 class="text-white">Détails des résultats</h1>
-            <p class="text-white m-b0">{{ quiz.titre }}</p>
+        <div class="quiz-banner-content">
+            <h1>Détails des résultats</h1>
+            <p>{{ quiz.titre }}</p>
         </div>
     </div>
 </div>
@@ -29,45 +36,38 @@
 <div class="content-block">
     <div class="section-area section-sp2">
         <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="cours-bx">
-                        <div class="cours-info">
-                            <h5 class="mb-4">{{ quiz.titre }}</h5>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <strong>Score:</strong> {{ result.score }}
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>Date:</strong> {{ result.datepassage|date('d/m/Y H:i') }}
-                                </div>
-                                <div class="col-md-3">
-                                    <strong>Utilisateur:</strong> {{ result.utilisateur }}
-                                </div>
-                            </div>
+            <div class="quiz-take-container">
+                <div class="quiz-info-box">
+                    <h5 class="mb-4">{{ quiz.titre }}</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong><i class="fas fa-star"></i> Score:</strong> {{ result.score }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong><i class="fas fa-calendar"></i> Date:</strong> {{ result.datepassage|date('d/m/Y H:i') }}
+                        </div>
+                        <div class="col-md-4">
+                            <strong><i class="fas fa-user"></i> Utilisateur:</strong> {{ result.utilisateur }}
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="heading-bx left">
-                        <h6 class="title-ext text-primary">Merci d'avoir complété ce quiz d'orientation!</h6>
+                <div class="quiz-question-card text-center">
+                    <div class="quiz-empty-icon mx-auto mb-4">
+                        <i class="fas fa-check-circle"></i>
                     </div>
+                    <h3 class="quiz-empty-title mb-4">Merci d'avoir complété ce quiz d'orientation!</h3>
+                    <p class="quiz-empty-message mb-4">Votre participation a été enregistrée avec succès.</p>
                     
-                    <div class="cours-bx">
-                        <div class="cours-info text-center">
-                            <p class="lead mb-4">Votre participation a été enregistrée avec succès.</p>
-                            <div class="d-flex justify-content-center gap-3">
-                                <a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}" class="btn btn-primary radius-xl">
-                                    <i class="fas fa-redo"></i> Refaire le quiz
-                                </a>
-                                <a href="{{ path('quiz_index') }}" class="btn btn-secondary radius-xl">
-                                    <i class="fas fa-list"></i> Voir autres quiz
-                                </a>
-                            </div>
-                        </div>
+                    <div class="quiz-actions justify-content-center">
+                        <a href="{{ path('quiz_take', {'id': quiz.idquiz}) }}" class="quiz-btn quiz-btn-primary">
+                            <i class="fas fa-redo"></i>
+                            <span>Refaire le quiz</span>
+                        </a>
+                        <a href="{{ path('quiz_index') }}" class="quiz-btn quiz-btn-secondary">
+                            <i class="fas fa-list"></i>
+                            <span>Voir autres quiz</span>
+                        </a>
                     </div>
                 </div>
             </div>

@@ -2,69 +2,24 @@
 
 {% block title %}Accueil - EducaVision{% endblock %}
 
+{% block body_class %}page-home{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
-    <!-- Revolution Slider CSS -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/vendors/revolution/css/layers.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/vendors/revolution/css/settings.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('front-assets/vendors/revolution/css/navigation.css') }}">
 {% endblock %}
 
 {% block body %}
-<!-- Main Slider -->
-<div class="rev-slider">
-    <div id="rev_slider_486_1_wrapper" class="rev_slider_wrapper fullwidthbanner-container"
-        style="margin:0px auto;background-color:#ffffff;padding:0px;">
-        <div id="rev_slider_486_1" class="rev_slider fullwidthabanner" style="display:none;">
-            <ul>
-                <!-- SLIDE 1 -->
-                <li data-transition="parallaxvertical">
-                    <img src="{{ asset('front-assets/images/slider/slide1.jpg') }}" alt="" class="rev-slidebg" />
-                    
-                    <!-- Overlay -->
-                    <div class="tp-caption tp-shape tp-shapewrapper"
-                        data-x="center" data-y="middle"
-                        data-width="full" data-height="full"
-                        style="z-index: 5;background-color:rgba(2, 0, 11, 0.80);">
-                    </div>
-
-                    <!-- Title -->
-                    <div class="tp-caption Newspaper-Title tp-resizeme"
-                        data-x="center" data-y="top" data-voffset="250"
-                        data-fontsize="50" data-lineheight="55"
-                        style="z-index: 6; font-family:rubik; font-weight:700; color:#fff;">
-                        Bienvenue sur EducaVision
-                    </div>
-
-                    <!-- Subtitle -->
-                    <div class="tp-caption Newspaper-Subtitle tp-resizeme"
-                        data-x="center" data-y="top" data-voffset="210"
-                        style="z-index: 7; color:#fff; font-size:18px;">
-                        Meilleure éducation pour un meilleur avenir
-                    </div>
-
-                    <!-- Description -->
-                    <div class="tp-caption Newspaper-Subtitle tp-resizeme"
-                        data-x="center" data-y="top" data-voffset="320"
-                        data-width="800"
-                        style="z-index: 7; color:#fff; text-align:center; line-height:28px;">
-                        Plateforme intelligente d'apprentissage et de suivi pédagogique
-                    </div>
-
-                    <!-- Buttons -->
-                    <div class="tp-caption Newspaper-Button rev-btn"
-                        data-x="center" data-hoffset="90" data-y="top" data-voffset="400"
-                        style="z-index: 8; background-color:#FF9800; border-radius:30px; padding:12px 30px;">
-                        <a href="{{ path('front_cours_list') }}" style="color: white;">NOS COURS</a>
-                    </div>
-
-                    <div class="tp-caption Newspaper-Button rev-btn"
-                        data-x="center" data-hoffset="-90" data-y="top" data-voffset="400"
-                        style="z-index: 8; border-radius:30px; padding:12px 30px; border: 1px solid white;">
-                        <a href="{{ path('front_contact') }}" style="color: white;">CONTACTEZ-NOUS</a>
-                    </div>
-                </li>
-            </ul>
+<!-- Bannière compacte -->
+<div class="home-hero">
+    <div class="home-hero-bg" style="background-image: url('{{ asset('front-assets/images/slider/slide1.jpg') }}');"></div>
+    <div class="home-hero-overlay"></div>
+    <div class="home-hero-content">
+        <h1>Bienvenue sur EducaVision</h1>
+        <p class="home-hero-subtitle">Meilleure éducation pour un meilleur avenir</p>
+        <p class="home-hero-desc">Plateforme intelligente d'apprentissage et de suivi pédagogique</p>
+        <div class="home-hero-buttons">
+            <a href="{{ path('front_cours_list') }}" class="home-hero-btn home-hero-btn-primary">NOS COURS</a>
+            <a href="{{ path('front_contact') }}" class="home-hero-btn home-hero-btn-secondary">CONTACTEZ-NOUS</a>
         </div>
     </div>
 </div>
@@ -114,6 +69,54 @@
                         </div>
                         <h4><a href="{{ path('front_stages') }}">Offres de Stages</a></h4>
                         <a href="{{ path('front_stages') }}" class="btn radius-xl">Postuler</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Nouvelle ligne pour Quiz et autres modules -->
+        <div class="row m-t30">
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="service-bx">
+                    <div class="action-box">
+                        <img src="{{ asset('front-assets/images/our-services/pic1.jpg') }}" alt="">
+                    </div>
+                    <div class="info-bx text-center">
+                        <div class="feature-box-sm radius bg-white">
+                            <i class="fa fa-question-circle text-primary"></i>
+                        </div>
+                        <h4><a href="{{ path('quiz_index') }}">Quiz d'Orientation</a></h4>
+                        <a href="{{ path('quiz_index') }}" class="btn radius-xl">Commencer</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="service-bx">
+                    <div class="action-box">
+                        <img src="{{ asset('front-assets/images/our-services/pic2.jpg') }}" alt="">
+                    </div>
+                    <div class="info-bx text-center">
+                        <div class="feature-box-sm radius bg-white">
+                            <i class="fa fa-road text-primary"></i>
+                        </div>
+                        <h4><a href="{{ path('front_simulateur') }}">Simulateur d'Orientation</a></h4>
+                        <a href="{{ path('front_simulateur') }}" class="btn radius-xl">Simuler</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12">
+                <div class="service-bx m-b0">
+                    <div class="action-box">
+                        <img src="{{ asset('front-assets/images/our-services/pic3.jpg') }}" alt="">
+                    </div>
+                    <div class="info-bx text-center">
+                        <div class="feature-box-sm radius bg-white">
+                            <i class="fa fa-comments text-primary"></i>
+                        </div>
+                        <h4><a href="{{ path('front_contact') }}">Nous Contacter</a></h4>
+                        <a href="{{ path('front_contact') }}" class="btn radius-xl">Contacter</a>
                     </div>
                 </div>
             </div>
@@ -175,37 +178,4 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <!-- Revolution Slider JS -->
-    <script src="{{ asset('front-assets/vendors/revolution/js/jquery.themepunch.tools.min.js') }}"></script>
-    <script src="{{ asset('front-assets/vendors/revolution/js/jquery.themepunch.revolution.min.js') }}"></script>
-    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.actions.min.js') }}"></script>
-    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.carousel.min.js') }}"></script>
-    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.kenburn.min.js') }}"></script>
-    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.layeranimation.min.js') }}"></script>
-    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.navigation.min.js') }}"></script>
-    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.parallax.min.js') }}"></script>
-    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.slideanims.min.js') }}"></script>
-    <script src="{{ asset('front-assets/vendors/revolution/js/extensions/revolution.extension.video.min.js') }}"></script>
-
-    <script>
-    jQuery(document).ready(function() {
-        if (jQuery("#rev_slider_486_1").revolution !== undefined) {
-            jQuery("#rev_slider_486_1").show().revolution({
-                sliderType: "standard",
-                jsFileLocation: "{{ asset('front-assets/vendors/revolution/js/') }}",
-                sliderLayout: "fullwidth",
-                delay: 9000,
-                navigation: {
-                    arrows: {
-                        style: "uranus",
-                        enable: true
-                    }
-                },
-                gridwidth: [1240, 1024, 778, 480],
-                gridheight: [768, 600, 600, 600],
-                lazyType: "none"
-            });
-        }
-    });
-    </script>
 {% endblock %}

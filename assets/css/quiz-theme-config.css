@@ -1,0 +1,313 @@
+/* ============================================
+   QUIZ MODULE - CONFIGURATION DU THÈME
+   ============================================
+   
+   Ce fichier permet de personnaliser facilement
+   les couleurs et styles du module quiz.
+   
+   Pour créer un nouveau thème :
+   1. Copiez ce fichier
+   2. Modifiez les variables CSS
+   3. Importez-le dans vos templates
+   ============================================ */
+
+/* ============================================
+   THÈME PAR DÉFAUT - ORANGE/JAUNE
+   ============================================ */
+:root {
+    /* Couleurs principales */
+    --quiz-primary: #ff6b35;
+    --quiz-secondary: #f7931e;
+    --quiz-accent: #fdc830;
+    
+    /* Couleurs de statut */
+    --quiz-success: #48bb78;
+    --quiz-danger: #f56565;
+    --quiz-warning: #fd7e14;
+    --quiz-info: #4299e1;
+    
+    /* Couleurs neutres */
+    --quiz-dark: #2d3748;
+    --quiz-gray: #718096;
+    --quiz-light: #f7fafc;
+    --quiz-border: #e2e8f0;
+    
+    /* Ombres */
+    --quiz-shadow-sm: 0 5px 15px rgba(0, 0, 0, 0.08);
+    --quiz-shadow-md: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --quiz-shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+    
+    /* Transitions */
+    --quiz-transition-fast: all 0.2s ease;
+    --quiz-transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --quiz-transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Espacements */
+    --quiz-spacing-xs: 8px;
+    --quiz-spacing-sm: 12px;
+    --quiz-spacing-md: 20px;
+    --quiz-spacing-lg: 30px;
+    --quiz-spacing-xl: 40px;
+    
+    /* Bordures */
+    --quiz-radius-sm: 8px;
+    --quiz-radius-md: 12px;
+    --quiz-radius-lg: 20px;
+    --quiz-radius-xl: 30px;
+    --quiz-radius-full: 50%;
+    
+    /* Typographie */
+    --quiz-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --quiz-font-size-xs: 12px;
+    --quiz-font-size-sm: 14px;
+    --quiz-font-size-md: 16px;
+    --quiz-font-size-lg: 18px;
+    --quiz-font-size-xl: 24px;
+    --quiz-font-size-2xl: 32px;
+    --quiz-font-size-3xl: 48px;
+    
+    /* Poids de police */
+    --quiz-font-weight-normal: 400;
+    --quiz-font-weight-medium: 500;
+    --quiz-font-weight-semibold: 600;
+    --quiz-font-weight-bold: 700;
+    --quiz-font-weight-extrabold: 800;
+}
+
+/* ============================================
+   THÈME ALTERNATIF - BLEU/VIOLET
+   ============================================
+   Décommentez pour utiliser ce thème
+   ============================================ */
+
+/*
+:root {
+    --quiz-primary: #4299e1;
+    --quiz-secondary: #667eea;
+    --quiz-accent: #9f7aea;
+    --quiz-success: #48bb78;
+    --quiz-danger: #f56565;
+    --quiz-warning: #ed8936;
+    --quiz-info: #4299e1;
+}
+*/
+
+/* ============================================
+   THÈME ALTERNATIF - VERT/ÉMERAUDE
+   ============================================
+   Décommentez pour utiliser ce thème
+   ============================================ */
+
+/*
+:root {
+    --quiz-primary: #10b981;
+    --quiz-secondary: #059669;
+    --quiz-accent: #34d399;
+    --quiz-success: #48bb78;
+    --quiz-danger: #f56565;
+    --quiz-warning: #f59e0b;
+    --quiz-info: #3b82f6;
+}
+*/
+
+/* ============================================
+   THÈME ALTERNATIF - ROSE/ROUGE
+   ============================================
+   Décommentez pour utiliser ce thème
+   ============================================ */
+
+/*
+:root {
+    --quiz-primary: #ec4899;
+    --quiz-secondary: #f43f5e;
+    --quiz-accent: #fb7185;
+    --quiz-success: #48bb78;
+    --quiz-danger: #ef4444;
+    --quiz-warning: #f59e0b;
+    --quiz-info: #3b82f6;
+}
+*/
+
+/* ============================================
+   THÈME SOMBRE (MODE NUIT)
+   ============================================
+   Décommentez pour utiliser ce thème
+   ============================================ */
+
+/*
+:root {
+    --quiz-primary: #ff6b35;
+    --quiz-secondary: #f7931e;
+    --quiz-accent: #fdc830;
+    --quiz-success: #48bb78;
+    --quiz-danger: #f56565;
+    --quiz-warning: #fd7e14;
+    --quiz-info: #4299e1;
+    
+    --quiz-dark: #f7fafc;
+    --quiz-gray: #cbd5e0;
+    --quiz-light: #1a202c;
+    --quiz-border: #2d3748;
+    
+    --quiz-shadow-sm: 0 5px 15px rgba(0, 0, 0, 0.3);
+    --quiz-shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --quiz-shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+body {
+    background: #1a202c;
+    color: #f7fafc;
+}
+
+.quiz-card,
+.quiz-question-card,
+.quiz-info-box {
+    background: #2d3748;
+    color: #f7fafc;
+}
+
+.quiz-option-label {
+    background: #1a202c;
+    border-color: #4a5568;
+    color: #f7fafc;
+}
+*/
+
+/* ============================================
+   PERSONNALISATION AVANCÉE
+   ============================================ */
+
+/* Dégradés personnalisés */
+.quiz-gradient-primary {
+    background: linear-gradient(135deg, var(--quiz-primary), var(--quiz-secondary));
+}
+
+.quiz-gradient-accent {
+    background: linear-gradient(135deg, var(--quiz-secondary), var(--quiz-accent));
+}
+
+.quiz-gradient-success {
+    background: linear-gradient(135deg, var(--quiz-success), #38a169);
+}
+
+/* Effets de glassmorphism */
+.quiz-glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Effets néomorphiques */
+.quiz-neomorph {
+    background: var(--quiz-light);
+    box-shadow: 
+        8px 8px 16px rgba(0, 0, 0, 0.1),
+        -8px -8px 16px rgba(255, 255, 255, 0.7);
+}
+
+.quiz-neomorph-inset {
+    background: var(--quiz-light);
+    box-shadow: 
+        inset 8px 8px 16px rgba(0, 0, 0, 0.1),
+        inset -8px -8px 16px rgba(255, 255, 255, 0.7);
+}
+
+/* ============================================
+   UTILITAIRES DE COULEUR
+   ============================================ */
+
+.quiz-text-primary { color: var(--quiz-primary); }
+.quiz-text-secondary { color: var(--quiz-secondary); }
+.quiz-text-accent { color: var(--quiz-accent); }
+.quiz-text-success { color: var(--quiz-success); }
+.quiz-text-danger { color: var(--quiz-danger); }
+.quiz-text-warning { color: var(--quiz-warning); }
+.quiz-text-info { color: var(--quiz-info); }
+
+.quiz-bg-primary { background-color: var(--quiz-primary); }
+.quiz-bg-secondary { background-color: var(--quiz-secondary); }
+.quiz-bg-accent { background-color: var(--quiz-accent); }
+.quiz-bg-success { background-color: var(--quiz-success); }
+.quiz-bg-danger { background-color: var(--quiz-danger); }
+.quiz-bg-warning { background-color: var(--quiz-warning); }
+.quiz-bg-info { background-color: var(--quiz-info); }
+
+.quiz-border-primary { border-color: var(--quiz-primary); }
+.quiz-border-secondary { border-color: var(--quiz-secondary); }
+.quiz-border-accent { border-color: var(--quiz-accent); }
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* Mobile first approach */
+@media (min-width: 576px) {
+    /* Small devices (landscape phones) */
+}
+
+@media (min-width: 768px) {
+    /* Medium devices (tablets) */
+}
+
+@media (min-width: 992px) {
+    /* Large devices (desktops) */
+}
+
+@media (min-width: 1200px) {
+    /* Extra large devices (large desktops) */
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+    .quiz-banner,
+    .quiz-actions,
+    .breadcrumb-row {
+        display: none;
+    }
+    
+    .quiz-card,
+    .quiz-question-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+}
+
+/* ============================================
+   ACCESSIBILITÉ
+   ============================================ */
+
+/* Focus visible pour la navigation au clavier */
+.quiz-option-input:focus-visible + .quiz-option-text,
+.quiz-btn:focus-visible {
+    outline: 3px solid var(--quiz-primary);
+    outline-offset: 2px;
+}
+
+/* Contraste élevé pour les utilisateurs malvoyants */
+@media (prefers-contrast: high) {
+    :root {
+        --quiz-border: #000;
+    }
+    
+    .quiz-option-label {
+        border-width: 2px;
+    }
+}
+
+/* Réduction des animations pour les utilisateurs sensibles */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

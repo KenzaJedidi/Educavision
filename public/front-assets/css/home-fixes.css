@@ -1,0 +1,201 @@
+/* ===================================
+   HOME PAGE - Corrections scroll, affichage, responsive
+   EducaVision
+   =================================== */
+
+/* Base: permettre le scroll correct */
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+body {
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    min-height: 100vh;
+}
+
+/* ========== NAVBAR - Logo, menu et boutons centrés (toutes les pages) ========== */
+.elegant-header .main-nav .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.elegant-header .nav-container {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1.5rem;
+    flex-wrap: nowrap;
+    width: 100%;
+    max-width: 100%;
+}
+
+.elegant-header .nav-logo {
+    flex: 0 0 auto;
+    order: 1;
+}
+
+.elegant-header .nav-menu {
+    flex: 0 0 auto !important;
+    margin: 0;
+    order: 2;
+}
+
+.elegant-header .nav-actions {
+    flex: 0 0 auto;
+    order: 3;
+}
+
+/* Sur petits écrans */
+@media (max-width: 1200px) {
+    .elegant-header .nav-container {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 991px) {
+    .elegant-header .nav-container {
+        flex-wrap: wrap;
+    }
+}
+
+/* ========== PAGE D'ACCUEIL ========== */
+body.page-home .page-wraper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+body.page-home .page-content {
+    flex: 1;
+    padding: 0 !important;
+    min-height: 0;
+}
+
+/* Bannière photo - compacte, boxes juste après */
+.home-hero {
+    position: relative;
+    height: 220px;
+    min-height: 200px;
+    max-height: 280px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.home-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(2, 0, 11, 0.75);
+}
+
+.home-hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 15px 15px;
+    max-width: 700px;
+}
+
+.home-hero h1 {
+    color: #fff;
+    font-size: clamp(22px, 3.5vw, 34px);
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    font-family: Rubik, sans-serif;
+}
+
+.home-hero-subtitle {
+    color: #fff;
+    font-size: clamp(13px, 1.8vw, 16px);
+    margin: 0 0 6px 0;
+}
+
+.home-hero-desc {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(12px, 1.3vw, 14px);
+    line-height: 1.5;
+    margin: 0 0 14px 0;
+}
+
+.home-hero-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.home-hero-btn {
+    display: inline-block;
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.home-hero-btn-primary {
+    background: #FF9800;
+    color: white !important;
+    border: 2px solid #FF9800;
+}
+
+.home-hero-btn-primary:hover {
+    background: #e68900;
+    border-color: #e68900;
+    color: white !important;
+}
+
+.home-hero-btn-secondary {
+    background: transparent;
+    color: white !important;
+    border: 2px solid white;
+}
+
+.home-hero-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white !important;
+}
+
+/* Boxes après la photo - espacement vers le bas */
+body.page-home .service-info-bx {
+    margin-top: 60px !important;
+    padding-top: 0 !important;
+    position: relative;
+    z-index: 5;
+}
+
+@media (max-width: 576px) {
+    .home-hero {
+        height: 200px;
+        min-height: 180px;
+    }
+    
+    body.page-home .service-info-bx {
+        margin-top: 40px !important;
+    }
+    
+    .home-hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}

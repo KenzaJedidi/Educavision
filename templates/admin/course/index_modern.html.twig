@@ -1,0 +1,528 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Gestion des Cours - EducaVision{% endblock %}
+
+{% block breadcrumb_title %}Gestion des Cours{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="{{ path('admin_dashboard') }}">Dashboard</a></li>
+<li>Cours</li>
+{% endblock %}
+
+{% block body %}
+<!-- Statistiques globales -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ statistics.total_courses }}</h4>
+                        <p class="card-text">Total Cours</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fa fa-book fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ statistics.total_views }}</h4>
+                        <p class="card-text">Vues Totales</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fa fa-eye fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ statistics.total_likes }}</h4>
+                        <p class="card-text">Likes Totaux</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fa fa-heart fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ statistics.average_score|number_format(1) }}</h4>
+                        <p class="card-text">Score Moyen</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fa fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top cours et trending -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">🏆 Top 5 Cours</h5>
+                <a href="{{ path('admin_course_statistics') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fa fa-chart-bar"></i> Voir stats
+                </a>
+            </div>
+            <div class="card-body">
+                {% if topCourses %}
+                    {% for course in topCourses %}
+                        <div class="d-flex justify-content-between align-items-center mb-2 p-2 border-bottom">
+                            <div>
+                                <h6 class="mb-1">{{ course.titre }}</h6>
+                                <small class="text-muted">{{ course.category }} • {{ course.chapters|length }} chapitres</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-primary">{{ course.popularity_score|number_format(1) }}</span>
+                                <small class="text-muted d-block">Score</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">Aucun cours disponible</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🔥 Trending</h5>
+            </div>
+            <div class="card-body">
+                {% if trendingCourses %}
+                    {% for course in trendingCourses %}
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                {% if course.imageUrl %}
+                                    <img src="{{ asset(course.imageUrl) }}" alt="{{ course.titre }}" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="fa fa-book text-white"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">{{ course.titre|slice(0, 30) }}...</h6>
+                                <small class="text-muted">{{ course.popularity_score|number_format(1) }} pts</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">Aucun cours trending</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">🔍 Filtres et Recherche</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label">Rechercher</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fa fa-search"></i></span>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           placeholder="Titre, description..." value="{{ search }}">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label for="category" class="form-label">Catégorie</label>
+                <select class="form-select" id="category" name="category">
+                    <option value="">Toutes</option>
+                    {% for category in categories %}
+                        <option value="{{ category }}" {% if selectedCategory == category %}selected{% endif %}>
+                            {{ category }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="status" class="form-label">Statut</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">Tous</option>
+                    <option value="1" {% if selectedStatus == '1' %}selected{% endif %}>Actif</option>
+                    <option value="0" {% if selectedStatus == '0' %}selected{% endif %}>Inactif</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="sortBy" class="form-label">Trier par</label>
+                <select class="form-select" id="sortBy" name="sortBy">
+                    <option value="created_at" {% if sortBy == 'created_at' %}selected{% endif %}>Date</option>
+                    <option value="titre" {% if sortBy == 'titre' %}selected{% endif %}>Titre</option>
+                    <option value="popularity_score" {% if sortBy == 'popularity_score' %}selected{% endif %}>Score</option>
+                    <option value="views" {% if sortBy == 'views' %}selected{% endif %}>Vues</option>
+                    <option value="likes" {% if sortBy == 'likes' %}selected{% endif %}>Likes</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-filter"></i> Filtrer
+                    </button>
+                    <a href="{{ path('admin_course_index') }}" class="btn btn-outline-secondary">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+        
+        {% if search or selectedCategory or selectedStatus is not null %}
+            <div class="mt-3">
+                <div class="alert alert-info d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fa fa-info-circle"></i>
+                        <strong>Filtres actifs:</strong>
+                        {% if search %} Recherche: "{{ search }}"{% endif %}
+                        {% if selectedCategory %} Catégorie: {{ selectedCategory }}{% endif %}
+                        {% if selectedStatus is not null %} Statut: {{ selectedStatus == '1' ? 'Actif' : 'Inactif' }}{% endif %}
+                        <span class="badge bg-primary">{{ courses|length }} résultat(s)</span>
+                    </div>
+                    <a href="{{ path('admin_course_index') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa fa-times"></i> Effacer
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Actions rapides -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="mb-3">⚡ Actions Rapides</h5>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{{ path('admin_course_new') }}" class="btn btn-success">
+                        <i class="fa fa-plus"></i> Nouveau Cours
+                    </a>
+                    <button type="button" class="btn btn-info" onclick="updateAllScores()">
+                        <i class="fa fa-sync"></i> Mettre à jour les scores
+                    </button>
+                    <a href="{{ path('admin_course_dashboard') }}" class="btn btn-primary">
+                        <i class="fa fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 text-end">
+                <h5 class="mb-3">📊 Export</h5>
+                <div class="d-flex gap-2 justify-content-end">
+                    <button type="button" class="btn btn-outline-success">
+                        <i class="fa fa-file-csv"></i> CSV
+                    </button>
+                    <button type="button" class="btn btn-outline-danger">
+                        <i class="fa fa-file-pdf"></i> PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tableau des cours -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">📚 Liste des Cours ({{ courses|length }})</h5>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleView('grid')">
+                <i class="fa fa-th"></i> Grille
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary active" onclick="toggleView('table')">
+                <i class="fa fa-list"></i> Tableau
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Vue tableau -->
+        <div id="tableView">
+            {% if courses is not empty %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Image</th>
+                                <th>Cours</th>
+                                <th>Catégorie</th>
+                                <th>Statistiques</th>
+                                <th>Score</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in courses %}
+                                {% set isTrending = course.isTrending() %}
+                                <tr class="{% if isTrending %}table-warning{% endif %}">
+                                    <td>
+                                        {% if course.imageUrl %}
+                                            <img src="{{ asset(course.imageUrl) }}" alt="{{ course.titre }}" 
+                                                 class="rounded" style="width: 60px; height: 40px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-secondary rounded d-flex align-items-center justify-content-center" 
+                                                 style="width: 60px; height: 40px;">
+                                                <i class="fa fa-book text-white"></i>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-1">
+                                                {{ course.titre }}
+                                                {% if isTrending %}
+                                                    <span class="badge bg-warning ms-1">🔥 Trending</span>
+                                                {% endif %}
+                                            </h6>
+                                            <small class="text-muted">
+                                                {{ course.description|slice(0, 80) }}...
+                                                <br>
+                                                <i class="fa fa-calendar"></i> {{ course.createdAt|date('d/m/Y') }}
+                                                <span class="ms-2"><i class="fa fa-file-alt"></i> {{ course.chapters|length }} chapitres</span>
+                                            </small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ course.category ?: 'Non définie' }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="small">
+                                            <div><i class="fa fa-eye text-primary"></i> {{ course.views }}</div>
+                                            <div><i class="fa fa-heart text-danger"></i> {{ course.likes }}</div>
+                                            <div><i class="fa fa-comments text-success"></i> {{ course.commentsCount }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-center">
+                                            <span class="badge bg-{{ course.popularityScore > 50 ? 'success' : 'secondary' }} fs-6">
+                                                {{ course.popularityScore|number_format(1) }}
+                                            </span>
+                                            <small class="d-block text-muted">pts</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ course.status == 1 ? 'success' : 'danger' }}">
+                                            {{ course.getFormattedStatus() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ path('admin_course_show', {'id': course.id}) }}" 
+                                               class="btn btn-sm btn-info" title="Voir">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                            <a href="{{ path('admin_course_edit', {'id': course.id}) }}" 
+                                               class="btn btn-sm btn-warning" title="Modifier">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-success" 
+                                                    onclick="recordLike({{ course.id }})" title="Like">
+                                                <i class="fa fa-heart"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                    onclick="toggleStatus({{ course.id }})" title="Activer/Désactiver">
+                                                <i class="fa fa-power-off"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger" 
+                                                    onclick="confirmDelete({{ course.id }}, '{{ course.titre }}')" title="Supprimer">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fa fa-book fa-3x text-muted mb-3"></i>
+                    <h5>Aucun cours trouvé</h5>
+                    <p class="text-muted">Commencez par créer votre premier cours.</p>
+                    <a href="{{ path('admin_course_new') }}" class="btn btn-primary">
+                        <i class="fa fa-plus"></i> Créer un cours
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Vue grille -->
+        <div id="gridView" style="display: none;">
+            <div class="row">
+                {% for course in courses %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            {% if course.imageUrl %}
+                                <img src="{{ asset(course.imageUrl) }}" class="card-img-top" alt="{{ course.titre }}" 
+                                     style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
+                                     style="height: 200px;">
+                                    <i class="fa fa-book fa-3x text-white"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">
+                                    {{ course.titre|slice(0, 30) }}...
+                                    {% if course.isTrending() %}
+                                        <span class="badge bg-warning ms-1">🔥</span>
+                                    {% endif %}
+                                </h5>
+                                <p class="card-text">{{ course.description|slice(0, 100) }}...</p>
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-info">{{ course.category ?: 'Non définie' }}</span>
+                                        <span class="badge bg-{{ course.popularityScore > 50 ? 'success' : 'secondary' }}">
+                                            {{ course.popularityScore|number_format(1) }} pts
+                                        </span>
+                                    </div>
+                                    <div class="btn-group w-100" role="group">
+                                        <a href="{{ path('admin_course_show', {'id': course.id}) }}" 
+                                           class="btn btn-sm btn-outline-primary">Voir</a>
+                                        <a href="{{ path('admin_course_edit', {'id': course.id }) }}" 
+                                           class="btn btn-sm btn-outline-warning">Modifier</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12 text-center py-5">
+                        <i class="fa fa-book fa-3x text-muted mb-3"></i>
+                        <h5>Aucun cours trouvé</h5>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">⚠️ Confirmation de suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer le cours "<span id="deleteCourseTitle"></span>" ?</p>
+                <p class="text-danger">Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <a href="#" id="confirmDeleteBtn" class="btn btn-danger">
+                    <i class="fa fa-trash"></i> Supprimer
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+function toggleView(view) {
+    const tableView = document.getElementById('tableView');
+    const gridView = document.getElementById('gridView');
+    const buttons = document.querySelectorAll('[onclick^="toggleView"]');
+    
+    if (view === 'grid') {
+        tableView.style.display = 'none';
+        gridView.style.display = 'block';
+        buttons[0].classList.add('active');
+        buttons[1].classList.remove('active');
+    } else {
+        tableView.style.display = 'block';
+        gridView.style.display = 'none';
+        buttons[1].classList.add('active');
+        buttons[0].classList.remove('active');
+    }
+}
+
+function confirmDelete(id, title) {
+    document.getElementById('deleteCourseTitle').textContent = title;
+    document.getElementById('confirmDeleteBtn').href = `/admin/course/${id}/delete`;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+
+function toggleStatus(id) {
+    if (confirm('Êtes-vous sûr de vouloir changer le statut de ce cours ?')) {
+        window.location.href = `/admin/course/${id}/toggle-status`;
+    }
+}
+
+function recordLike(id) {
+    fetch(`/admin/course/api/record-like/${id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Une erreur est survenue');
+    });
+}
+
+function updateAllScores() {
+    if (confirm('Cette opération peut prendre quelques instants. Continuer ?')) {
+        fetch('/admin/course/api/update-scores', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Erreur: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue');
+        });
+    }
+}
+</script>
+{% endblock %}

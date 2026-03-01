@@ -18,6 +18,9 @@ class Answer
     #[ORM\Column(type: "boolean")]
     private bool $correct = false;
 
+    #[ORM\Column(type: "integer", options: ['default' => 1])]
+    private int $position = 1;
+
     #[ORM\ManyToOne(targetEntity: Question::class, inversedBy: "answers")]
     #[ORM\JoinColumn(nullable: false)]
     private ?Question $question = null;
@@ -57,6 +60,17 @@ class Answer
     public function setQuestion(?Question $question): static
     {
         $this->question = $question;
+        return $this;
+    }
+
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): static
+    {
+        $this->position = $position;
         return $this;
     }
 }

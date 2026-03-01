@@ -84,6 +84,42 @@
 		</div>
 	</div>
 </div>
+<!-- Agrégats des notes pour les Réponses (en dehors du tableau) -->
+<div class="row m-b30">
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card" style="background:linear-gradient(135deg,#6366f1,#4338ca);color:#fff;">
+			<div class="wc-item p-3">
+				<h4 class="wc-title">Satisfaction des réponses</h4>
+				<span class="wc-des">Note moyenne</span>
+				<div class="d-flex align-items-center my-2">
+					<h3 class="mb-0 mr-3">{{ stats.reponses.avgRating }}</h3>
+					<div>
+						{% for i in 1..5 %}
+							{% if i <= stats.reponses.avgRating|round(0, 'floor') %}
+								<i class="fa fa-star text-warning"></i>
+							{% else %}
+								<i class="fa fa-star-o text-warning"></i>
+							{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+				<p class="mb-1">Réponses notées : <strong>{{ stats.reponses.ratedCount }}</strong> / {{ stats.reponses.total }} ({{ stats.reponses.percentRated }}%)</p>
+				<p class="small">Vous pouvez cliquer sur <a href="{{ path('reponse_index') }}" class="text-white">Gérer les réponses</a> pour voir les détails et les notes individuelles.</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card">
+			<div class="wc-item p-3">
+				<h4 class="wc-title">Répartition des notes</h4>
+				<span class="wc-des">Distribution des évaluations</span>
+				<div class="widget-inner mt-3">
+					<canvas id="ratingChart" width="400" height="160"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 <!-- Cards statistiques -->
 <div class="row">
 	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
@@ -104,7 +140,7 @@
 	</div>
 	
 	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
-		<div class="widget-card widget-bg2">
+		<div class="widget-card widget-bg3">
 			<div class="wc-item">
 				<h4 class="wc-title">Formations</h4>
 				<span class="wc-des">Formations proposées</span>
@@ -115,6 +151,40 @@
 				<span class="wc-progress-bx">
 					<span class="wc-change">Disponibles</span>
 					<span class="wc-number ml-auto">{{ stats.formations.pct|default(100) }}%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg5">
+			<div class="wc-item">
+				<h4 class="wc-title">Quiz</h4>
+				<span class="wc-des">Total des quiz</span>
+				<span class="wc-stats counter">{{ stats.quizzes.total|default(0) }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Créés</span>
+					<span class="wc-number ml-auto">{{ stats.quizzes.total|default(0) }}</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-md-6 col-lg-3 col-xl-3 col-sm-6 col-12">
+		<div class="widget-card widget-bg6">
+			<div class="wc-item">
+				<h4 class="wc-title">Quiz Publiés</h4>
+				<span class="wc-des">Accessibles aux étudiants</span>
+				<span class="wc-stats counter">{{ stats.quizzes.published|default(0) }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.quizzes.pct|default(0) }}%;" aria-valuenow="{{ stats.quizzes.pct|default(0) }}" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Publiés</span>
+					<span class="wc-number ml-auto">{{ stats.quizzes.pct|default(0) }}%</span>
 				</span>
 			</div>
 		</div>
@@ -284,6 +354,98 @@
 	</div>
  </div>
 
+<!-- Accès rapide - Module Cours & Chapitres -->
+<div class="row">
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Accès rapide - Module Cours & Chapitres</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="row">
+					<div class="col-md-6 text-center m-b20">
+						<a href="{{ path('admin_course_index') }}" class="qa-card qa-cours">
+							<i class="fa fa-book fa-3x m-b10"></i>
+							<h5>Gérer les Cours</h5>
+							<p class="text-white">Lister, créer, modifier</p>
+						</a>
+					</div>
+					<div class="col-md-6 text-center m-b20">
+						<a href="{{ path('admin_chapter_index') }}" class="qa-card qa-chapitre">
+							<i class="fa fa-layers fa-3x m-b10"></i>
+							<h5>Gérer les Chapitres</h5>
+							<p class="text-white">Contenus des cours</p>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+ </div>
+<!-- Cartes métriques - Quiz & Quiz Publiés (avant accès rapide) -->
+<div class="row m-b30">
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card widget-bg5">
+			<div class="wc-item">
+				<h4 class="wc-title">Quiz Créés</h4>
+				<span class="wc-des">Total des quiz</span>
+				<span class="wc-stats counter">{{ stats.quizzes.total|default(0) }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Créés</span>
+					<span class="wc-number ml-auto">{{ stats.quizzes.total|default(0) }}</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-lg-6 col-sm-12">
+		<div class="widget-card widget-bg6">
+			<div class="wc-item">
+				<h4 class="wc-title">Quiz Publiés</h4>
+				<span class="wc-des">Accessibles aux étudiants</span>
+				<span class="wc-stats counter">{{ stats.quizzes.published|default(0) }}</span>
+				<div class="progress wc-progress">
+					<div class="progress-bar" role="progressbar" style="width: {{ stats.quizzes.pct|default(0) }}%;" aria-valuenow="{{ stats.quizzes.pct|default(0) }}" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
+				<span class="wc-progress-bx">
+					<span class="wc-change">Publiés</span>
+					<span class="wc-number ml-auto">{{ stats.quizzes.pct|default(0) }}%</span>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Accès rapide - Module Quiz & Résultats -->
+<div class="row">
+	<div class="col-lg-12 m-b30">
+		<div class="widget-box">
+			<div class="wc-title">
+				<h4>Accès rapide - Module Quiz & Résultats</h4>
+			</div>
+			<div class="widget-inner">
+				<div class="row">
+					<div class="col-md-6 text-center m-b20">
+						<a href="{{ path('admin_quiz_index') }}" class="qa-card qa-quiz">
+							<i class="fa fa-question-circle fa-3x m-b10"></i>
+							<h5>Gérer les Quiz</h5>
+							<p class="text-white">Créer, configurer</p>
+						</a>
+					</div>
+					<div class="col-md-6 text-center m-b20">
+						<a href="{{ path('admin_quiz_results') }}" class="qa-card qa-resultats">
+							<i class="fa fa-chart-bar fa-3x m-b10"></i>
+							<h5>Résultats des Quiz</h5>
+							<p class="text-white">Statistiques et résultats</p>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+ </div>
+
 <!-- Accès rapide - Module Réclamations & Réponses -->
 <div class="row">
 	<div class="col-lg-12 m-b30">
@@ -312,6 +474,7 @@
 		</div>
 	</div>
  </div>
+
 {% endblock %}
 
 {% block javascripts %}
@@ -337,6 +500,34 @@ var chart = new Chart(ctx, {
     }
 });
 </script>
+<script>
+// Chart for rating distribution
+var ratingCtx = document.getElementById('ratingChart');
+if (ratingCtx) {
+	var labels = ['1', '2', '3', '4', '5'];
+	var data = {{ stats.reponses.ratingBuckets|default({1:0,2:0,3:0,4:0,5:0})|json_encode|raw }};
+	// Ensure ordering 1..5
+	var dataset = [data[1] ?? 0, data[2] ?? 0, data[3] ?? 0, data[4] ?? 0, data[5] ?? 0];
+	new Chart(ratingCtx.getContext('2d'), {
+		type: 'bar',
+		data: {
+			labels: labels,
+			datasets: [{
+				label: 'Nombre de notes',
+				data: dataset,
+				backgroundColor: 'rgba(99,102,241,0.6)',
+				borderColor: 'rgba(99,102,241,1)',
+				borderWidth: 1
+			}]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: true,
+			scales: { y: { beginAtZero: true, ticks: {stepSize:1} } }
+		}
+	});
+}
+</script>
 <style>
 /* Attractive gradient cards for quick-access modules */
 .qa-card{display:block;border-radius:14px;padding:18px 16px;text-decoration:none;background:#222;color:#fff !important;box-shadow:0 8px 24px rgba(0,0,0,.08);transition:transform .15s ease, box-shadow .15s ease}
@@ -348,5 +539,9 @@ var chart = new Chart(ctx, {
 .qa-candidature{background:linear-gradient(135deg,#22c55e,#16a34a)}
 .qa-reclamation{background:linear-gradient(135deg,#f59e0b,#d97706)}
 .qa-reponse{background:linear-gradient(135deg,#6366f1,#4338ca)}
+.qa-cours{background:linear-gradient(135deg,#FF6B6B,#C92A2A)}
+.qa-chapitre{background:linear-gradient(135deg,#4ECDC4,#2A9D8F)}
+.qa-quiz{background:linear-gradient(135deg,#95E1D3,#3AA989)}
+.qa-resultats{background:linear-gradient(135deg,#A8E6CF,#7FD1AE)}
 </style>
 {% endblock %}

@@ -1,0 +1,420 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}{{ quiz.titre }} - Quiz - EducaVision{% endblock %}
+
+{% block body %}
+
+<!-- Page Title -->
+<div class="page-banner ovbl-dark" style="background-image:url({{ asset('front-assets/images/banner/banner3.jpg') }});">
+    <div class="container">
+        <div class="page-banner-entry">
+            <h1 class="text-white">{{ quiz.titre }}</h1>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-row">
+    <div class="container">
+        <ul class="list-inline">
+            <li><a href="{{ path('front_home') }}">Accueil</a></li>
+            <li><a href="{{ path('quiz_list') }}">Quiz</a></li>
+            <li>{{ quiz.titre }}</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="content-block">
+    <div class="section-area section-sp2">
+        <div class="container">
+            <!-- Quiz Stats Header -->
+            <div class="quiz-stats-header mb-4 p-4 rounded-lg bg-white shadow-sm">
+                <div class="row align-items-center">
+                    <div class="col-md-3 text-center">
+                        <i class="fa fa-list-ol fa-2x text-primary mb-2"></i>
+                        <h6 class="text-muted mb-1">Questions</h6>
+                        <h3 class="text-primary fw-bold">{{ quiz.numberOfQuestions }}</h3>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <i class="fa fa-signal fa-2x text-primary mb-2"></i>
+                        <h6 class="text-muted mb-1">Difficulté</h6>
+                        <span class="badge badge-{{ quiz.difficultyLevel|lower == 'facile' ? 'success' : (quiz.difficultyLevel|lower == 'moyen' ? 'warning' : 'danger') }} p-2">
+                            {{ quiz.difficultyLevel | default('Non défini') }}
+                        </span>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <i class="fa fa-clock fa-2x text-primary mb-2"></i>
+                        <h6 class="text-muted mb-1">Temps</h6>
+                        <h3 class="text-primary fw-bold">{{ (quiz.timeLimit / 60) | round(0, 'floor') }}m</h3>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <i class="fa fa-hourglass-end fa-2x text-danger mb-2"></i>
+                        <h6 class="text-muted mb-1">Temps restant</h6>
+                        <h3 id="timer" class="text-danger fw-bold">{{ quiz.timeLimit }}s</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress mb-4 rounded-lg" style="height: 8px;">
+                <div id="progressBar" class="progress-bar bg-success" style="width: 0%; transition: width 0.3s ease;"></div>
+            </div>
+
+            <!-- Question Counter -->
+            <div class="text-center mb-4">
+                <p class="text-muted">
+                    <span id="currentQuestion">1</span> / <span id="totalQuestions">{{ questions | length }}</span>
+                </p>
+            </div>
+
+            <!-- Questions Container -->
+            <div id="questionsContainer" class="row justify-content-center">
+                {% for question in questions %}
+                <div class="col-md-8">
+                    <div class="question-card card mb-4 shadow-lg rounded-lg" data-question-id="{{ question.id }}" style="display: {% if loop.first %}block{% else %}none{% endif %}">
+                        <!-- Question Header -->
+                        <div class="card-header bg-gradient-primary text-white p-4">
+                            <h4 class="mb-0">
+                                <i class="fa fa-lightbulb-o"></i> Question {{ loop.index }}
+                            </h4>
+                        </div>
+
+                        <!-- Question Body -->
+                        <div class="card-body p-5">
+                            <h5 class="card-title mb-4 fw-bold text-dark">
+                                {{ question.texte }}
+                            </h5>
+
+                            <!-- Answers -->
+                            <div class="answers-list">
+                                {% for answer in question.answers %}
+                                <div class="form-check answer-option mb-3 p-3 rounded-lg border border-light hover-shadow" style="transition: all 0.3s ease; cursor: pointer;">
+                                    <input 
+                                        class="form-check-input answer-radio" 
+                                        type="radio" 
+                                        name="question_{{ question.id }}" 
+                                        id="answer_{{ answer.id }}" 
+                                        value="{{ loop.index0 }}"
+                                        data-answer-index="{{ loop.index0 }}"
+                                        style="cursor: pointer;"
+                                    >
+                                    <label class="form-check-label w-100" for="answer_{{ answer.id }}" style="cursor: pointer;">
+                                        <span class="answer-text">
+                                            {{ loop.index }}) {{ answer.texte }}
+                                        </span>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="card-footer bg-light p-4 d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-secondary btn-prev rounded-lg" {% if loop.first %}disabled{% endif %}>
+                                <i class="fa fa-chevron-left"></i> Précédent
+                            </button>
+                            
+                            {% if loop.last %}
+                            <button type="button" class="btn btn-success btn-next btn-lg rounded-lg fw-bold">
+                                <i class="fa fa-check-circle"></i> Terminer le Quiz
+                            </button>
+                            {% else %}
+                            <button type="button" class="btn btn-primary btn-next rounded-lg fw-bold">
+                                Suivant <i class="fa fa-chevron-right"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Completion Message -->
+            <div id="completionMessage" class="row justify-content-center" style="display: none;">
+                <div class="col-md-8">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary mb-4" style="width: 4rem; height: 4rem;" role="status">
+                            <span class="visually-hidden">Calcul des résultats...</span>
+                        </div>
+                        <h3>Quiz Terminé!</h3>
+                        <p class="text-muted mb-3">Calcul de vos résultats...</p>
+                        <p class="text-muted">Redirection vers la page de résultats...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CSRF token pour soumission des réponses -->
+            <div id="quizSubmitData" data-csrf="{{ csrf_token('quiz_submit') }}" style="display: none;"></div>
+
+            <!-- Error Alert -->
+            <div id="errorAlert" class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
+                <i class="fa fa-exclamation-circle"></i>
+                <strong>Erreur:</strong>
+                <span id="errorMessage"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentQuestionIndex = 0;
+    let quizId = {{ quiz.idquiz }};
+    let totalQuestions = {{ questions | length }};
+    let answers = {};
+    let timerInterval;
+    let timeRemaining = {{ quiz.timeLimit }};
+
+    // Timer
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timer').textContent = 
+                (minutes > 0 ? minutes + 'm ' : '') + seconds + 's';
+
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                finishQuiz();
+            }
+
+            // Change color when time is running out
+            if (timeRemaining <= 60) {
+                document.getElementById('timer').classList.add('text-danger');
+            }
+        }, 1000);
+    }
+
+    // Show question
+    function showQuestion(index) {
+        document.querySelectorAll('.question-card').forEach(card => card.style.display = 'none');
+        document.querySelectorAll('.question-card')[index].style.display = 'block';
+
+        currentQuestionIndex = index;
+        document.getElementById('currentQuestion').textContent = index + 1;
+        const percent = ((index + 1) / totalQuestions) * 100;
+        document.getElementById('progressBar').style.width = percent + '%';
+
+        // Restore previous answer if exists
+        const questionId = document.querySelectorAll('.question-card')[index].dataset.questionId;
+        if (answers[questionId] !== undefined) {
+            const radio = document.querySelector(`input[data-answer-index="${answers[questionId]}"][name="question_${questionId}"]`);
+            if (radio) radio.checked = true;
+        }
+    }
+
+    // Save current answer
+    function saveCurrentAnswer() {
+        const card = document.querySelectorAll('.question-card')[currentQuestionIndex];
+        const questionId = card.dataset.questionId;
+        const selectedAnswer = card.querySelector('.answer-radio:checked');
+
+        if (selectedAnswer) {
+            answers[questionId] = parseInt(selectedAnswer.dataset.answerIndex);
+        }
+    }
+
+    // Finish quiz - soumettre les réponses pour afficher score et correction
+    function finishQuiz() {
+        clearInterval(timerInterval);
+        saveCurrentAnswer();
+
+        document.getElementById('questionsContainer').style.display = 'none';
+        document.getElementById('completionMessage').style.display = 'block';
+
+        // Créer et soumettre le formulaire avec les réponses pour afficher les résultats
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `{{ path('quiz_submit_complete', {'quizId': 'REPLACE'}) }}`.replace('REPLACE', quizId);
+
+        for (const [questionId, answerIndex] of Object.entries(answers)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = `answers[${questionId}]`;
+            input.value = answerIndex;
+            form.appendChild(input);
+        }
+
+        const csrfToken = document.getElementById('quizSubmitData')?.dataset?.csrf;
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('totalQuestions').textContent = totalQuestions;
+
+        document.querySelectorAll('.btn-prev').forEach(btn => {
+            btn.addEventListener('click', () => {
+                saveCurrentAnswer();
+                if (currentQuestionIndex > 0) {
+                    showQuestion(currentQuestionIndex - 1);
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-next').forEach(btn => {
+            btn.addEventListener('click', () => {
+                saveCurrentAnswer();
+                const nextIndex = currentQuestionIndex + 1;
+                if (nextIndex < totalQuestions) {
+                    showQuestion(nextIndex);
+                } else {
+                    finishQuiz();
+                }
+            });
+        });
+
+        // Answer option styling
+        document.querySelectorAll('.answer-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('.answer-radio');
+                radio.checked = true;
+            });
+
+            option.addEventListener('mouseenter', function() {
+                if (!this.querySelector('.answer-radio:checked')) {
+                    this.style.backgroundColor = '#f8f9fa';
+                }
+            });
+
+            option.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+            });
+        });
+
+        startTimer();
+        showQuestion(0);
+    });
+</script>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    }
+
+    .question-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        animation: slideIn 0.3s ease-in-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .answer-option {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .answer-option:hover {
+        border-color: #007bff !important;
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+    }
+
+    .answer-option input[type="radio"]:checked + label {
+        color: #007bff;
+        font-weight: 600;
+    }
+
+    .answer-option input[type="radio"]:checked {
+        border-color: #007bff !important;
+    }
+
+    .form-check-input:checked {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .form-check-input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    }
+
+    .quiz-stats-header {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 1px solid #e0e0e0;
+    }
+
+    .btn-prev, .btn-next {
+        min-width: 120px;
+        font-weight: 500;
+        border-radius: 8px;
+        padding: 10px 20px;
+    }
+
+    .btn-prev:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .hover-shadow:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .rounded-lg {
+        border-radius: 12px;
+    }
+
+    .fw-bold {
+        font-weight: 600;
+    }
+
+    .card-header {
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #timer {
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+    }
+
+    .shadow-lg {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .progress {
+        background-color: #e9ecef;
+    }
+
+    .answer-text {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .quiz-stats-header {
+            font-size: 0.9rem;
+        }
+
+        .btn-prev, .btn-next {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .card-body {
+            padding: 1.5rem !important;
+        }
+    }
+</style>
+
+{% endblock %}

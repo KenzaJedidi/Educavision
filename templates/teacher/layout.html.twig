@@ -182,34 +182,40 @@
 							<span class="ttr-label">Dashboard</span>
 						</a>
 					</li>
-					<li class="teacher-section-label">Mes Contenus</li>
+					<li class="teacher-section-label">Mes Contenus Pédagogiques</li>
 					<li>
 						<a href="#" class="ttr-material-button">
 							<span class="ttr-icon"><i class="ti-book"></i></span>
-							<span class="ttr-label">Mes Cours</span>
+							<span class="ttr-label">Cours & Chapitres</span>
 							<span class="ttr-arrow-icon"><i class="fa fa-angle-down"></i></span>
 						</a>
 						<ul>
 							<li>
-								<a href="{{ path('teacher_course_index') }}" class="ttr-material-button"><span class="ttr-label">Liste des cours</span></a>
+								<a href="{{ path('teacher_course_index') }}" class="ttr-material-button"><span class="ttr-label">Mes Cours</span></a>
 							</li>
 							<li>
 								<a href="{{ path('teacher_course_new') }}" class="ttr-material-button"><span class="ttr-label">Ajouter un cours</span></a>
+							</li>
+							<li>
+								<a href="{{ path('teacher_chapter_index') }}" class="ttr-material-button"><span class="ttr-label">Mes Chapitres</span></a>
+							</li>
+							<li>
+								<a href="{{ path('teacher_chapter_new') }}" class="ttr-material-button"><span class="ttr-label">Ajouter un chapitre</span></a>
 							</li>
 						</ul>
 					</li>
 					<li>
 						<a href="#" class="ttr-material-button">
-							<span class="ttr-icon"><i class="ti-layers"></i></span>
-							<span class="ttr-label">Mes Chapitres</span>
+							<span class="ttr-icon"><i class="ti-email"></i></span>
+							<span class="ttr-label">Quiz & Résultats</span>
 							<span class="ttr-arrow-icon"><i class="fa fa-angle-down"></i></span>
 						</a>
 						<ul>
 							<li>
-								<a href="{{ path('teacher_chapter_index') }}" class="ttr-material-button"><span class="ttr-label">Liste des chapitres</span></a>
+								<a href="{{ path('quiz_index') }}" class="ttr-material-button"><span class="ttr-label">Voir les quiz</span></a>
 							</li>
 							<li>
-								<a href="{{ path('teacher_chapter_new') }}" class="ttr-material-button"><span class="ttr-label">Ajouter un chapitre</span></a>
+								<a href="{{ path('front_quiz_results') }}" class="ttr-material-button"><span class="ttr-label">Résultats des quiz</span></a>
 							</li>
 						</ul>
 					</li>

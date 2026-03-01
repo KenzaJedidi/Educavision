@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test Adaptation de Difficulté{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <a href="{{ path('ai_test_index') }}" class="btn btn-outline-secondary mb-4">
+        <i class="fas fa-arrow-left"></i> Retour
+    </a>
+    
+    <h1 class="mb-4">
+        <i class="fas fa-sliders-h text-info"></i>
+        Test d'Adaptation de Difficulté
+    </h1>
+
+    <div class="row">
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Entrez un score</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Score obtenu (%)</label>
+                            <input type="range" class="form-range" name="score" id="scoreRange" min="0" max="100" value="50" oninput="document.getElementById('scoreValue').textContent = this.value">
+                            <div class="text-center mt-2">
+                                <h2 class="text-primary"><span id="scoreValue">50</span>%</h2>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-info text-white w-100">
+                            <i class="fas fa-calculator"></i> Calculer l'Adaptation
+                        </button>
+                    </form>
+
+                    <div class="mt-4">
+                        <h6 class="fw-bold">Exemples rapides:</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-danger btn-sm" onclick="setScore(25)">25% - Faible</button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="setScore(50)">50% - Moyen</button>
+                            <button class="btn btn-outline-primary btn-sm" onclick="setScore(75)">75% - Bon</button>
+                            <button class="btn btn-outline-success btn-sm" onclick="setScore(95)">95% - Excellent</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            {% if adaptations %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Recommandations IA</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="progress" style="height: 40px;">
+                            <div class="progress-bar {% if adaptations.score >= 80 %}bg-success{% elseif adaptations.score >= 60 %}bg-primary{% elseif adaptations.score >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                 style="width: {{ adaptations.score }}%">
+                                <strong>{{ adaptations.score }}%</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-{% if adaptations.score >= 80 %}success{% elseif adaptations.score >= 60 %}primary{% elseif adaptations.score >= 40 %}warning{% else %}danger{% endif %}">
+                        <h5 class="fw-bold">Niveau: {{ adaptations.recommendations.level }}</h5>
+                        <p class="mb-0">{{ adaptations.recommendations.message }}</p>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold">
+                                <i class="fas fa-graduation-cap text-primary"></i>
+                                Prochain Quiz
+                            </h6>
+                            <p class="mb-0">
+                                Difficulté recommandée: 
+                                <span class="badge bg-primary">{{ adaptations.recommendations.nextQuizDifficulty }}</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold">
+                                <i class="fas fa-book text-warning"></i>
+                                Sujets Suggérés
+                            </h6>
+                            <ul class="mb-0">
+                                {% for topic in adaptations.recommendations.suggestedTopics %}
+                                <li>{{ topic }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>💪 Motivation:</strong><br>
+                        {{ adaptations.recommendations.motivationalMessage }}
+                    </div>
+
+                    {% if adaptations.recommendations.additionalHelp is defined %}
+                    <div class="alert alert-info">
+                        <h6 class="fw-bold">Aide Supplémentaire:</h6>
+                        <ul class="mb-0">
+                            {% for help in adaptations.recommendations.additionalHelp %}
+                            <li>{{ help }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="card shadow-sm">
+                <div class="card-body text-center text-muted">
+                    <i class="fas fa-arrow-left fa-3x mb-3"></i>
+                    <p>Entrez un score et cliquez sur "Calculer l'Adaptation"</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function setScore(value) {
+    document.getElementById('scoreRange').value = value;
+    document.getElementById('scoreValue').textContent = value;
+}
+</script>
+{% endblock %}

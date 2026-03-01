@@ -4,7 +4,9 @@ namespace App\Controller\Front;
 
 use App\Entity\Reclamation;
 use App\Form\ReclamationType;
+use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\FormError;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ReclamationController extends AbstractController
 {
     #[Route('/reclamation', name: 'front_reclamation', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function new(Request $request, EntityManagerInterface $em, UtilisateurRepository $utilisateurRepository, \App\Service\ResumeAutoService $resumeService, \App\Service\SentimentAutoService $sentimentService, \App\Service\ResolutionTimePredictionService $predictionService, \App\Service\CategoryAutoService $categoryService): Response
     {
         $reclamation = new Reclamation();
         $reclamation->setDateReclamation(new \DateTime());
@@ -28,14 +30,34 @@ class ReclamationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($reclamation);
-            $em->flush();
-            // Memorize email to prefill 'Mes réclamations'
-            if (method_exists($reclamation, 'getEmail') && $reclamation->getEmail()) {
-                $request->getSession()->set('reclamation_email', $reclamation->getEmail());
+            // Vérifier que l'email est inscrit sur le site
+            $email = $reclamation->getEmail();
+            $utilisateur = $utilisateurRepository->findOneBy(['email' => $email]);
+            if (!$utilisateur) {
+                $form->get('email')->addError(new FormError(
+                    'Cet email n\'est pas inscrit sur le site. Seuls les utilisateurs ayant un compte peuvent déposer une réclamation. Veuillez vous inscrire d\'abord.'
+                ));
+            } else {
+                // Détection automatique du rôle depuis le compte utilisateur
+                $roleUtilisateur = $utilisateur->getRole();
+                $reclamation->setRole(in_array($roleUtilisateur, ['etudiant', 'professeur']) ? $roleUtilisateur : 'professeur');
+
+                // Analyse automatique
+                $desc = $reclamation->getDescription();
+                $reclamation->setResumeAuto($resumeService->summarize($desc));
+                $reclamation->setSentimentAuto($sentimentService->analyze($desc));
+                $reclamation->setTempsResolutionAuto($predictionService->predict($desc));
+                $reclamation->setCategory($categoryService->categorize($desc));
+
+                $em->persist($reclamation);
+                $em->flush();
+                if (method_exists($reclamation, 'getEmail') && $reclamation->getEmail()) {
+                    $request->getSession()->set('reclamation_email', $reclamation->getEmail());
+                }
+                $this->addFlash('success', 'Votre réclamation a été envoyée. Merci, nous vous répondrons prochainement.');
+
+                return $this->redirectToRoute('front_reclamation');
             }
-            $this->addFlash('success', 'Votre réclamation a été envoyée. Merci, nous vous répondrons prochainement.');
-            return $this->redirectToRoute('front_reclamation');
         }
 
         return $this->render('front/pages/reclamation/new.html.twig', [
@@ -43,25 +65,20 @@ class ReclamationController extends AbstractController
         ]);
     }
 
-    #[Route('/mes-reclamations', name: 'front_reclamation_my', methods: ['GET', 'POST'])]
-    public function my(Request $request, EntityManagerInterface $em): Response
+    #[Route('/mes-reclamations', name: 'front_reclamation_my', methods: ['GET'])]
+    public function my(EntityManagerInterface $em): Response
     {
-        $email = $request->query->get('email') ?: $request->getSession()->get('reclamation_email');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        if ($request->isMethod('POST')) {
-            $emailPosted = trim((string)$request->request->get('email'));
-            if ($emailPosted) {
-                return $this->redirectToRoute('front_reclamation_my', ['email' => $emailPosted]);
-            }
-        }
+        $user = $this->getUser();
+        $email = $user->getUserIdentifier(); // email for Utilisateur
 
-        $items = [];
-        if ($email) {
-            $items = $em->getRepository(Reclamation::class)->findBy(['email' => $email], ['dateReclamation' => 'DESC']);
-        }
+        $items = $em->getRepository(Reclamation::class)->findBy(
+            ['email' => $email],
+            ['dateReclamation' => 'DESC']
+        );
 
         return $this->render('front/pages/reclamation/my.html.twig', [
-            'email' => $email,
             'reclamations' => $items,
         ]);
     }

@@ -22,25 +22,7 @@
 <div class="content-block">
     <div class="section-area section-sp2">
         <div class="container">
-            <div class="row m-b30">
-                <div class="col-md-12">
-                    <div class="filter-form bg-light p-3">
-                        <form method="post" action="{{ path('front_reclamation_my') }}" class="row g-2 align-items-center">
-                            <div class="col-md-8">
-                                <input type="email" name="email" class="form-control" placeholder="Votre email utilisé dans la réclamation" value="{{ email }}" required>
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-primary w-100">Afficher mes réclamations</button>
-                            </div>
-                        </form>
-                        {% if not email %}
-                            <small class="text-muted">Astuce : si vous avez déjà déposé une réclamation, nous avons mémorisé votre email et pré-rempli ce champ.</small>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            {% if email and reclamations is defined and reclamations|length > 0 %}
+            {% if reclamations is defined and reclamations|length > 0 %}
                 <div class="row">
                     {% for r in reclamations %}
                         <div class="col-md-6 m-b30">
@@ -57,22 +39,88 @@
                                 <div class="offre-body">
                                     <h4>{{ r.titre }}</h4>
                                     <p class="offre-description">{{ r.description }}</p>
-                                    <div class="offre-details">
-                                        <span><i class="fa fa-user"></i> {{ r.nom }} {{ r.prenom }}</span>
-                                        <span><i class="fa fa-at"></i> {{ r.email }}</span>
-                                        <span><i class="fa fa-id-badge"></i> {{ r.role|capitalize }}</span>
-                                    </div>
+                                    {# Responses and rating stars #}
+                                    {% if r.reponses is not empty %}
+                                        <div class="mt-3">
+                                            <strong>Réponses :</strong>
+                                            <div class="list-group mt-2">
+                                                {% for rep in r.reponses %}
+                                                    <div class="list-group-item">
+                                                        <div class="d-flex justify-content-between align-items-start">
+                                                            <div>
+                                                                <div class="fw-bold">Réponse du {{ rep.dateReponse|date('d/m/Y H:i') }}</div>
+                                                                <div class="small text-muted">{{ rep.contenu }}</div>
+                                                            </div>
+                                                            <div class="text-end">
+                                                                <div class="rating" data-id="{{ rep.id }}" data-csrf="{{ csrf_token('rate_response') }}">
+                                                                    {% set current = rep.rating|default(0) %}
+                                                                    {% for i in 1..5 %}
+                                                                        <i class="fa fa-star star {{ i <= current ? 'text-warning' : 'text-muted' }}" data-value="{{ i }}" style="cursor:pointer; font-size:18px;"></i>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
-            {% elseif email %}
-                <div class="alert alert-info">Aucune réclamation trouvée pour l'email <strong>{{ email }}</strong>.</div>
             {% else %}
-                <div class="alert alert-secondary">Entrez votre email pour afficher vos réclamations.</div>
+                <div class="alert alert-info">Aucune réclamation pour le moment. <a href="{{ path('front_reclamation') }}">Déposer une réclamation</a></div>
             {% endif %}
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function(){
+            document.querySelectorAll('.rating').forEach(function(container){
+                const id = container.dataset.id;
+                const csrf = container.dataset.csrf;
+                container.querySelectorAll('.star').forEach(function(st){
+                    st.addEventListener('click', async function(){
+                        const val = this.dataset.value;
+                        // optimistic UI
+                        container.querySelectorAll('.star').forEach(s => s.classList.remove('text-warning'));
+                        container.querySelectorAll('.star').forEach(s => { if (s.dataset.value <= val) s.classList.add('text-warning'); });
+
+                        try {
+                            const res = await fetch('{{ path('front_reponse_rate') }}', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                                body: new URLSearchParams({ id: id, rating: val, _token: csrf })
+                            });
+                            const data = await res.json();
+                                if (!res.ok) {
+                                    alert('Erreur: ' + (data.error || res.statusText));
+                                } else {
+                                    // show satisfaction label near stars
+                                    if (data.label) {
+                                        const noteEl = document.createElement('div');
+                                        noteEl.className = 'small text-success mt-1';
+                                        noteEl.textContent = data.label;
+                                        // remove previous label and append
+                                        const existing = container.querySelector('.rating-label');
+                                        if (existing) existing.remove();
+                                        noteEl.classList.add('rating-label');
+                                        container.appendChild(noteEl);
+                                    }
+                                }
+                        } catch (err) {
+                            console.error(err);
+                            alert('Erreur réseau');
+                        }
+                    });
+                });
+            });
+        })();
+    </script>
 {% endblock %}

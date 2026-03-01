@@ -1,0 +1,44 @@
+# Configuration Services - Course Module
+# Ajouter ceci à config/services.yaml (OPTIONNEL - autowiring faite par défaut)
+
+services:
+  # ===== Services IA =====
+  
+  App\Service\OpenAICourseService:
+    arguments:
+      - '@Symfony\Contracts\HttpClient\HttpClientInterface'
+      - '@logger'
+      - '%env(OPENAI_API_KEY)%'
+    tags:
+      - { name: 'monolog.logger', channel: 'openai' }
+
+  App\Service\WikipediaResourceService:
+    arguments:
+      - '@Symfony\Contracts\HttpClient\HttpClientInterface'
+      - '@logger'
+    tags:
+      - { name: 'monolog.logger', channel: 'wikipedia' }
+
+  App\Service\CourseService:
+    arguments:
+      - '@App\Repository\CourseRepository'
+      - '@doctrine.orm.entity_manager'
+      - '@App\Service\OpenAICourseService'
+      - '@App\Service\WikipediaResourceService'
+      - '@logger'
+    tags:
+      - { name: 'monolog.logger', channel: 'course' }
+
+  # ===== Controllers =====
+  
+  App\Controller\Front\CourseController:
+    arguments:
+      - '@App\Service\CourseService'
+    tags:
+      - { name: 'controller.service_arguments' }
+
+  # ===== Repositories =====
+  
+  App\Repository\CourseRepository:
+    arguments:
+      - '@doctrine'

@@ -1,0 +1,144 @@
+{% set prerequisites = formation.prerequis %}
+{% set prerequisTexte = formation.prerequisTexte %}
+{% set competences = formation.competencesAcquises %}
+{% set debouches = formation.debouches %}
+
+{% if prerequisites|length > 0 or prerequisTexte or competences or debouches %}
+<!-- Roadmap Section -->
+<div class="roadmap-section">
+    <h3>
+        <i class="fa fa-road"></i> Votre Parcours d'Apprentissage
+    </h3>
+    <p class="roadmap-subtitle">Découvrez les étapes clés de cette formation, des prérequis aux débouchés professionnels</p>
+    
+    <div class="roadmap-container">
+        <!-- Stage 1: Before Training -->
+        <div class="roadmap-stage">
+            <div class="stage-badge stage-badge-before">●</div>
+            
+            <div class="stage-header">
+                <h4>Avant la Formation</h4>
+            </div>
+            
+            <div class="stage-content">
+                {% if prerequisites|length > 0 %}
+                    <div class="stage-count" style="margin-bottom: 12px;">Prérequis Nécessaires</div>
+                    <ul class="prerequis-list">
+                        {% for prerequi in prerequisites|sort((a, b) => a.ordre <=> b.ordre) %}
+                            <li class="prerequis-item">
+                                <span class="item-icon">✓</span>
+                                <div class="item-content">
+                                    <h5>{{ prerequi.nom }}</h5>
+                                    {% if prerequi.description %}
+                                        <small>{{ prerequi.description }}</small>
+                                    {% endif %}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% elseif prerequisTexte %}
+                    <div class="stage-count" style="margin-bottom: 12px;">Prérequis Nécessaires</div>
+                    <div class="competences-display">
+                        {% if prerequisTexte|striptags|trim starts with '<' %}
+                            {{ prerequisTexte|raw }}
+                        {% else %}
+                            <ul>
+                                {% for item in prerequisTexte|split('\n') %}
+                                    {% set item_trim = item|striptags|trim %}
+                                    {% if item_trim %}
+                                        <li>{{ item_trim }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p style="margin: 0; color: #999;">
+                        <i class="fa fa-info-circle" style="margin-right: 8px;"></i> 
+                        Aucun prérequis spécifique requis
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Stage 2: During Training -->
+        <div class="roadmap-stage">
+            <div class="stage-badge stage-badge-during">●</div>
+            
+            <div class="stage-header">
+                <h4>Pendant la Formation</h4>
+            </div>
+            
+            <div class="stage-content">
+                {% if competences %}
+                    <div class="stage-count" style="margin-bottom: 12px;">Compétences à Acquérir</div>
+                    <div class="competences-display">
+                        {% if competences|striptags|trim starts with '<' %}
+                            {{ competences|raw }}
+                        {% else %}
+                            <ul>
+                                {% for comp in competences|split('\n') %}
+                                    {% set comp_trim = comp|striptags|trim %}
+                                    {% if comp_trim %}
+                                        <li>{{ comp_trim }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p style="margin: 0; color: #999;">
+                        <i class="fa fa-info-circle" style="margin-right: 8px;"></i> 
+                        Compétences à définir
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Stage 3: After Training -->
+        <div class="roadmap-stage last-stage">
+            <div class="stage-badge stage-badge-after">●</div>
+            
+            <div class="stage-header">
+                <h4>Après la Formation</h4>
+            </div>
+            
+            <div class="stage-content">
+                {% if debouches %}
+                    <div class="stage-count" style="margin-bottom: 12px;">Débouchés Professionnels</div>
+                    <div class="debouches-display">
+                        {% if debouches|striptags|trim starts with '<' %}
+                            {{ debouches|raw }}
+                        {% else %}
+                            <ul>
+                                {% for deb in debouches|split('\n') %}
+                                    {% set deb_trim = deb|striptags|trim %}
+                                    {% if deb_trim %}
+                                        <li>{{ deb_trim }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <p style="margin: 0; color: #999;">
+                        <i class="fa fa-info-circle" style="margin-right: 8px;"></i> 
+                        Débouchés à définir
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Difficulty Badge -->
+    {% set difficulty_count = prerequisites|length %}
+    {% set difficulty_level = difficulty_count <= 2 ? 'easy' : (difficulty_count <= 5 ? 'medium' : 'hard') %}
+    {% set difficulty_icon = difficulty_level == 'easy' ? '🟢' : (difficulty_level == 'medium' ? '🟡' : '🔴') %}
+    {% set difficulty_text = difficulty_level == 'easy' ? 'Accessible facilement' : (difficulty_level == 'medium' ? 'Accessible avec effort' : 'Formation exigeante') %}
+    
+    <div class="roadmap-badge difficulty-{{ difficulty_level }}">
+        <span class="badge-icon">{{ difficulty_icon }}</span>
+        <span class="badge-text">{{ difficulty_text }}</span>
+    </div>
+</div>
+{% endif %}

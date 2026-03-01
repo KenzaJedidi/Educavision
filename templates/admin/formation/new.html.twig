@@ -456,6 +456,20 @@ select:focus {
 					{{ form_errors(form.competencesAcquises) }}
 				</div>
 				
+				<!-- Débouchés Professionnels -->
+				<div class="form-group-modern">
+					<label>
+						<i class="fa fa-briefcase"></i>
+						Débouchés Professionnels
+					</label>
+					{{ form_widget(form.debouches, {'attr': {'class': 'form-control-modern', 'placeholder': 'Décrivez les opportunités professionnelles après la formation...', 'rows': 4}}) }}
+					<div class="form-helper">
+						<i class="fa fa-info-circle"></i>
+						Exemple : Chef de projet, développeur senior, freelance...
+					</div>
+					{{ form_errors(form.debouches) }}
+				</div>
+				
 				<!-- Image -->
 				<div class="form-group-modern">
 					<label>

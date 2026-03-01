@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test Génération de Questions{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <a href="{{ path('ai_test_index') }}" class="btn btn-outline-secondary mb-4">
+        <i class="fas fa-arrow-left"></i> Retour
+    </a>
+    
+    <h1 class="mb-4">
+        <i class="fas fa-magic text-warning"></i>
+        Test de Génération Automatique
+    </h1>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">Paramètres</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Sujet</label>
+                            <input type="text" class="form-control" name="topic" value="Intelligence Artificielle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Niveau</label>
+                            <select class="form-select" name="level">
+                                <option value="novice">Novice</option>
+                                <option value="beginner">Débutant</option>
+                                <option value="intermediate" selected>Intermédiaire</option>
+                                <option value="expert">Expert</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de questions</label>
+                            <input type="number" class="form-control" name="question_count" value="5" min="1" max="20">
+                        </div>
+                        <button type="submit" class="btn btn-warning text-white w-100">
+                            <i class="fas fa-magic"></i> Générer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            {% if quiz %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">{{ quiz.title }}</h5>
+                    <small>{{ quiz.description }}</small>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <strong>Niveau:</strong> {{ quiz.level }} | 
+                        <strong>Total points:</strong> {{ quiz.totalPoints }}
+                    </div>
+
+                    {% for question in quiz.questions %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong>Question {{ loop.index }}</strong>
+                            <span class="badge bg-secondary float-end">{{ question.points }} pts</span>
+                        </div>
+                        <div class="card-body">
+                            <h6>{{ question.text }}</h6>
+                            <div class="mt-3">
+                                <span class="badge bg-info">{{ question.type }}</span>
+                                <span class="badge bg-warning">{{ question.difficulty }}</span>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <h6 class="text-muted">Options:</h6>
+                                <div class="list-group">
+                                    {% for option in question.options %}
+                                    <div class="list-group-item {% if option.isCorrect %}list-group-item-success{% endif %}">
+                                        {{ option.text }}
+                                        {% if option.isCorrect %}
+                                        <span class="badge bg-success float-end">✓</span>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="card shadow-sm">
+                <div class="card-body text-center text-muted">
+                    <i class="fas fa-arrow-left fa-3x mb-3"></i>
+                    <p>Configurez les paramètres et cliquez sur "Générer"</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

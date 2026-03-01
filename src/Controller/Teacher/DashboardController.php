@@ -4,6 +4,7 @@ namespace App\Controller\Teacher;
 
 use App\Repository\CourseRepository;
 use App\Repository\ChapterRepository;
+use App\Repository\QuizRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,7 +15,8 @@ class DashboardController extends AbstractController
     #[Route('/', name: 'teacher_dashboard')]
     public function index(
         CourseRepository $courseRepository,
-        ChapterRepository $chapterRepository
+        ChapterRepository $chapterRepository,
+        QuizRepository $quizRepository
     ): Response {
         $teacher = $this->getUser();
 
@@ -33,6 +35,24 @@ class DashboardController extends AbstractController
             $totalChapters += $course->getChapters()->count();
         }
 
+        // Count quizzes
+        $totalQuizzes = 0;
+        $publishedQuizzes = 0;
+        $draftQuizzes = 0;
+        
+        foreach ($courses as $course) {
+            foreach ($course->getChapters() as $chapter) {
+                foreach ($chapter->getQuizzes() as $quiz) {
+                    $totalQuizzes++;
+                    if ($quiz->getStatus() === 'published') {
+                        $publishedQuizzes++;
+                    } else {
+                        $draftQuizzes++;
+                    }
+                }
+            }
+        }
+
         // Recent courses (last 5)
         $recentCourses = array_slice($courses, 0, 5);
 
@@ -42,6 +62,9 @@ class DashboardController extends AbstractController
                 'activeCourses' => $activeCourses,
                 'inactiveCourses' => $inactiveCourses,
                 'totalChapters' => $totalChapters,
+                'totalQuizzes' => $totalQuizzes,
+                'publishedQuizzes' => $publishedQuizzes,
+                'draftQuizzes' => $draftQuizzes,
             ],
             'recentCourses' => $recentCourses,
         ]);

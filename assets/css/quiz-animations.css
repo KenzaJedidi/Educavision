@@ -1,0 +1,331 @@
+/* ============================================
+   QUIZ MODULE - ANIMATIONS AVANCÉES
+   ============================================ */
+
+/* Animation de chargement pour les cards */
+@keyframes cardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.quiz-card {
+    animation: cardSlideIn 0.6s ease-out backwards;
+}
+
+.quiz-card:nth-child(1) { animation-delay: 0.1s; }
+.quiz-card:nth-child(2) { animation-delay: 0.2s; }
+.quiz-card:nth-child(3) { animation-delay: 0.3s; }
+.quiz-card:nth-child(4) { animation-delay: 0.4s; }
+.quiz-card:nth-child(5) { animation-delay: 0.5s; }
+.quiz-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Animation de pulsation pour les boutons */
+@keyframes buttonPulse {
+    0% {
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+    }
+    50% {
+        box-shadow: 0 8px 25px rgba(255, 107, 53, 0.5);
+    }
+    100% {
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+    }
+}
+
+.quiz-start-btn:hover {
+    animation: buttonPulse 1.5s ease-in-out infinite;
+}
+
+/* Animation de rotation pour les icônes */
+@keyframes iconRotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.quiz-card-icon:hover i {
+    animation: iconRotate 0.6s ease-in-out;
+}
+
+/* Animation de shake pour les erreurs */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.quiz-option-label.error {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Animation de succès pour les réponses correctes */
+@keyframes successPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(72, 187, 120, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(72, 187, 120, 0);
+    }
+}
+
+.quiz-option-label.success {
+    animation: successPulse 0.6s ease-out;
+}
+
+/* Animation de brillance pour les badges */
+@keyframes shine {
+    0% {
+        background-position: -200% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
+}
+
+.quiz-question-number::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transition: left 0.5s;
+}
+
+.quiz-question-card:hover .quiz-question-number::after {
+    left: 100%;
+}
+
+/* Animation de progression */
+@keyframes progressFill {
+    from {
+        width: 0%;
+    }
+}
+
+.quiz-progress-bar {
+    animation: progressFill 1s ease-out;
+}
+
+/* Animation de confetti pour les bons résultats */
+@keyframes confetti {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+.confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: var(--quiz-primary);
+    top: -10px;
+    animation: confetti 3s ease-out forwards;
+}
+
+/* Animation de typing pour les messages */
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes blink {
+    50% {
+        border-color: transparent;
+    }
+}
+
+.typing-effect {
+    overflow: hidden;
+    border-right: 2px solid var(--quiz-primary);
+    white-space: nowrap;
+    animation: typing 3s steps(40) 1s forwards, blink 0.75s step-end infinite;
+}
+
+/* Animation de flip pour les cards */
+@keyframes flipIn {
+    from {
+        transform: perspective(400px) rotateY(90deg);
+        opacity: 0;
+    }
+    to {
+        transform: perspective(400px) rotateY(0deg);
+        opacity: 1;
+    }
+}
+
+.quiz-card.flip-animation {
+    animation: flipIn 0.6s ease-out;
+}
+
+/* Animation de glow pour les éléments actifs */
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(255, 107, 53, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 107, 53, 0.8);
+    }
+}
+
+.quiz-option-label:has(.quiz-option-input:checked) {
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* Animation de bounce pour les icônes de succès */
+@keyframes bounceIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.success-icon {
+    animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Animation de slide pour les notifications */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.quiz-notification {
+    animation: slideInRight 0.5s ease-out;
+}
+
+/* Animation de zoom pour les modales */
+@keyframes zoomIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.quiz-modal {
+    animation: zoomIn 0.3s ease-out;
+}
+
+/* Animation de wave pour le background */
+@keyframes wave {
+    0% {
+        transform: translateX(0) translateY(0);
+    }
+    50% {
+        transform: translateX(-25%) translateY(5%);
+    }
+    100% {
+        transform: translateX(0) translateY(0);
+    }
+}
+
+.quiz-banner::before {
+    animation: wave 15s ease-in-out infinite;
+}
+
+/* Animation de count up pour les scores */
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-number {
+    animation: countUp 0.8s ease-out;
+}
+
+/* Animation de skeleton loading */
+@keyframes skeleton {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.quiz-skeleton {
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 25%,
+        #e0e0e0 50%,
+        #f0f0f0 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton 1.5s ease-in-out infinite;
+}
+
+/* Transitions fluides pour tous les éléments interactifs */
+.quiz-card,
+.quiz-option-label,
+.quiz-btn,
+.quiz-question-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Effet de parallaxe léger */
+@media (prefers-reduced-motion: no-preference) {
+    .quiz-banner {
+        background-attachment: fixed;
+    }
+}
+
+/* Désactiver les animations pour les utilisateurs qui préfèrent */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

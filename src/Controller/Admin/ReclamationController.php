@@ -6,6 +6,9 @@ use App\Entity\Reclamation;
 use App\Form\ReclamationType;
 use App\Repository\ReclamationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ResumeAutoService;
+use App\Service\SentimentAutoService;
+use App\Service\ResolutionTimePredictionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +20,7 @@ use Dompdf\Options;
 class ReclamationController extends AbstractController
 {
     #[Route('/', name: 'reclamation_index', methods: ['GET'])]
-    public function index(Request $request, ReclamationRepository $reclamationRepository): Response
+    public function index(Request $request, ReclamationRepository $reclamationRepository, \App\Repository\ReponseRepository $reponseRepository): Response
     {
         $search = $request->query->get('search');
         $reclamations = $search
@@ -32,6 +35,51 @@ class ReclamationController extends AbstractController
             ['label' => 'Traité', 'value' => $traite, 'percent' => $percentTraite, 'color' => '#2ecc71'],
             ['label' => 'En cours', 'value' => $encours, 'percent' => $percentEncours, 'color' => '#f1c40f'],
         ];
+        // compute aggregated rating stats for responses (used in reclamation admin view)
+        $reponsesTotal = $reponseRepository->count([]);
+        $avgRating = 0;
+        $ratedCount = 0;
+        $percentRated = 0;
+        $ratingBuckets = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
+        try {
+            $avg = $reponseRepository->createQueryBuilder('r')
+                ->select('AVG(r.rating) as avgRating')
+                ->where('r.rating IS NOT NULL')
+                ->getQuery()
+                ->getSingleScalarResult();
+            $avgRating = $avg !== null ? round((float) $avg, 2) : 0;
+        } catch (\Throwable $e) {
+            $avgRating = 0;
+        }
+        try {
+            $rows = $reponseRepository->createQueryBuilder('r')
+                ->select('r.rating as rating, COUNT(r.id) as cnt')
+                ->where('r.rating IS NOT NULL')
+                ->groupBy('r.rating')
+                ->getQuery()
+                ->getResult();
+            foreach ($rows as $row) {
+                $rating = (int) $row['rating'];
+                $cnt = (int) $row['cnt'];
+                if (isset($ratingBuckets[$rating])) {
+                    $ratingBuckets[$rating] = $cnt;
+                }
+                $ratedCount += $cnt;
+            }
+        } catch (\Throwable $e) {
+        }
+        if ($reponsesTotal > 0) {
+            $percentRated = (int) round(($ratedCount * 100) / $reponsesTotal);
+        }
+
+        $ratingStats = [
+            'avgRating' => $avgRating,
+            'ratedCount' => $ratedCount,
+            'percentRated' => $percentRated,
+            'ratingBuckets' => $ratingBuckets,
+            'reponsesTotal' => $reponsesTotal,
+        ];
+
         return $this->render('admin/reclamation/index.html.twig', [
             'reclamations' => $reclamations,
             'total_reclamations' => $total,
@@ -39,11 +87,12 @@ class ReclamationController extends AbstractController
             'encours_reclamations' => $encours,
             'status_breakdown' => $statusBreakdown,
             'search' => $search,
+            'ratingStats' => $ratingStats,
         ]);
     }
 
     #[Route('/new', name: 'reclamation_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function new(Request $request, EntityManagerInterface $em, ResumeAutoService $resumeService, SentimentAutoService $sentimentService, ResolutionTimePredictionService $predictionService, \App\Service\CategoryAutoService $categoryService): Response
     {
         $reclamation = new Reclamation();
         $reclamation->setDateReclamation(new \DateTime());
@@ -51,6 +100,11 @@ class ReclamationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $desc = $reclamation->getDescription();
+            $reclamation->setResumeAuto($resumeService->summarize($desc));
+            $reclamation->setSentimentAuto($sentimentService->analyze($desc));
+            $reclamation->setTempsResolutionAuto($predictionService->predict($desc));
+            $reclamation->setCategory($categoryService->categorize($desc));
             $em->persist($reclamation);
             $em->flush();
             return $this->redirectToRoute('reclamation_index');
@@ -70,12 +124,17 @@ class ReclamationController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'reclamation_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Reclamation $reclamation, EntityManagerInterface $em): Response
+    public function edit(Request $request, Reclamation $reclamation, EntityManagerInterface $em, ResumeAutoService $resumeService, SentimentAutoService $sentimentService, ResolutionTimePredictionService $predictionService, \App\Service\CategoryAutoService $categoryService): Response
     {
         $form = $this->createForm(ReclamationType::class, $reclamation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $desc = $reclamation->getDescription();
+            $reclamation->setResumeAuto($resumeService->summarize($desc));
+            $reclamation->setSentimentAuto($sentimentService->analyze($desc));
+            $reclamation->setTempsResolutionAuto($predictionService->predict($desc));
+            $reclamation->setCategory($categoryService->categorize($desc));
             $em->flush();
             return $this->redirectToRoute('reclamation_index');
         }

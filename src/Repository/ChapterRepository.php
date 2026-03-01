@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Chapter;
+use App\Entity\Course;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,37 +18,81 @@ class ChapterRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retourne les chapitres d'un cours ordonnés par ordre
+     * Retourne les chapitres d'un cours ordonnés par position
      */
-    public function findByCourseOrdered(int $courseId): array
+    public function findByCourseOrdered(Course $course): array
     {
         return $this->createQueryBuilder('c')
             ->where('c.course = :courseId')
-            ->setParameter('courseId', $courseId)
-            ->orderBy('c.ordre', 'ASC')
+            ->setParameter('courseId', $course->getId())
+            ->orderBy('c.position', 'ASC')
             ->addOrderBy('c.created_at', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
     /**
-     * Retourne le prochain ordre pour un cours
+     * Retourne la position maximale pour un cours
      */
-    public function getNextOrder(int $courseId): int
+    public function findMaxPositionByCourse(Course $course): ?int
     {
-        $maxOrder = $this->createQueryBuilder('c')
-            ->select('MAX(c.ordre)')
+        return $this->createQueryBuilder('c')
+            ->select('MAX(c.position)')
             ->where('c.course = :courseId')
-            ->setParameter('courseId', $courseId)
+            ->setParameter('courseId', $course->getId())
             ->getQuery()
             ->getSingleScalarResult();
-
-        return ($maxOrder ?? 0) + 1;
     }
 
     /**
-     * Recherche de chapitres par titre
+     * Retourne les chapitres publiés d'un cours
      */
+    public function findByCourseAndStatus(Course $course, string $status = 'published'): array
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.course = :courseId')
+            ->andWhere('c.status = :status')
+            ->setParameter('courseId', $course->getId())
+            ->setParameter('status', $status)
+            ->orderBy('c.position', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Retourne les chapitres avec contenu enrichi
+     */
+    public function findWithEnrichedContent(Course $course): array
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.course = :courseId')
+            ->andWhere('c.enriched_content IS NOT NULL')
+            ->setParameter('courseId', $course->getId())
+            ->orderBy('c.position', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Compte les chapitres par statut
+     */
+    public function countByStatus(Course $course, string $status): int
+    {
+        return (int) $this->createQueryBuilder('c')
+            ->select('COUNT(c.id)')
+            ->where('c.course = :courseId')
+            ->andWhere('c.status = :status')
+            ->setParameter('courseId', $course->getId())
+            ->setParameter('status', $status)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    //    /**
+    //     * @return Chapter[] Returns an array of Chapter objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
     public function searchByTitle(string $term, int $courseId = null): array
     {
         $qb = $this->createQueryBuilder('c')

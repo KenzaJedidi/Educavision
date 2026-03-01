@@ -2,12 +2,10 @@
 
 namespace App\Twig;
 
-use Symfony\Bridge\Twig\Attribute\AsTwigExtension;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-#[AsTwigExtension]
 class CompanyAssetExtension extends AbstractExtension
 {
     public function __construct(private readonly KernelInterface $kernel)

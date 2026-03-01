@@ -1,0 +1,167 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test IA - Quiz Intelligent{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">🤖 Test du Système IA pour Quiz</h1>
+            <p class="text-center text-muted mb-5">
+                Testez toutes les fonctionnalités d'Intelligence Artificielle
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Test 1: Détection de niveau -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary text-white rounded-circle p-3 me-3">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Détection de Niveau</h5>
+                            <small class="text-muted">Analyse automatique du niveau étudiant</small>
+                        </div>
+                    </div>
+                    <p class="card-text">
+                        Testez la détection automatique du niveau basée sur l'historique des scores.
+                    </p>
+                    <a href="{{ path('ai_test_level') }}" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Tester
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 2: Correction intelligente -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-success text-white rounded-circle p-3 me-3">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Correction Intelligente</h5>
+                            <small class="text-muted">NLP pour réponses ouvertes</small>
+                        </div>
+                    </div>
+                    <p class="card-text">
+                        Testez la correction automatique des réponses textuelles avec analyse sémantique.
+                    </p>
+                    <a href="{{ path('ai_test_correction') }}" class="btn btn-success">
+                        <i class="fas fa-play"></i> Tester
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 3: Génération de questions -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-warning text-white rounded-circle p-3 me-3">
+                            <i class="fas fa-magic fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Génération de Questions</h5>
+                            <small class="text-muted">Création automatique de quiz</small>
+                        </div>
+                    </div>
+                    <p class="card-text">
+                        Générez automatiquement des questions adaptées au niveau de l'étudiant.
+                    </p>
+                    <a href="{{ path('ai_test_generation') }}" class="btn btn-warning text-white">
+                        <i class="fas fa-play"></i> Tester
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 4: Adaptation de difficulté -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-info text-white rounded-circle p-3 me-3">
+                            <i class="fas fa-sliders-h fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Adaptation de Difficulté</h5>
+                            <small class="text-muted">Ajustement intelligent</small>
+                        </div>
+                    </div>
+                    <p class="card-text">
+                        Testez l'adaptation automatique de la difficulté selon les performances.
+                    </p>
+                    <a href="{{ path('ai_test_adaptation') }}" class="btn btn-info text-white">
+                        <i class="fas fa-play"></i> Tester
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Démonstration complète -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h4 class="mb-3">
+                        <i class="fas fa-rocket text-primary"></i>
+                        Démonstration Complète
+                    </h4>
+                    <p class="text-muted mb-4">
+                        Voir tous les exemples en action avec des données de test
+                    </p>
+                    <a href="{{ path('ai_test_demo') }}" class="btn btn-lg btn-primary">
+                        <i class="fas fa-eye"></i> Voir la Démo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documentation -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle"></i> À propos du système IA</h5>
+                <p class="mb-0">
+                    Ce système utilise des algorithmes de Machine Learning et de NLP pour:
+                </p>
+                <ul class="mt-2 mb-0">
+                    <li>Détecter automatiquement le niveau de l'étudiant</li>
+                    <li>Corriger intelligemment les réponses ouvertes</li>
+                    <li>Générer des questions adaptées</li>
+                    <li>Adapter la difficulté selon les performances</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+.rounded-circle {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
+{% endblock %}

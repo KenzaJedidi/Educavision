@@ -20,6 +20,12 @@ class Question
     #[ORM\Column(type: "integer", nullable: true)]
     private ?int $points = null;
 
+    #[ORM\Column(type: "integer", options: ['default' => 1])]
+    private int $position = 1;
+
+    #[ORM\Column(length: 50, nullable: true, options: ['default' => 'Moyen'])]
+    private ?string $difficulty = 'Moyen'; // Facile, Moyen, Difficile
+
     #[ORM\ManyToOne(targetEntity: Quiz::class, inversedBy: "questions")]
     #[ORM\JoinColumn(name: "idquiz", referencedColumnName: "idquiz", nullable: false)]
     private ?Quiz $quiz = null;
@@ -94,6 +100,28 @@ class Question
                 $answer->setQuestion(null);
             }
         }
+        return $this;
+    }
+
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): static
+    {
+        $this->position = $position;
+        return $this;
+    }
+
+    public function getDifficulty(): ?string
+    {
+        return $this->difficulty;
+    }
+
+    public function setDifficulty(?string $difficulty): static
+    {
+        $this->difficulty = $difficulty;
         return $this;
     }
 }

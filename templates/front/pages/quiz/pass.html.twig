@@ -55,7 +55,7 @@
                                     <div class="col-md-3">
                                         <div class="info-item">
                                             <i class="fa fa-question-circle"></i>
-                                            <span>{{ quiz.questions|length }}</span>
+                                            <span>{{ (validQuestions|default(quiz.questions))|length }}</span>
                                             <small>Questions</small>
                                         </div>
                                     </div>
@@ -69,7 +69,7 @@
                                     <div class="col-md-3">
                                         <div class="info-item">
                                             <i class="fa fa-star"></i>
-                                            <span>{{ quiz.pointsTotal ?? quiz.questions|length * 10 }}</span>
+                                            <span>{{ quiz.pointsTotal ?? (validQuestions|default(quiz.questions))|length * 10 }}</span>
                                             <small>Points</small>
                                         </div>
                                     </div>
@@ -88,7 +88,7 @@
                                 <input type="hidden" name="duree_effective" id="duree_effective" value="0">
                                 <input type="hidden" name="quiz_id" value="{{ quiz.idquiz }}">
                                 
-                                {% for question in quiz.questions %}
+                                {% for question in validQuestions|default(quiz.questions) %}
                                     <div class="question-container mb-4 p-4 border rounded" data-question-id="{{ question.id }}">
                                         <div class="question-header mb-3">
                                             <div class="d-flex justify-content-between align-items-start">
@@ -102,7 +102,7 @@
                                                     {% endif %}
                                                 </div>
                                                 <div class="question-progress">
-                                                    <small class="text-muted">Question {{ loop.index }}/{{ quiz.questions|length }}</small>
+                                                    <small class="text-muted">Question {{ loop.index }}/{{ (validQuestions|default(quiz.questions))|length }}</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -149,7 +149,7 @@
                                             <div class="progress-info mb-3">
                                                 <div class="d-flex justify-content-between mb-2">
                                                     <span>Progression</span>
-                                                    <span id="progress-text">0/{{ quiz.questions|length }}</span>
+                                                    <span id="progress-text">0/{{ (validQuestions|default(quiz.questions))|length }}</span>
                                                 </div>
                                                 <div class="progress" style="height: 8px;">
                                                     <div class="progress-bar" id="progress-bar" role="progressbar" style="width: 0%"></div>
@@ -335,7 +335,7 @@ let timeLeft = {{ quiz.duree ? (quiz.duree * 60) : 1800 }}; // 30 minutes par dÃ
 let timerElement = document.getElementById('time');
 let dureeEffectiveElement = document.getElementById('duree_effective');
 let startTime = Date.now();
-let totalQuestions = {{ quiz.questions|length }};
+let totalQuestions = {{ (validQuestions|default(quiz.questions))|length }};
 
 function updateTimer() {
     timeLeft--;
@@ -428,15 +428,27 @@ function submitQuizAjax() {
     })
     .then(response => response.text())
     .then(html => {
-        // Replace the entire quiz content with results
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = html;
+        // Parse the full HTML response to extract styles
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // Remove previous quiz results styles (if user re-submits)
+        document.querySelectorAll('style[data-quiz-results="true"]').forEach(el => el.remove());
+        
+        // Inject all <style> tags from the response into the current page (essential for AI section design)
+        const styleTags = doc.querySelectorAll('style');
+        styleTags.forEach(styleEl => {
+            const newStyle = document.createElement('style');
+            newStyle.textContent = styleEl.textContent;
+            newStyle.setAttribute('data-quiz-results', 'true');
+            document.head.appendChild(newStyle);
+        });
         
         // Try to find the results container
-        const resultsContainer = tempDiv.querySelector('.results-container') || 
-                                tempDiv.querySelector('.content-block') || 
-                                tempDiv.querySelector('main') ||
-                                tempDiv.querySelector('body');
+        const resultsContainer = doc.querySelector('.results-container') || 
+                                doc.querySelector('.content-block') || 
+                                doc.querySelector('main') ||
+                                doc.querySelector('body');
         
         if (resultsContainer) {
             // Replace the quiz container with results

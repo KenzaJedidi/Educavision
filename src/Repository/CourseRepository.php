@@ -33,6 +33,36 @@ class CourseRepository extends ServiceEntityRepository
     }
 
     /**
+     * Retourne les cours actifs avec leurs chapitres (évite N+1)
+     */
+    public function findActiveCoursesWithChapters(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.chapters', 'ch')
+            ->addSelect('ch')
+            ->where('c.status = :status')
+            ->setParameter('status', 1)
+            ->orderBy('c.created_at', 'DESC')
+            ->addOrderBy('ch.position', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Retourne un cours avec ses chapitres (évite N+1)
+     */
+    public function findCourseWithChapters(int $courseId): ?Course
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.chapters', 'ch')
+            ->addSelect('ch')
+            ->where('c.id = :id')
+            ->setParameter('id', $courseId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * Recherche avancée multicritère avec pagination
      * 
      * @param string|null $title Titre du cours
@@ -42,7 +72,7 @@ class CourseRepository extends ServiceEntityRepository
      * @param int $page Page actuelle (1-based)
      * @param int $limit Nombre d'éléments par page
      * 
-     * @return array{items: Course[], total: int, page: int, limit: int, pages: int}
+     * @return array{items: CourseListItemDTO[], total: int, page: int, limit: int, pages: int}
      */
     public function searchCoursesAdvanced(
         ?string $title = null,
@@ -76,7 +106,7 @@ class CourseRepository extends ServiceEntityRepository
                 $course->getId(),
                 $course->getTitre(),
                 $course->getDescription(),
-                $course->getPrice(),
+                $course->getPrice() ? (float)$course->getPrice() : null,
                 $course->getCategory(),
                 $course->getImageUrl(),
                 $course->getCreatedAt(),
@@ -226,7 +256,7 @@ class CourseRepository extends ServiceEntityRepository
                 $qb->setParameter($paramName, '%' . $keyword . '%');
             }
             
-            if (!empty($keywordConditions)) {
+            if ($keywordConditions) {
                 $qb->andWhere('(' . implode(' OR ', $keywordConditions) . ')');
             }
         }

@@ -14,7 +14,7 @@ class Chapter
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(length: 255)]
     private ?string $titre = null;
@@ -58,7 +58,7 @@ class Chapter
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $structured_outline = null; // Plan structuré généré par IA
 
-    #[ORM\ManyToOne(inversedBy: 'chapters')]
+    #[ORM\ManyToOne(inversedBy: 'chapters', fetch: 'LAZY')]
     #[ORM\JoinColumn(name: 'course_id', referencedColumnName: 'id', nullable: true)]
     private ?Course $course = null;
 

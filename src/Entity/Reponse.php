@@ -13,28 +13,28 @@ class Reponse
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id;
 
-    #[ORM\ManyToOne(targetEntity: Reclamation::class, inversedBy: 'reponses')]
+    #[ORM\ManyToOne(targetEntity: Reclamation::class, inversedBy: 'reponses', fetch: 'LAZY')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private $reclamation;
+    private ?Reclamation $reclamation;
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(message: 'Le contenu de la réponse est obligatoire.')]
     #[Assert\Length(min: 5, max: 2000, minMessage: 'La réponse doit contenir au moins {{ limit }} caractères.', maxMessage: 'La réponse ne doit pas dépasser {{ limit }} caractères.')]
-    private $contenu;
+    private ?string $contenu;
 
     #[ORM\Column(type: 'datetime')]
-    private $dateReponse;
+    private ?\DateTimeInterface $dateReponse;
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     public function getReclamation(): ?Reclamation
     {
-        return $this->reclamation;
+        return $this->reclamation ?? null;
     }
 
     public function setReclamation(?Reclamation $reclamation): self
@@ -45,7 +45,7 @@ class Reponse
 
     public function getContenu(): ?string
     {
-        return $this->contenu;
+        return $this->contenu ?? null;
     }
 
     public function setContenu(?string $contenu): self
@@ -56,7 +56,7 @@ class Reponse
 
     public function getDateReponse(): ?\DateTimeInterface
     {
-        return $this->dateReponse;
+        return $this->dateReponse ?? null;
     }
 
     public function setDateReponse(\DateTimeInterface $dateReponse): self
@@ -66,11 +66,11 @@ class Reponse
     }
 
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $rating;
+    private ?int $rating;
 
     public function getRating(): ?int
     {
-        return $this->rating;
+        return $this->rating ?? null;
     }
 
     public function setRating(?int $rating): self

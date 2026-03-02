@@ -15,7 +15,7 @@ class Course
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le titre du cours est obligatoire')]
@@ -76,7 +76,7 @@ class Course
     /**
      * @var Collection<int, Chapter>
      */
-    #[ORM\OneToMany(targetEntity: Chapter::class, mappedBy: 'course', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Chapter::class, mappedBy: 'course', orphanRemoval: true, fetch: 'LAZY')]
     private Collection $chapters;
 
     public function __construct()
@@ -382,7 +382,7 @@ class Course
         if ($this->price === null || $this->price == 0) {
             return 'Gratuit';
         }
-        return number_format($this->price, 2, ',', ' ') . ' €';
+        return number_format((float)$this->price, 2, ',', ' ') . ' €';
     }
 
     /**

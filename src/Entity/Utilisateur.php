@@ -60,7 +60,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: 'Le nom est obligatoire.')]
@@ -113,12 +113,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     public function getNom(): ?string
     {
-        return $this->nom;
+        return $this->nom ?? null;
     }
 
     public function setNom(?string $nom): static
@@ -129,7 +129,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPrenom(): ?string
     {
-        return $this->prenom;
+        return $this->prenom ?? null;
     }
 
     public function setPrenom(?string $prenom): static
@@ -140,7 +140,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getEmail(): ?string
     {
-        return $this->email;
+        return $this->email ?? null;
     }
 
     public function setEmail(?string $email): static
@@ -151,7 +151,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getMotDePasse(): ?string
     {
-        return $this->motDePasse;
+        return $this->motDePasse ?? null;
     }
 
     public function setMotDePasse(string $motDePasse): static
@@ -162,7 +162,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRole(): ?string
     {
-        return $this->role;
+        return $this->role ?? null;
     }
 
     public function setRole(?string $role): static
@@ -173,7 +173,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getTelephone(): ?string
     {
-        return $this->telephone;
+        return $this->telephone ?? null;
     }
 
     public function setTelephone(?string $telephone): static
@@ -184,7 +184,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getAdresse(): ?string
     {
-        return $this->adresse;
+        return $this->adresse ?? null;
     }
 
     public function setAdresse(?string $adresse): static
@@ -195,7 +195,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isActif(): ?bool
     {
-        return $this->actif;
+        return $this->actif ?? null;
     }
 
     public function setActif(?bool $actif): static
@@ -206,7 +206,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getDateInscription(): ?\DateTime
     {
-        return $this->dateInscription;
+        return $this->dateInscription ?? null;
     }
 
     public function setDateInscription(\DateTime $dateInscription): static
@@ -217,7 +217,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getDateModification(): ?\DateTime
     {
-        return $this->dateModification;
+        return $this->dateModification ?? null;
     }
 
     public function setDateModification(\DateTime $dateModification): static
@@ -230,14 +230,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getFullName(): string
     {
-        return $this->prenom . ' ' . $this->nom;
+        $prenom = $this->prenom ?? '';
+        $nom = $this->nom ?? '';
+        return trim($prenom . ' ' . $nom);
     }
 
     // ========== UserInterface (Symfony Security) ==========
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string) ($this->email ?? '');
     }
 
     public function getRoles(): array
@@ -257,7 +259,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPassword(): ?string
     {
-        return $this->motDePasse;
+        return $this->motDePasse ?? null;
     }
 
     public function eraseCredentials(): void
@@ -269,7 +271,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getFaceIdToken(): ?string
     {
-        return $this->faceIdToken;
+        return $this->faceIdToken ?? null;
     }
 
     public function setFaceIdToken(?string $faceIdToken): static
@@ -280,7 +282,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isFaceIdEnrolled(): ?bool
     {
-        return $this->faceIdEnrolled;
+        return $this->faceIdEnrolled ?? null;
     }
 
     public function setFaceIdEnrolled(?bool $faceIdEnrolled): static
@@ -291,7 +293,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getFaceIdEnrollmentDate(): ?\DateTime
     {
-        return $this->faceIdEnrollmentDate;
+        return $this->faceIdEnrollmentDate ?? null;
     }
 
     public function setFaceIdEnrollmentDate(?\DateTime $faceIdEnrollmentDate): static

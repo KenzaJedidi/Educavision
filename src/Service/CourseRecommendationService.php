@@ -204,7 +204,7 @@ class CourseRecommendationService
     /**
      * Recommandations de secours si aucune similarité trouvée
      */
-    private function getFallbackRecommendations(Course $course, int $limit): array
+    public function getFallbackRecommendations(?Course $course = null, int $limit): array
     {
         return $this->courseRepository->findBy(
             ['status' => 1],

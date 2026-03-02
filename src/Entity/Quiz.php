@@ -12,7 +12,7 @@ class Quiz
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: "idquiz", type: "integer")]
-    private ?int $idquiz = null;
+    private ?int $idquiz;
 
     #[ORM\ManyToOne(inversedBy: 'quizzes')]
     #[ORM\JoinColumn(nullable: true, name: 'chapter_id')]
@@ -54,7 +54,7 @@ class Quiz
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $metadata = null;
 
-    #[ORM\OneToMany(mappedBy: "quiz", targetEntity: Result::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: "quiz", targetEntity: Result::class, orphanRemoval: true, fetch: 'LAZY')]
     private Collection $results;
 
     #[ORM\OneToMany(mappedBy: "quiz", targetEntity: Question::class, cascade: ["persist"], orphanRemoval: true)]
@@ -204,6 +204,9 @@ class Quiz
 
     public function setStatus(string $status): static
     {
+        if (!in_array($status, ['draft', 'published'])) {
+            throw new \InvalidArgumentException('Invalid status: ' . $status);
+        }
         $this->status = $status;
         return $this;
     }
@@ -215,6 +218,9 @@ class Quiz
 
     public function setDifficultyLevel(?string $difficultyLevel): static
     {
+        if ($difficultyLevel && !in_array($difficultyLevel, ['Facile', 'Moyen', 'Difficile'])) {
+            throw new \InvalidArgumentException('Invalid difficulty level: ' . $difficultyLevel);
+        }
         $this->difficultyLevel = $difficultyLevel;
         return $this;
     }
@@ -271,6 +277,67 @@ class Quiz
     public function setMetadata(?array $metadata): static
     {
         $this->metadata = $metadata;
+        return $this;
+    }
+
+    /**
+     * Vérifie si le quiz est publié
+     */
+    public function isPublished(): bool
+    {
+        return $this->status === 'published';
+    }
+
+    /**
+     * Retourne le nombre de résultats
+     */
+    public function getResultsCount(): int
+    {
+        return $this->results->count();
+    }
+
+    /**
+     * Retourne le nombre de questions
+     */
+    public function getQuestionsCount(): int
+    {
+        return $this->questions->count();
+    }
+
+    /**
+     * Vérifie si le quiz a une limite de temps
+     */
+    public function hasTimeLimit(): bool
+    {
+        return $this->timeLimit > 0;
+    }
+
+    /**
+     * Retourne la durée formatée
+     */
+    public function getFormattedDuration(): string
+    {
+        if ($this->duree === null) {
+            return 'Non définie';
+        }
+        
+        $hours = floor($this->duree / 60);
+        $minutes = $this->duree % 60;
+        
+        if ($hours > 0) {
+            return $hours . 'h' . ($minutes > 0 ? $minutes . 'min' : '');
+        }
+        
+        return $minutes . 'min';
+    }
+
+    /**
+     * Incrémente le nombre de tentatives
+     */
+    public function incrementAttempts(): static
+    {
+        $this->attempts++;
+        $this->updatedAt = new \DateTime();
         return $this;
     }
 }

@@ -32,6 +32,22 @@ class ChapterRepository extends ServiceEntityRepository
     }
 
     /**
+     * Retourne les chapitres d'un cours avec le cours (évite N+1)
+     */
+    public function findByCourseWithCourse(int $courseId): array
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.course', 'course')
+            ->addSelect('course')
+            ->where('c.course = :courseId')
+            ->setParameter('courseId', $courseId)
+            ->orderBy('c.position', 'ASC')
+            ->addOrderBy('c.created_at', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Retourne la position maximale pour un cours
      */
     public function findMaxPositionByCourse(Course $course): ?int

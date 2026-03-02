@@ -14,7 +14,7 @@ class Filiere
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
@@ -34,17 +34,18 @@ class Filiere
     /**
      * @var Collection<int, Metier>
      */
-    #[ORM\OneToMany(targetEntity: Metier::class, mappedBy: 'filiere', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Metier::class, mappedBy: 'filiere', orphanRemoval: true, fetch: 'LAZY')]
     private Collection $metiers;
 
     public function __construct()
     {
         $this->metiers = new ArrayCollection();
+        $this->dateCreation = new \DateTime();
     }
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     public function getNom(): ?string
@@ -135,5 +136,45 @@ class Filiere
         }
 
         return $this;
+    }
+
+    /**
+     * Retourne le nombre de métiers
+     */
+    public function getMetiersCount(): int
+    {
+        return $this->metiers->count();
+    }
+
+    /**
+     * Vérifie si la filière a des métiers
+     */
+    public function hasMetiers(): bool
+    {
+        return $this->metiers->count() > 0;
+    }
+
+    /**
+     * Retourne la date de création formatée
+     */
+    public function getFormattedDate(): string
+    {
+        return $this->dateCreation->format('d/m/Y');
+    }
+
+    /**
+     * Vérifie si la filière a une image
+     */
+    public function hasImage(): bool
+    {
+        return $this->image !== null && $this->image !== '';
+    }
+
+    /**
+     * Retourne le chemin de l'image
+     */
+    public function getImagePath(): ?string
+    {
+        return $this->image ? '/uploads/filieres/' . $this->image : null;
     }
 }

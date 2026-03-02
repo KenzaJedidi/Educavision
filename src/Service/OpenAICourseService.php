@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -25,7 +26,7 @@ class OpenAICourseService
         private HttpClientInterface $httpClient,
         private LoggerInterface $logger,
         private CacheInterface $cache,
-        string $openaiApiKey = ''
+        ?string $openaiApiKey = null
     ) {
         $this->apiKey = $openaiApiKey ?: ($_ENV['OPENAI_API_KEY'] ?? '');
     }
@@ -62,55 +63,41 @@ class OpenAICourseService
 
         try {
             // Vérifier le cache en premier
-            $cached = $this->cache->getItem($cacheKey);
-            if ($cached->isHit()) {
-                $this->logger->info("Résumé cours récupéré du cache pour: {$title}");
-                return $cached->get();
-            }
+            $summary = $this->cache->get($cacheKey, function (ItemInterface $item) use ($title, $description, $category) {
+                $item->expiresAfter(30 * 24 * 60 * 60); // 30 jours
+                
+                // Si OpenAI pas configurée, utiliser le mock directement
+                if (!$this->isConfigured()) {
+                    $this->logger->info("OpenAI non configurée, utilisation du service mock pour: {$title}");
+                    return $this->generateMockSummary($title, $description, $category);
+                }
 
-            // Si OpenAI pas configurée, utiliser le mock directement
-            if (!$this->isConfigured()) {
-                $this->logger->info("OpenAI non configurée, utilisation du service mock pour: {$title}");
-                $summary = $this->generateMockSummary($title, $description, $category);
+                // Appeler l'API OpenAI
+                $this->logger->info("Génération résumé OpenAI pour: {$title}");
+                $summary = $this->callOpenAIWithRetry(
+                    $this->buildSummaryPrompt($title, $description, $category),
+                    'summary',
+                    'Tu es un expert en contenu éducatif et tu dois créer des résumés concis et informatifs.',
+                    $title,
+                    $description,
+                    $category
+                );
                 
                 if ($summary) {
-                    $cached->set($summary);
-                    $cached->expiresAfter(30 * 24 * 60 * 60);
-                    $this->cache->save($cached);
+                    return $summary;
                 }
-                return $summary;
-            }
-
-            // Appel API avec retry automatique pour l'erreur 429
-            $summary = $this->callOpenAIWithRetry(
-                $this->buildSummaryPrompt($title, $description, $category),
-                'summary',
-                'Tu es un expert en création de contenus pédagogiques. Génère des résumés clairs, concis et engageants.',
-                $title,
-                $description,
-                $category
-            );
+                
+                // Fallback au mock en cas d'erreur
+                $this->logger->warning("Erreur OpenAI, fallback au mock pour: {$title}");
+                return $this->generateMockSummary($title, $description, $category);
+            });
 
             if ($summary) {
-                // Mettre en cache le résumé pour 30 jours
-                $cached->set($summary);
-                $cached->expiresAfter(30 * 24 * 60 * 60); // 30 jours
-                $this->cache->save($cached);
-                
-                $this->logger->info("Résumé cours généré et mis en cache pour: {$title}");
-            } else {
-                // Fallback: utiliser le service mock si OpenAI échoue
-                $this->logger->warning("Utilisation du service mock pour le résumé: {$title}");
-                $summary = $this->generateMockSummary($title, $description, $category);
-                if ($summary) {
-                    $cached->set($summary);
-                    $cached->expiresAfter(30 * 24 * 60 * 60);
-                    $this->cache->save($cached);
-                    $this->lastError = ''; // Réinitialiser l'erreur après succès du fallback
-                }
+                $this->logger->info("Résumé cours généré avec succès pour: {$title}");
+                return $summary;
             }
             
-            return $summary;
+            return null;
 
         } catch (\Exception $e) {
             // En cas d'exception inévitable, utiliser le mock
@@ -119,10 +106,10 @@ class OpenAICourseService
             
             if ($summary) {
                 try {
-                    $cached = $this->cache->getItem($cacheKey);
-                    $cached->set($summary);
-                    $cached->expiresAfter(30 * 24 * 60 * 60);
-                    $this->cache->save($cached);
+                    $this->cache->get($cacheKey, function (ItemInterface $item) use ($summary) {
+                        $item->expiresAfter(30 * 24 * 60 * 60);
+                        return $summary;
+                    });
                 } catch (\Exception $cacheEx) {
                     // Ignorer les erreurs de cache
                 }
@@ -148,58 +135,41 @@ class OpenAICourseService
 
         try {
             // Vérifier le cache en premier
-            $cached = $this->cache->getItem($cacheKey);
-            if ($cached->isHit()) {
-                $this->logger->info("Mots-clés récupérés du cache pour: {$title}");
-                return $cached->get();
-            }
-
-            // Si OpenAI pas configurée, utiliser le mock directement
-            if (!$this->isConfigured()) {
-                $this->logger->info("OpenAI non configurée, utilisation du service mock pour: {$title}");
-                $keywords = $this->generateMockKeywords($title, $description, $category);
-                $keywords = $this->cleanKeywords($keywords);
+            $keywords = $this->cache->get($cacheKey, function (ItemInterface $item) use ($title, $description, $category) {
+                $item->expiresAfter(30 * 24 * 60 * 60); // 30 jours
                 
-                if ($keywords) {
-                    $cached->set($keywords);
-                    $cached->expiresAfter(30 * 24 * 60 * 60);
-                    $this->cache->save($cached);
+                // Si OpenAI pas configurée, utiliser le mock directement
+                if (!$this->isConfigured()) {
+                    $this->logger->info("OpenAI non configurée, utilisation du service mock pour: {$title}");
+                    $keywords = $this->generateMockKeywords($title, $description, $category);
+                    return $this->cleanKeywords($keywords);
                 }
-                return $keywords;
-            }
 
-            // Appel API avec retry automatique pour l'erreur 429
-            $keywords = $this->callOpenAIWithRetry(
-                $this->buildKeywordsPrompt($title, $description, $category),
-                'keywords',
-                'Tu es un expert en SEO et en classification de contenu éducatif.',
-                $title,
-                $description,
-                $category
-            );
+                // Appel API avec retry automatique pour l'erreur 429
+                $keywords = $this->callOpenAIWithRetry(
+                    $this->buildKeywordsPrompt($title, $description, $category),
+                    'keywords',
+                    'Tu es un expert en SEO et en classification de contenu éducatif.',
+                    $title,
+                    $description,
+                    $category
+                );
 
-            if ($keywords) {
-                // Nettoyage des mots-clés
-                $keywords = $this->cleanKeywords($keywords);
+                if ($keywords) {
+                    // Nettoyage des mots-clés
+                    return $this->cleanKeywords($keywords);
+                }
                 
-                // Mettre en cache les mots-clés pour 30 jours
-                $cached->set($keywords);
-                $cached->expiresAfter(30 * 24 * 60 * 60); // 30 jours
-                $this->cache->save($cached);
-                
-                $this->logger->info("Mots-clés générés et mis en cache pour: {$title}");
-            } else {
                 // Fallback: utiliser le service mock si OpenAI échoue
                 $this->logger->warning("Utilisation du service mock pour les mots-clés: {$title}");
                 $keywords = $this->generateMockKeywords($title, $description, $category);
                 if ($keywords) {
-                    $keywords = $this->cleanKeywords($keywords);
-                    $cached->set($keywords);
-                    $cached->expiresAfter(30 * 24 * 60 * 60);
-                    $this->cache->save($cached);
                     $this->lastError = ''; // Réinitialiser l'erreur après succès du fallback
+                    return $this->cleanKeywords($keywords);
                 }
-            }
+                
+                return null;
+            });
             
             return $keywords;
 
@@ -211,10 +181,10 @@ class OpenAICourseService
             
             if ($keywords) {
                 try {
-                    $cached = $this->cache->getItem($cacheKey);
-                    $cached->set($keywords);
-                    $cached->expiresAfter(30 * 24 * 60 * 60);
-                    $this->cache->save($cached);
+                    $this->cache->get($cacheKey, function (ItemInterface $item) use ($keywords) {
+                        $item->expiresAfter(30 * 24 * 60 * 60);
+                        return $keywords;
+                    });
                 } catch (\Exception $cacheEx) {
                     // Ignorer les erreurs de cache
                 }

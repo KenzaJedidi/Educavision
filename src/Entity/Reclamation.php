@@ -14,40 +14,40 @@ class Reclamation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id;
 
 
     #[ORM\Column(type: 'string', length: 100)]
     #[Assert\NotBlank(message: 'Le nom est obligatoire.')]
     #[Assert\Length(min: 2, max: 100, minMessage: 'Le nom doit contenir au moins {{ limit }} caractères.')]
     #[Assert\Regex(pattern: '/^[\p{L}\s\-\']+$/u', message: 'Le nom ne doit contenir que des lettres, espaces ou tirets.')]
-    private $nom;
+    private ?string $nom;
 
     #[ORM\Column(type: 'string', length: 100)]
     #[Assert\NotBlank(message: 'Le prénom est obligatoire.')]
     #[Assert\Length(min: 2, max: 100, minMessage: 'Le prénom doit contenir au moins {{ limit }} caractères.')]
     #[Assert\Regex(pattern: '/^[\p{L}\s\-\']+$/u', message: 'Le prénom ne doit contenir que des lettres, espaces ou tirets.')]
-    private $prenom;
+    private ?string $prenom;
 
     #[ORM\Column(type: 'string', length: 180)]
     #[Assert\NotBlank(message: 'L\'email est obligatoire.')]
     #[Assert\Email(message: 'L\'email n\'est pas valide.')]
-    private $email;
+    private ?string $email;
 
     #[ORM\Column(type: 'string', length: 20)]
-    private $role; // 'etudiant' ou 'professeur' — rempli automatiquement depuis le compte
+    private ?string $role; // 'etudiant' ou 'professeur' — rempli automatiquement depuis le compte
 
     #[ORM\Column(type: 'string', length: 30)]
     #[Assert\Choice(choices: ['en cours de traitement', 'traiter'], message: 'Statut invalide.')]
-    private $status = 'en cours de traitement'; // 'en cours de traitement' ou 'traiter'
+    private string $status = 'en cours de traitement'; // 'en cours de traitement' ou 'traiter'
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message: 'Le titre est obligatoire.')]
     #[Assert\Length(min: 3, max: 255, minMessage: 'Le titre doit contenir au moins {{ limit }} caractères.')]
-    private $titre;
+    private ?string $titre;
     public function getNom(): ?string
     {
-        return $this->nom;
+        return $this->nom ?? null;
     }
     public function setNom(?string $nom): self
     {
@@ -57,7 +57,7 @@ class Reclamation
 
     public function getPrenom(): ?string
     {
-        return $this->prenom;
+        return $this->prenom ?? null;
     }
     public function setPrenom(?string $prenom): self
     {
@@ -67,7 +67,7 @@ class Reclamation
 
     public function getEmail(): ?string
     {
-        return $this->email;
+        return $this->email ?? null;
     }
     public function setEmail(?string $email): self
     {
@@ -77,7 +77,7 @@ class Reclamation
 
     public function getRole(): ?string
     {
-        return $this->role;
+        return $this->role ?? null;
     }
     public function setRole(?string $role): self
     {
@@ -98,22 +98,22 @@ class Reclamation
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(message: 'La description est obligatoire.')]
     #[Assert\Length(min: 5, minMessage: 'La description doit contenir au moins {{ limit }} caractères.', max: 2000, maxMessage: 'La description ne doit pas dépasser {{ limit }} caractères.')]
-    private $description;
+    private ?string $description;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    private $resumeAuto;
+    private ?string $resumeAuto;
 
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
-    private $category;
+    private ?string $category;
 
     #[ORM\Column(type: 'string', length: 20, nullable: true)]
-    private $sentimentAuto;
+    private ?string $sentimentAuto;
 
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $tempsResolutionAuto;
+    private ?int $tempsResolutionAuto;
 
     #[ORM\Column(type: 'datetime')]
-    private $dateReclamation;
+    private ?\DateTimeInterface $dateReclamation;
     public function getResumeAuto(): ?string
     {
         return $this->resumeAuto;
@@ -155,8 +155,8 @@ class Reclamation
         return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: 'reclamation', targetEntity: Reponse::class, orphanRemoval: true)]
-    private $reponses;
+    #[ORM\OneToMany(mappedBy: 'reclamation', targetEntity: Reponse::class, orphanRemoval: true, fetch: 'LAZY')]
+    private Collection $reponses;
 
     public function __construct()
     {
@@ -165,12 +165,12 @@ class Reclamation
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     public function getTitre(): ?string
     {
-        return $this->titre;
+        return $this->titre ?? null;
     }
 
     public function setTitre(?string $titre): self
@@ -181,7 +181,7 @@ class Reclamation
 
     public function getDescription(): ?string
     {
-        return $this->description;
+        return $this->description ?? null;
     }
 
     public function setDescription(?string $description): self
@@ -192,7 +192,7 @@ class Reclamation
 
     public function getDateReclamation(): ?\DateTimeInterface
     {
-        return $this->dateReclamation;
+        return $this->dateReclamation ?? null;
     }
 
     public function setDateReclamation(\DateTimeInterface $dateReclamation): self

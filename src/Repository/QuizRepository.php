@@ -22,11 +22,42 @@ class QuizRepository extends ServiceEntityRepository
     public function findVisibleOrdered(): array
     {
         return $this->createQueryBuilder('q')
-            ->andWhere('q.visible = :vis')
+            ->where('q.visible = :vis')
             ->setParameter('vis', true)
             ->orderBy('q.datecreation', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Retourne les quizzes visibles avec leurs chapitres (évite N+1)
+     */
+    public function findVisibleOrderedWithChapter(): array
+    {
+        return $this->createQueryBuilder('q')
+            ->leftJoin('q.chapter', 'c')
+            ->addSelect('c')
+            ->where('q.visible = :vis')
+            ->setParameter('vis', true)
+            ->orderBy('q.datecreation', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Retourne un quiz avec ses résultats et questions (évite N+1)
+     */
+    public function findQuizWithRelations(int $quizId): ?Quiz
+    {
+        return $this->createQueryBuilder('q')
+            ->leftJoin('q.results', 'r')
+            ->addSelect('r')
+            ->leftJoin('q.questions', 'qu')
+            ->addSelect('qu')
+            ->where('q.idquiz = :id')
+            ->setParameter('id', $quizId)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**

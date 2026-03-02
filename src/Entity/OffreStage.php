@@ -13,7 +13,7 @@ class OffreStage
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le titre est obligatoire')]
@@ -65,12 +65,12 @@ class OffreStage
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     public function getTitre(): ?string
     {
-        return $this->titre;
+        return $this->titre ?? null;
     }
 
     public function setTitre(string $titre): static
@@ -82,7 +82,7 @@ class OffreStage
 
     public function getDescription(): ?string
     {
-        return $this->description;
+        return $this->description ?? null;
     }
 
     public function setDescription(string $description): static
@@ -94,7 +94,7 @@ class OffreStage
 
     public function getEntreprise(): ?string
     {
-        return $this->entreprise;
+        return $this->entreprise ?? null;
     }
 
     public function setEntreprise(string $entreprise): static
@@ -106,7 +106,7 @@ class OffreStage
 
     public function getLieu(): ?string
     {
-        return $this->lieu;
+        return $this->lieu ?? null;
     }
 
     public function setLieu(?string $lieu): static
@@ -118,7 +118,7 @@ class OffreStage
 
     public function getDateDebut(): ?\DateTime
     {
-        return $this->dateDebut;
+        return $this->dateDebut ?? null;
     }
 
     public function setDateDebut(?\DateTime $dateDebut): static
@@ -130,7 +130,7 @@ class OffreStage
 
     public function getDateFin(): ?\DateTime
     {
-        return $this->dateFin;
+        return $this->dateFin ?? null;
     }
 
     public function setDateFin(?\DateTime $dateFin): static
@@ -142,7 +142,7 @@ class OffreStage
 
     public function getDureeJours(): ?int
     {
-        return $this->dureeJours;
+        return $this->dureeJours ?? null;
     }
 
     public function setDureeJours(?int $dureeJours): static
@@ -154,7 +154,7 @@ class OffreStage
 
     public function getDateCreation(): ?\DateTime
     {
-        return $this->dateCreation;
+        return $this->dateCreation ?? null;
     }
 
     public function setDateCreation(\DateTime $dateCreation): static
@@ -166,7 +166,7 @@ class OffreStage
 
     public function getStatut(): ?string
     {
-        return $this->statut;
+        return $this->statut ?? null;
     }
 
     public function setStatut(?string $statut): static
@@ -178,7 +178,7 @@ class OffreStage
 
     public function getSalaire(): ?string
     {
-        return $this->salaire;
+        return $this->salaire ?? null;
     }
 
     public function setSalaire(?string $salaire): static
@@ -190,7 +190,7 @@ class OffreStage
 
     public function getCompetencesRequises(): ?array
     {
-        return $this->competencesRequises;
+        return $this->competencesRequises ?? null;
     }
 
     public function setCompetencesRequises(?array $competencesRequises): static
@@ -202,7 +202,7 @@ class OffreStage
 
     public function getDescriptionIa(): ?string
     {
-        return $this->descriptionIa;
+        return $this->descriptionIa ?? null;
     }
 
     public function setDescriptionIa(?string $descriptionIa): static

@@ -1,17 +1,18 @@
 <?php
 namespace App\Entity;
 
+use App\Repository\ResultRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ResultRepository::class)]
 class Result
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: "idresult", type: "integer")]
-    private ?int $idresult = null;
+    private ?int $idresult;
 
-    #[ORM\ManyToOne(targetEntity: Quiz::class, inversedBy: "results")]
+    #[ORM\ManyToOne(targetEntity: Quiz::class, inversedBy: "results", fetch: 'LAZY')]
     #[ORM\JoinColumn(name: "idquiz", referencedColumnName: "idquiz", nullable: false, onDelete: "CASCADE")]
     private ?Quiz $quiz = null;
 
@@ -31,7 +32,7 @@ class Result
 
     public function getIdresult(): ?int
     {
-        return $this->idresult;
+        return $this->idresult ?? null;
     }
 
     public function getQuiz(): ?Quiz
@@ -76,5 +77,56 @@ class Result
     {
         $this->datepassage = $datepassage;
         return $this;
+    }
+
+    /**
+     * Vérifie si le score est réussi (>= 50%)
+     */
+    public function isSuccessful(): bool
+    {
+        return $this->score !== null && $this->score >= 50;
+    }
+
+    /**
+     * Vérifie si le score est excellent (>= 90%)
+     */
+    public function isExcellent(): bool
+    {
+        return $this->score !== null && $this->score >= 90;
+    }
+
+    /**
+     * Retourne le score formaté en pourcentage
+     */
+    public function getFormattedScore(): string
+    {
+        return $this->score . '%';
+    }
+
+    /**
+     * Retourne la date de passage formatée
+     */
+    public function getFormattedDate(): string
+    {
+        return $this->datepassage->format('d/m/Y H:i');
+    }
+
+    /**
+     * Retourne l'évaluation du score
+     */
+    public function getGrade(): string
+    {
+        if ($this->score === null) {
+            return 'Non noté';
+        }
+
+        return match (true) {
+            $this->score >= 90 => 'Excellent',
+            $this->score >= 80 => 'Très bien',
+            $this->score >= 70 => 'Bien',
+            $this->score >= 60 => 'Assez bien',
+            $this->score >= 50 => 'Passable',
+            default => 'Insuffisant'
+        };
     }
 }

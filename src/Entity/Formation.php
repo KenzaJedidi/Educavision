@@ -14,7 +14,7 @@ class Formation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
@@ -43,7 +43,7 @@ class Formation
     /**
      * @var Collection<int, Prerequis>
      */
-    #[ORM\OneToMany(targetEntity: Prerequis::class, mappedBy: 'formation', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Prerequis::class, mappedBy: 'formation', orphanRemoval: true, fetch: 'LAZY')]
     private Collection $prerequis;
 
     public function __construct()
@@ -53,7 +53,7 @@ class Formation
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     public function getNom(): ?string
@@ -180,5 +180,64 @@ class Formation
         $this->debouches = $debouches;
 
         return $this;
+    }
+
+    /**
+     * Retourne le nombre de prérequis
+     */
+    public function getPrerequisCount(): int
+    {
+        return $this->prerequis->count();
+    }
+
+    /**
+     * Vérifie si la formation a des prérequis
+     */
+    public function hasPrerequis(): bool
+    {
+        return $this->prerequis->count() > 0;
+    }
+
+    /**
+     * Vérifie si la formation a une image
+     */
+    public function hasImage(): bool
+    {
+        return $this->image !== null && $this->image !== '';
+    }
+
+    /**
+     * Retourne le chemin de l'image
+     */
+    public function getImagePath(): ?string
+    {
+        return $this->image ? '/uploads/formations/' . $this->image : null;
+    }
+
+    /**
+     * Vérifie si la formation est complète (tous les champs requis)
+     */
+    public function isComplete(): bool
+    {
+        return $this->nom !== null && 
+               $this->description !== null && 
+               $this->duree !== null && 
+               $this->niveau !== null;
+    }
+
+    /**
+     * Retourne la durée formatée
+     */
+    public function getFormattedDuration(): string
+    {
+        return $this->duree ?? 'Non définie';
+    }
+
+    /**
+     * Retourne le niveau formaté
+     */
+    public function getFormattedLevel(): string
+    {
+        return $this->niveau ?? 'Non défini';
     }
 }

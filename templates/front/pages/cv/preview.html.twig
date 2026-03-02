@@ -1,0 +1,17 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Aperçu CV{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+  <h1>Aperçu CV — {{ cv.nom }}</h1>
+  <p><strong>Email:</strong> {{ cv.email }} — <strong>Téléphone:</strong> {{ cv.telephone }}</p>
+  <h3>Expériences</h3>
+  <ul>
+    {% for e in cv.experiences %}
+      <li><strong>{{ e.poste }}</strong> — {{ e.entreprise }} ({{ e.annees }})<br>{{ e.description }}</li>
+    {% endfor %}
+  </ul>
+  <a href="{{ path('cv_index') }}" class="btn btn-secondary">Retour</a>
+</div>
+{% endblock %}

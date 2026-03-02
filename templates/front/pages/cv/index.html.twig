@@ -1,0 +1,11 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Générateur de CV{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+  <h1>Générateur de CV</h1>
+  <p>Bienvenue sur le générateur de CV. Cette page est un point d'entrée minimal pour le module CV.</p>
+  <a href="{{ path('cv_preview') }}" class="btn btn-primary">Aperçu de test</a>
+</div>
+{% endblock %}
